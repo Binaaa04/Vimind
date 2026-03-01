@@ -5,6 +5,8 @@ import "../App.css";
 import logoLeft from "../assets/logovimind.png";
 import logoTop from "../assets/logovimind2.png";
 
+import api from "../services/api";
+
 const Login = () => {
   const navigate = useNavigate();
 
@@ -20,7 +22,7 @@ const Login = () => {
     });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!form.email || !form.password) {
@@ -28,8 +30,22 @@ const Login = () => {
       return;
     }
 
-    navigate("/dashboard");
+    try {
+      const response = await api.post("/login", {
+        email: form.email,
+        password: form.password,
+      });
+
+      if (response.status === 200) {
+        alert("Login Berhasil!");
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert(error.response?.data?.message || "Terjadi kesalahan saat login");
+    }
   };
+
 
   return (
     <div className="page-wrapper">
@@ -43,7 +59,7 @@ const Login = () => {
         {/* RIGHT FORM */}
         <div className="card-right">
 
-          <img src={logoTop} alt="logo" className="logo-img"/>
+          <img src={logoTop} alt="logo" className="logo-img" />
 
           <p className="subtitle center-text">
             Bagaimanakah kesehatan mentalmu hari ini?
