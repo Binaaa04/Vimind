@@ -1,9 +1,9 @@
 const moodData = {
-  "😭": { percent: 20, text:"Sedih", msg:"Kamu lagi kurang baik. Jangan dipendam ya." },
-  "☹️": { percent: 40, text:"Murung", msg:"Coba lakukan hal yang kamu suka." },
-  "😐": { percent: 55, text:"Biasa", msg:"Mood kamu stabil hari ini." },
-  "🙂": { percent: 75, text:"Baik", msg:"Pertahankan energi positifmu!" },
-  "😁": { percent: 95, text:"Bahagia", msg:"Kamu lagi happy banget hari ini!" }
+  "😭": { percent: 20, text: "Sedih", msg: "Kamu lagi kurang baik. Jangan dipendam ya." },
+  "☹️": { percent: 40, text: "Murung", msg: "Coba lakukan hal yang kamu suka." },
+  "😐": { percent: 55, text: "Biasa", msg: "Mood kamu stabil hari ini." },
+  "🙂": { percent: 75, text: "Baik", msg: "Pertahankan energi positifmu!" },
+  "😁": { percent: 95, text: "Bahagia", msg: "Kamu lagi happy banget hari ini!" }
 };
 
 export default function MoodResultModal({ mood, onClose }) {
@@ -19,10 +19,10 @@ export default function MoodResultModal({ mood, onClose }) {
           <h2>Rangkuman Mood Kamu</h2>
 
           {/* GAUGE */}
-          <div className="gauge">
-            <div 
-              className="gauge-fill"
-              style={{width:`${data.percent}%`}}
+          <div className="mood-gauge">
+            <div
+              className="mood-gauge-fill"
+              style={{ width: `${data.percent}%` }}
             />
           </div>
 

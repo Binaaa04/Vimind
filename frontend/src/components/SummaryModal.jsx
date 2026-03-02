@@ -31,8 +31,8 @@ export default function SummaryModal({ onClose }) {
 
           <h3 className="center">Kondisi Mental Kamu</h3>
 
-          <div className="gauge">
-            <div className="gauge-fill"></div>
+          <div className="summary-gauge">
+            <div className="summary-gauge-fill"></div>
 
             <div className="gauge-center">
               <h2>66% 😕</h2>
