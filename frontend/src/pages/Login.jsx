@@ -4,8 +4,6 @@ import "../App.css";
 
 import logoLeft from "../assets/logovimind.png";
 import logoTop from "../assets/logovimind2.png";
-
-import api from "../services/api";
 import { supabase } from "../services/supabaseClient";
 
 const Login = () => {
@@ -30,7 +28,6 @@ const Login = () => {
       alert("Gagal login dengan Google: " + error.message);
     }
   };
-
 
   const handleChange = (e) => {
     setForm({
@@ -102,7 +99,6 @@ const Login = () => {
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="google" />
             Login dengan Google
           </button>
-
 
           <div className="small-text">
             Belum punya akun? <Link to="/register">Daftar sekarang</Link>
