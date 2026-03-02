@@ -1,24 +1,7 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Finish() {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const fromDashboard = location.state?.from === "dashboard";
-
-  const handleNext = () => {
-    const from = localStorage.getItem("quizFrom");
-
-    if (from === "dashboard") {
-      navigate("/dashboard");
-    } else {
-      navigate("/hasil");
-    }
-
-    localStorage.removeItem("quizFrom");
-  };
-
-  console.log("STATE DI FINISH:", location.state);
 
   return (
     <div className="question-page">
@@ -37,7 +20,7 @@ export default function Finish() {
         <button
           className="next-btn"
           style={{ marginTop: "30px" }}
-          onClick={handleNext}
+          onClick={() => navigate("/hasil")}
         >
           Lanjutkan
         </button>
@@ -48,3 +31,4 @@ export default function Finish() {
     </div>
   );
 }
+/*FINISH*/

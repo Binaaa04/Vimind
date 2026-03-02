@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 export default function Result() {
     const navigate = useNavigate();
 
-    const [showLogin, setShowLogin] = useState(true);
+    const [showLogin, setShowLogin] = useState(
+        localStorage.getItem("isLogin") !== "true"
+    );
     const [loading, setLoading] = useState(false); // ← PINDAH KE SINI
-
+    const isLogin = localStorage.getItem("isLogin") === "true";
     return (
         <div className="result-page">
 
@@ -68,7 +70,17 @@ export default function Result() {
                     </div>
                 </div>
             )}
-
+            {isLogin && (
+                <div style={{ textAlign: "center", marginTop: "30px" }}>
+                    <button
+                        className="next-btn"
+                        onClick={() => navigate("/dashboard")}
+                    >
+                        Kembali ke Dashboard
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
+/*RESULT*/
