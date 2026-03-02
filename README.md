@@ -1,5 +1,5 @@
 # ViMind Project
-
+(npm dotenv)
 ViMind is a mental health management application using **Go (Fiber)** for the backend and **React (Vite)** for the frontend, with **Supabase** integration for database and authentication.
 
 ## Prerequisites
