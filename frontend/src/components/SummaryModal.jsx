@@ -29,7 +29,7 @@ export default function SummaryModal({ onClose }) {
         {/* RIGHT CARD */}
         <div className="summary-card small">
 
-          <h3>Kondisi Mental Kamu</h3>
+          <h3 className="center">Kondisi Mental Kamu</h3>
 
           <div className="gauge">
             <div className="gauge-fill"></div>
@@ -46,7 +46,7 @@ export default function SummaryModal({ onClose }) {
 
         </div>
 
-        {/* TOMBOL TUTUP PINDAH KE DALAM */}
+        {/* FOOTER */}
         <div className="summary-footer">
           <button onClick={onClose}>Tutup</button>
         </div>
@@ -56,3 +56,4 @@ export default function SummaryModal({ onClose }) {
     </div>
   );
 }
+/*SUMMARY*/

@@ -39,30 +39,16 @@ const Login = () => {
     });
   };
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
 
     if (!form.email || !form.password) {
       alert("Email dan password wajib diisi");
       return;
     }
-
-    try {
-      const response = await api.post("/login", {
-        email: form.email,
-        password: form.password,
-      });
-
-      if (response.status === 200) {
-        alert("Login Berhasil!");
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert(error.response?.data?.message || "Terjadi kesalahan saat login");
-    }
+    localStorage.setItem("isLogin", "true");
+    navigate("/dashboard");
   };
-
 
   return (
     <div className="page-wrapper">
