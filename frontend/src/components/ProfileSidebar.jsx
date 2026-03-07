@@ -1,7 +1,7 @@
 import "./ProfileSidebar.css";
 import logo from "../assets/logovimind2.png";
 
-const ProfileSidebar = ({ isOpen, onClose, onOpenNicknameModal,nickname }) => {
+const ProfileSidebar = ({ isOpen, onClose, onOpenNicknameModal, onOpenLogoutModal, nickname }) => {
   return (
     <>
       <div
@@ -41,7 +41,13 @@ const ProfileSidebar = ({ isOpen, onClose, onOpenNicknameModal,nickname }) => {
         </div>
 
         <div className="profile-bottom">
-          <button className="profile-logout-btn">
+          <button
+            className="profile-logout-btn"
+            onClick={() => {
+              onClose();
+              onOpenLogoutModal();
+            }}
+          >
             <span className="logout-icon">↪</span>
             <span>Log Out</span>
           </button>

@@ -6,6 +6,7 @@ import MoodModal from "../components/MoodModal";
 import ProfileSidebar from "../components/ProfileSidebar";
 import NicknameModal from "../components/NicknameModal";
 import NicknameSuccessModal from "../components/NicknameSuccessModal";
+import LogoutModal from "../components/LogoutModal";
 import logo from "../assets/logovimind2.png";
 
 const Dashboard = () => {
@@ -15,6 +16,7 @@ const Dashboard = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [showNicknameSuccessModal, setShowNicknameSuccessModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [nickname, setNickname] = useState(
     localStorage.getItem("nickname") || "Udean"
   );
@@ -28,6 +30,16 @@ const Dashboard = () => {
     localStorage.setItem("nickname", finalNickname);
     setShowNicknameModal(false);
     setShowNicknameSuccessModal(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("nickname");
+    localStorage.removeItem("mood");
+    localStorage.removeItem("quizFrom");
+
+    setShowLogoutModal(false);
+
+    navigate("/login");
   };
 
   return (
@@ -60,6 +72,7 @@ const Dashboard = () => {
             isOpen={showSidebar}
             onClose={() => setShowSidebar(false)} 
             onOpenNicknameModal={() => setShowNicknameModal(true)}
+            onOpenLogoutModal={() => setShowLogoutModal(true)}
             nickname={nickname}
           />
         </div>
@@ -146,6 +159,13 @@ const Dashboard = () => {
       <NicknameSuccessModal
         isOpen={showNicknameSuccessModal}
         onClose={() => setShowNicknameSuccessModal(false)}
+      />
+      
+      {/* LOGOUT MODAL */}
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
       />
       
       {/* MOOD MODAL */}
