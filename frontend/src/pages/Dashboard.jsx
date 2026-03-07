@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import MoodModal from "../components/MoodModal";
 import ProfileSidebar from "../components/ProfileSidebar";
 import NicknameModal from "../components/NicknameModal";
+import NicknameSuccessModal from "../components/NicknameSuccessModal";
 import logo from "../assets/logovimind2.png";
 
 const Dashboard = () => {
@@ -13,6 +14,7 @@ const Dashboard = () => {
   const [showResult, setShowResult] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
+  const [showNicknameSuccessModal, setShowNicknameSuccessModal] = useState(false);
   const [nickname, setNickname] = useState(
     localStorage.getItem("nickname") || "Udean"
   );
@@ -24,6 +26,8 @@ const Dashboard = () => {
     const finalNickname = newNickname?.trim() || "Udean";
     setNickname(finalNickname);
     localStorage.setItem("nickname", finalNickname);
+    setShowNicknameModal(false);
+    setShowNicknameSuccessModal(true);
   };
 
   return (
@@ -138,6 +142,12 @@ const Dashboard = () => {
         onSave={handleSaveNickname}
       />
 
+      {/* NICKNAME SUCCESS MODAL */}
+      <NicknameSuccessModal
+        isOpen={showNicknameSuccessModal}
+        onClose={() => setShowNicknameSuccessModal(false)}
+      />
+      
       {/* MOOD MODAL */}
       {showMood && (
         <MoodModal onClose={() => setShowMood(false)} />
