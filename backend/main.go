@@ -244,7 +244,15 @@ func main() {
 		if req.UserEmail != "" {
 			var uid int
 			err := dbpool.QueryRow(context.Background(), "SELECT user_id FROM users WHERE email=$1", req.UserEmail).Scan(&uid)
-			if err == nil {
+			if err != nil {
+				// Auto-create user if not found
+				err = dbpool.QueryRow(context.Background(), "INSERT INTO users (email, name) VALUES ($1, $2) RETURNING user_id", req.UserEmail, strings.Split(req.UserEmail, "@")[0]).Scan(&uid)
+				if err == nil {
+					internalUserID = &uid
+				} else {
+					log.Printf("Error auto-creating user %s: %v", req.UserEmail, err)
+				}
+			} else {
 				internalUserID = &uid
 			}
 		}
@@ -293,6 +301,50 @@ func main() {
 			"top_result":  top,
 			"all_results": finalResults,
 		})
+	})
+
+	// GET /api/profile - Fetch user profile
+	app.Get("/api/profile", func(c *fiber.Ctx) error {
+		email := c.Query("email")
+		if email == "" {
+			return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
+		}
+
+		var id int
+		var name, userEmail string
+		err := dbpool.QueryRow(context.Background(), "SELECT user_id, name, email FROM users WHERE email=$1", email).Scan(&id, &name, &userEmail)
+		if err != nil {
+			return c.Status(404).JSON(fiber.Map{"error": "User not found"})
+		}
+
+		return c.JSON(fiber.Map{
+			"id":    id,
+			"name":  name,
+			"email": userEmail,
+		})
+	})
+
+	// POST /api/profile - Update or Create user profile
+	app.Post("/api/profile", func(c *fiber.Ctx) error {
+		type ProfileReq struct {
+			Email string `json:"email"`
+			Name  string `json:"name"`
+		}
+		var pr ProfileReq
+		if err := c.BodyParser(&pr); err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
+		}
+
+		_, err := dbpool.Exec(context.Background(), `
+			INSERT INTO users (email, name) VALUES ($1, $2)
+			ON CONFLICT (email) DO UPDATE SET name=$2
+		`, pr.Email, pr.Name)
+
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to update profile"})
+		}
+
+		return c.JSON(fiber.Map{"message": "Profile updated successfully"})
 	})
 
 	// GET /api/history - Fetch diagnosis history for a user

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../services/supabaseClient";
 import SummaryModal from "../components/SummaryModal";
 import MoodResultModal from "../components/MoodResultModal";
@@ -10,6 +10,7 @@ import NicknameSuccessModal from "../components/NicknameSuccessModal";
 import LogoutModal from "../components/LogoutModal";
 import ArticleModal from "../components/ArticleModal";
 import { articlesList } from "../data/articlesData";
+import { getProfile, updateProfile } from "../services/api";
 import logo from "../assets/logovimind2.png";
 
 const Dashboard = () => {
@@ -23,19 +24,49 @@ const Dashboard = () => {
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [showNicknameSuccessModal, setShowNicknameSuccessModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const [userEmail, setUserEmail] = useState("");
   const [nickname, setNickname] = useState(
-    localStorage.getItem("nickname") || "Udean"
+    localStorage.getItem("nickname") || "User"
   );
 
   const navigate = useNavigate();
   const mood = localStorage.getItem("mood");
 
-  const handleSaveNickname = (newNickname) => {
-    const finalNickname = newNickname?.trim() || "Udean";
-    setNickname(finalNickname);
-    localStorage.setItem("nickname", finalNickname);
-    setShowNicknameModal(false);
-    setShowNicknameSuccessModal(true);
+  useEffect(() => {
+    const fetchUserAndProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.email) {
+        setUserEmail(session.user.email);
+        try {
+          const res = await getProfile(session.user.email);
+          if (res.data?.name) {
+            setNickname(res.data.name);
+            localStorage.setItem("nickname", res.data.name);
+          }
+        } catch (err) {
+          console.error("Profile not found, using default.");
+          // If profile not in DB yet, use Supabase metadata if exists
+          const name = session.user.user_metadata?.full_name || session.user.email.split("@")[0];
+          setNickname(name);
+        }
+      }
+    };
+    fetchUserAndProfile();
+  }, []);
+
+  const handleSaveNickname = async (newNickname) => {
+    const finalNickname = newNickname?.trim() || "User";
+    try {
+      await updateProfile(userEmail, finalNickname);
+      setNickname(finalNickname);
+      localStorage.setItem("nickname", finalNickname);
+      setShowNicknameModal(false);
+      setShowNicknameSuccessModal(true);
+    } catch (err) {
+      console.error("Failed to save nickname:", err);
+      alert("Gagal menyimpan nickname.");
+    }
   };
 
   const handleArticleClick = (articleId) => {
