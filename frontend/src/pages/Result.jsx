@@ -1,17 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../services/supabaseClient";
 
 export default function Result() {
     const navigate = useNavigate();
 
-    const [showLogin, setShowLogin] = useState(
-        localStorage.getItem("isLogin") !== "true"
-    );
-    const [loading, setLoading] = useState(false); // ← PINDAH KE SINI
-    const isLogin = localStorage.getItem("isLogin") === "true";
+    const [isLogin, setIsLogin] = useState(true); // Default true biar gak flicker pas loading
+    const [showLogin, setShowLogin] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const checkLogin = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            const loggedIn = !!session;
+            setIsLogin(loggedIn);
+            setShowLogin(!loggedIn);
+        };
+        checkLogin();
+    }, []);
+
     return (
         <div className="result-page">
-
             {/* HEADER */}
             <div className="result-header">
                 <div>
@@ -26,7 +35,7 @@ export default function Result() {
             </div>
 
             {/* CARD */}
-            <div className="result-card">
+            <div className={`result-card ${!isLogin ? "content-blur" : ""}`}>
                 <h2>Hasil Skrining Kesehatan Mental</h2>
 
                 <p>
@@ -70,6 +79,7 @@ export default function Result() {
                     </div>
                 </div>
             )}
+
             {isLogin && (
                 <div style={{ textAlign: "center", marginTop: "30px" }}>
                     <button
