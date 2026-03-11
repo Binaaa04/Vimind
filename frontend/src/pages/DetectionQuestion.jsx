@@ -82,7 +82,19 @@ export default function Detection() {
 
   if (loading) return <div className="question-page"><h1>Memuat Pertanyaan...</h1></div>;
 
-  const progressPercent = ((currentIndex + 1) / questions.length) * 100;
+  if (!questions || questions?.length === 0) {
+    return (
+      <div className="question-page">
+        <h1>Terjadi Kesalahan</h1>
+        <p>Gagal memuat daftar pertanyaan (Data Kosong). Silahkan hubungi administrator atau coba lagi nanti.</p>
+        <button onClick={() => window.location.reload()} className="next-btn" style={{ marginTop: "20px" }}>
+          Muat Ulang
+        </button>
+      </div>
+    );
+  }
+
+  const progressPercent = ((currentIndex + 1) / (questions?.length || 1)) * 100;
 
   return (
     <div className="question-page">

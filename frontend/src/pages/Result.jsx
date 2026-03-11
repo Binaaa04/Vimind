@@ -1,107 +1,134 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../services/supabaseClient";
+import { getProfile } from "../services/api";
 
 export default function Result() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [isLoggedIn, setIsLoggedIn] = useState(true); // Default true to avoid flicker
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [nickname, setNickname] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
 
     // Get data from location state (Passed from DetectionQuestion)
-    // Fallback to localStorage (for members who refresh)
     const stateDiagnosis = location.state?.diagnosis;
-
-    // We only read from localStorage if the user is a member OR we don't have state
     const storedDiagnosis = JSON.parse(localStorage.getItem("latest_diagnosis"));
     const diagnosis = stateDiagnosis || storedDiagnosis;
 
     useEffect(() => {
-        const checkAuth = async () => {
+        const checkAuthAndProfile = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            const authed = !!session;
-            setIsLoggedIn(authed);
-            setShowModal(!authed);
+            if (session) {
+                setIsLoggedIn(true);
+                setShowModal(false);
+                try {
+                    const profileRes = await getProfile(session.user.email);
+                    setNickname(profileRes.data.name || session.user.email.split("@")[0]);
+                } catch (err) {
+                    setNickname(session.user.email.split("@")[0]);
+                }
+            } else {
+                setIsLoggedIn(false);
+                setShowModal(true);
+            }
         };
-        checkAuth();
+        checkAuthAndProfile();
     }, []);
 
-    const result = diagnosis?.top_result;
+    const result = diagnosis?.top_result || (diagnosis?.all_results ? diagnosis.all_results[0] : null);
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        navigate("/login");
+    };
 
     return (
         <div className="result-page">
-            {/* HEADER */}
             <div className="result-header">
-                <div>
-                    <h1>Mari Kita Lihat Hasil Tesmu</h1>
-                    <p>
+                <div className="header-info">
+                    <h1>Mari Lihat Hasil Tesmu{nickname ? `, ${nickname}!` : ""}</h1>
+                    <div className="result-badge">
                         {result ? (
                             <>
-                                anda sedang mengalami <b>{result.disease_name}</b><br />
-                                Dengan Persentase <b>{(result.percentage).toFixed(0)}%</b>
+                                <span>Kamu Terdeteksi:</span>
+                                <h2>{result.disease_name}</h2>
+                                <div className="percentage-pill">
+                                    Akurasi: {(result.percentage || 0).toFixed(0)}%
+                                </div>
                             </>
                         ) : (
-                            "Data hasil tes tidak ditemukan."
+                            <p>Data hasil tes tidak ditemukan.</p>
                         )}
-                    </p>
+                    </div>
                 </div>
 
-                <div className="avatar"></div>
+                <div className="header-actions">
+                    <div className="avatar">{nickname ? nickname[0].toUpperCase() : "?"}</div>
+                    {isLoggedIn && (
+                        <button className="logout-mini-btn" onClick={handleLogout}>Keluar</button>
+                    )}
+                </div>
             </div>
 
-            {/* CARD */}
-            <div className={`result-card ${!isLoggedIn ? "content-blur" : ""}`}>
-                <h2>Hasil Skrining Kesehatan Mental</h2>
+            <div className={`result-card-container ${!isLoggedIn ? "content-blur" : ""}`}>
+                <div className="result-card">
+                    <div className="card-section">
+                        <h3>Deskripsi Kondisi</h3>
+                        <p>{result?.description || "Berdasarkan jawaban kuesioner, sistem sedang menganalisis kondisi Anda."}</p>
+                    </div>
 
-                <p>
-                    {result?.description || "Berdasarkan jawaban kuesioner yang telah diisi, sistem sedang menganalisis kondisi Anda."}
-                </p>
+                    <div className="card-section">
+                        <h3>Saran Perbaikan</h3>
+                        <div className="recommendations-box">
+                            {result?.recommendations ? (
+                                result.recommendations.split(",").map((s, i) => (
+                                    <div key={i} className="rec-item">
+                                        <span className="bullet">✦</span>
+                                        <p>{s.trim()}</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>Tetap jaga kesehatan mental Anda.</p>
+                            )}
+                        </div>
+                    </div>
 
-                <h3>Saran Perbaikan Kondisi</h3>
-                <div className="recommendations-list" style={{ whiteSpace: "pre-line", color: "#555", fontSize: "14px" }}>
-                    {result?.recommendations?.split(",").map((s, i) => (
-                        <li key={i}>{s.trim()}</li>
-                    )) || "Tetap jaga kesehatan mental Anda."}
+                    <div className="card-section rujukan">
+                        <h3>Saran Rujukan Profesional</h3>
+                        <p>
+                            Jika gejala ini mengganggu aktivitas harian Anda selama lebih dari <b>2 minggu</b>,
+                            sangat disarankan untuk berkonsultasi dengan psikolog atau psikiater.
+                        </p>
+                    </div>
                 </div>
 
-                <h3>Saran Rujukan Profesional</h3>
-                <p>
-                    Jika gejala berlangsung lebih dari dua minggu,
-                    disarankan berkonsultasi dengan profesional.
-                </p>
+                {isLoggedIn && (
+                    <div className="result-footer">
+                        <button className="dashboard-btn" onClick={() => navigate("/dashboard")}>
+                            Lihat Rangkuman di Dashboard
+                        </button>
+                    </div>
+                )}
             </div>
 
-            {/* LOGIN POPUP */}
             {showModal && (
                 <div className="overlay">
                     <div className="login-modal">
-                        <h2>Silahkan Login</h2>
-                        <p>Masuk untuk membuka lebih banyak fitur</p>
-
+                        <div className="lock-icon">🔒</div>
+                        <h2>Hasil Terkunci</h2>
+                        <p>Simpan hasil tes ini secara permanen dengan masuk ke akun kamu.</p>
                         <button
                             disabled={loading}
                             onClick={() => {
                                 setLoading(true);
-                                setTimeout(() => {
-                                    navigate("/login");
-                                }, 1000);
+                                navigate("/login");
                             }}
                         >
-                            {loading ? "Mengalihkan..." : "Login"}
+                            {loading ? "Menuju Login..." : "Masuk Sekarang"}
                         </button>
+                        <p className="guest-note">Akurasi deteksi mental health bisa berubah seiring waktu.</p>
                     </div>
-                </div>
-            )}
-
-            {isLoggedIn && (
-                <div style={{ textAlign: "center", marginTop: "30px" }}>
-                    <button
-                        className="next-btn"
-                        onClick={() => navigate("/dashboard")}
-                    >
-                        Kembali ke Dashboard
-                    </button>
                 </div>
             )}
         </div>

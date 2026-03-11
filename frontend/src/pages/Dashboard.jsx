@@ -12,6 +12,8 @@ import ArticleModal from "../components/ArticleModal";
 import { articlesList } from "../data/articlesData";
 import { getProfile, updateProfile } from "../services/api";
 import logo from "../assets/logovimind2.png";
+import kemenkesLogo from "../assets/kemenkes_logo.png";
+import familyBanner from "../assets/family_banner.png";
 import "../css/DashboardCSS.css";
 
 const Dashboard = () => {
@@ -194,13 +196,13 @@ const Dashboard = () => {
           </div>
         </div>
 
-       {/* HERO CAROUSEL */}
+        {/* HERO CAROUSEL */}
         <div style={{ overflow: "hidden", width: "100%", marginBottom: "15px" }}>
-          <div 
-            style={{ 
-              display: "flex", 
-              transition: "transform 0.5s ease-in-out", 
-              transform: `translateX(-${currentSlide * 100}%)` 
+          <div
+            style={{
+              display: "flex",
+              transition: "transform 0.5s ease-in-out",
+              transform: `translateX(-${currentSlide * 100}%)`
             }}
           >
             {carouselSlides.map((slide, index) => (
@@ -214,11 +216,11 @@ const Dashboard = () => {
                       Penuh oleh <span className="highlight">{slide.highlight}</span>
                     </h2>
                     <div className="sponsor-logo">
-                      <img src="https://via.placeholder.com/150x40?text=Logo+Kemenkes" alt="Sponsor" />
+                      <img src={kemenkesLogo} alt="Sponsor" />
                     </div>
                   </div>
                   <div className="promo-image">
-                    <img src="https://via.placeholder.com/250x350?text=Gambar+Keluarga" alt="Ilustrasi" />
+                    <img src={familyBanner} alt="Ilustrasi" />
                   </div>
                 </div>
 
@@ -237,9 +239,9 @@ const Dashboard = () => {
         {/* DOTS (Bisa diklik manual juga) */}
         <div className="dots">
           {carouselSlides.map((_, index) => (
-            <span 
-              key={index} 
-              className={currentSlide === index ? "active" : ""} 
+            <span
+              key={index}
+              className={currentSlide === index ? "active" : ""}
               onClick={() => setCurrentSlide(index)}
               style={{ cursor: "pointer" }}
             />
