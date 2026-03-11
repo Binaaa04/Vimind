@@ -1,35 +1,60 @@
 import "../css/ProfileSidebar.css";
 import logo from "../assets/logovimind2.png";
 import { useNavigate } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { supabase } from "../services/supabaseClient";
+import { updateProfile } from "../services/api";
 
-const ProfileSidebar = ({ 
-  isOpen, 
-  onClose, 
-  onOpenNicknameModal, 
-  onOpenLogoutModal, 
-  nickname 
+const ProfileSidebar = ({
+  isOpen,
+  onClose,
+  onOpenNicknameModal,
+  onOpenLogoutModal,
+  nickname,
+  avatarUrl,
+  userEmail,
+  onAvatarUpdate
 }) => {
 
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handlePhotoClick = () => {
     fileInputRef.current.click();
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0];
+    if (!file || !userEmail) return;
 
-    if (!file) return;
+    setIsUploading(true);
+    try {
+      // 1. Upload ke Supabase Storage (Bucket: avatars)
+      const fileName = `${Date.now()}_${file.name}`;
+      const { data, error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, file);
 
-    console.log("Foto dipilih:", file);
+      if (uploadError) throw uploadError;
 
-    // preview foto sementara
-    const imageURL = URL.createObjectURL(file);
-    document.querySelector(".profile-avatar-img").src = imageURL;
+      // 2. Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(fileName);
 
-    // nanti di sini bisa upload ke server
+      // 3. Update Profile via Backend API
+      await updateProfile(userEmail, nickname, publicUrl);
+
+      // 4. Notify Parent
+      onAvatarUpdate(publicUrl);
+      console.log("Foto Berhasil Diubah!");
+    } catch (err) {
+      console.error("Gagal ganti foto:", err.message);
+      alert("Gagal ganti foto: " + err.message + "\n(Pastikan bucket 'avatars' sudah ada di Supabase)");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -48,9 +73,10 @@ const ProfileSidebar = ({
 
           <div className="profile-avatar-wrap">
             <img
-              src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+              src={avatarUrl || "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"}
               alt="Profile"
               className="profile-avatar-img"
+              style={{ opacity: isUploading ? 0.5 : 1 }}
             />
           </div>
 
@@ -67,8 +93,9 @@ const ProfileSidebar = ({
           <button
             className="profile-photo-btn"
             onClick={handlePhotoClick}
+            disabled={isUploading}
           >
-            Ubah Foto
+            {isUploading ? "Uploading..." : "Ubah Foto"}
           </button>
 
           <div className="profile-menu">

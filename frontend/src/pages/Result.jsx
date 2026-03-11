@@ -8,6 +8,7 @@ export default function Result() {
     const location = useLocation();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [nickname, setNickname] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -25,6 +26,7 @@ export default function Result() {
                 try {
                     const profileRes = await getProfile(session.user.email);
                     setNickname(profileRes.data.name || session.user.email.split("@")[0]);
+                    setAvatarUrl(profileRes.data.avatar_url || "");
                 } catch (err) {
                     setNickname(session.user.email.split("@")[0]);
                 }
@@ -64,7 +66,13 @@ export default function Result() {
                 </div>
 
                 <div className="header-actions">
-                    <div className="avatar">{nickname ? nickname[0].toUpperCase() : "?"}</div>
+                    <div className="avatar">
+                        {avatarUrl ? (
+                            <img src={avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                        ) : (
+                            nickname ? nickname[0].toUpperCase() : "?"
+                        )}
+                    </div>
                     {isLoggedIn && (
                         <button className="logout-mini-btn" onClick={handleLogout}>Keluar</button>
                     )}

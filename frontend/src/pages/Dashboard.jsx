@@ -32,6 +32,9 @@ const Dashboard = () => {
   const [nickname, setNickname] = useState(
     localStorage.getItem("nickname") || "User"
   );
+  const [avatarUrl, setAvatarUrl] = useState(
+    localStorage.getItem("avatar_url") || ""
+  );
 
   const navigate = useNavigate();
   const mood = localStorage.getItem("mood");
@@ -46,6 +49,10 @@ const Dashboard = () => {
           if (res.data?.name) {
             setNickname(res.data.name);
             localStorage.setItem("nickname", res.data.name);
+          }
+          if (res.data?.avatar_url) {
+            setAvatarUrl(res.data.avatar_url);
+            localStorage.setItem("avatar_url", res.data.avatar_url);
           }
         } catch (err) {
           console.error("Profile not found, using default.");
@@ -179,7 +186,7 @@ const Dashboard = () => {
             >
               <span>Profile</span>
               <img
-                src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+                src={avatarUrl || "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"}
                 alt="Profile"
                 className="profile-trigger-avatar"
               />
@@ -192,6 +199,12 @@ const Dashboard = () => {
               onOpenNicknameModal={() => setShowNicknameModal(true)}
               onOpenLogoutModal={() => setShowLogoutModal(true)}
               nickname={nickname}
+              avatarUrl={avatarUrl}
+              userEmail={userEmail}
+              onAvatarUpdate={(newUrl) => {
+                setAvatarUrl(newUrl);
+                localStorage.setItem("avatar_url", newUrl);
+              }}
             />
           </div>
         </div>

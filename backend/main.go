@@ -308,24 +308,26 @@ func main() {
 		}
 
 		var id int
-		var name, userEmail string
-		err := dbpool.QueryRow(context.Background(), "SELECT user_id, name, email FROM users WHERE email=$1", email).Scan(&id, &name, &userEmail)
+		var name, userEmail, avatarURL string
+		err := dbpool.QueryRow(context.Background(), "SELECT user_id, name, email, COALESCE(avatar_url, '') FROM users WHERE email=$1", email).Scan(&id, &name, &userEmail, &avatarURL)
 		if err != nil {
 			return c.Status(404).JSON(fiber.Map{"error": "User not found"})
 		}
 
 		return c.JSON(fiber.Map{
-			"id":    id,
-			"name":  name,
-			"email": userEmail,
+			"id":         id,
+			"name":       name,
+			"email":      userEmail,
+			"avatar_url": avatarURL,
 		})
 	})
 
 	// POST /api/profile - Update or Create user profile
 	app.Post("/api/profile", func(c *fiber.Ctx) error {
 		type ProfileReq struct {
-			Email string `json:"email"`
-			Name  string `json:"name"`
+			Email     string `json:"email"`
+			Name      string `json:"name"`
+			AvatarURL string `json:"avatar_url"`
 		}
 		var pr ProfileReq
 		if err := c.BodyParser(&pr); err != nil {
@@ -333,9 +335,9 @@ func main() {
 		}
 
 		_, err := dbpool.Exec(context.Background(), `
-			INSERT INTO users (email, name) VALUES ($1, $2)
-			ON CONFLICT (email) DO UPDATE SET name=$2
-		`, pr.Email, pr.Name)
+			INSERT INTO users (email, name, avatar_url) VALUES ($1, $2, $3)
+			ON CONFLICT (email) DO UPDATE SET name=$2, avatar_url=COALESCE(NULLIF($3, ''), users.avatar_url)
+		`, pr.Email, pr.Name, pr.AvatarURL)
 
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to update profile"})

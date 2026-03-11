@@ -8,6 +8,6 @@ export const getQuestions = () => api.get("/api/questions");
 export const diagnose = (answers, userEmail = "") => api.post("/api/diagnose", { answers, user_email: userEmail });
 export const getHistory = (email) => api.get(`/api/history?email=${email}`);
 export const getProfile = (email) => api.get(`/api/profile?email=${email}`);
-export const updateProfile = (email, name) => api.post("/api/profile", { email, name });
+export const updateProfile = (email, name, avatarUrl = "") => api.post("/api/profile", { email, name, avatar_url: avatarUrl });
 
 export default api;
