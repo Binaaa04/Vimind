@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../services/supabaseClient";
 import SummaryModal from "../components/SummaryModal";
 import MoodResultModal from "../components/MoodResultModal";
@@ -11,6 +11,7 @@ import LogoutModal from "../components/LogoutModal";
 import ArticleModal from "../components/ArticleModal";
 import { articlesList } from "../data/articlesData";
 import logo from "../assets/logovimind2.png";
+import "../css/DashboardCSS.css";
 
 const Dashboard = () => {
   const [showMood, setShowMood] = useState(true);
@@ -58,6 +59,42 @@ const Dashboard = () => {
       alert("Gagal logout: " + error.message);
     }
   };
+
+  // --- STATE UNTUK CAROUSEL ---
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Data isi carousel (Saya buatkan 3 contoh slide berbeda, bisa Anda ubah isinya)
+  const carouselSlides = [
+    {
+      id: 0,
+      title: "Vimind Didukung",
+      highlight: "Kementerian Kesehatan RI",
+      rightText: "Lembaga Penyelenggara Pelatihan Bidang Kesehatan yang Telah Diakreditasi oleh Kemenkes RI",
+      bgRight: "#E9004C" // Warna Merah Halodoc
+    },
+    {
+      id: 1,
+      title: "Kesehatan Mental",
+      highlight: "Adalah Prioritas",
+      rightText: "Mari jaga kesehatan mentalmu bersama para ahli terbaik dari Vimind.",
+      bgRight: "#8B5CF6" // Warna Ungu Vimind
+    },
+    {
+      id: 2,
+      title: "Kenali Dirimu",
+      highlight: "Lebih Dalam",
+      rightText: "Ikuti berbagai tes dan kuis untuk memahami kondisi emosionalmu saat ini.",
+      bgRight: "#10B981" // Warna Hijau
+    }
+  ];
+
+  // Efek Auto-Slide setiap 3 detik (3000 ms)
+  useEffect(() => {
+    const slideTimer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
+    }, 3000);
+    return () => clearInterval(slideTimer);
+  }, [carouselSlides.length]);
 
   return (
     <div className="dashboard-page">
@@ -126,17 +163,56 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* HERO */}
-        <div className="dashboard-hero">
-          <div className="hero-big" />
-          <div className="hero-small" />
+       {/* HERO CAROUSEL */}
+        <div style={{ overflow: "hidden", width: "100%", marginBottom: "15px" }}>
+          <div 
+            style={{ 
+              display: "flex", 
+              transition: "transform 0.5s ease-in-out", 
+              transform: `translateX(-${currentSlide * 100}%)` 
+            }}
+          >
+            {carouselSlides.map((slide, index) => (
+              <div className="dashboard-hero" key={slide.id} style={{ minWidth: "100%", flexShrink: 0, marginBottom: 0 }}>
+                {/* Banner Kiri */}
+                <div className="hero-big promo-left">
+                  <div className="promo-content">
+                    <h2>
+                      {slide.title}<br />
+                      dan Direkomendasikan<br />
+                      Penuh oleh <span className="highlight">{slide.highlight}</span>
+                    </h2>
+                    <div className="sponsor-logo">
+                      <img src="https://via.placeholder.com/150x40?text=Logo+Kemenkes" alt="Sponsor" />
+                    </div>
+                  </div>
+                  <div className="promo-image">
+                    <img src="https://via.placeholder.com/250x350?text=Gambar+Keluarga" alt="Ilustrasi" />
+                  </div>
+                </div>
+
+                {/* Banner Kanan */}
+                <div className="hero-small promo-right" style={{ backgroundColor: slide.bgRight }}>
+                  <div className="promo-right-content">
+                    <h2 className="academy-logo">🧠 Vimind <span>academy</span></h2>
+                    <p>{slide.rightText}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* DOTS */}
+        {/* DOTS (Bisa diklik manual juga) */}
         <div className="dots">
-          <span />
-          <span className="active" />
-          <span />
+          {carouselSlides.map((_, index) => (
+            <span 
+              key={index} 
+              className={currentSlide === index ? "active" : ""} 
+              onClick={() => setCurrentSlide(index)}
+              style={{ cursor: "pointer" }}
+            />
+          ))}
         </div>
 
         {/* FEATURE */}
