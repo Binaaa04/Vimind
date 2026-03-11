@@ -70,7 +70,7 @@ const NicknameModal = ({ isOpen, onClose, onSave }) => {
 
             <h2>Berhasil!</h2>
 
-            <p>Nickname berhasil diperbarui</p>
+            <p>Nickname kamu berhasil diperbarui</p>
 
             <button onClick={handleContinue}>Lanjutkan</button>
           </div>
