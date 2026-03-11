@@ -65,11 +65,40 @@ Google Login integration is powered by Supabase Auth. Ensure the Redirect URI in
 
 ## Core Features Implemented (March 10, 2026)
 
-### 1. Certainty Factor (CF) Diagnosis
-The application now uses a data-driven Certainty Factor algorithm for mental health screening:
-- **Dynamic Questions**: Fetches symptoms directly from the database `cf_rules` table.
-- **Representative Screening**: Intelligent selection of up to 5 highest-weight symptoms per disease (covering 9 mental health conditions).
-- **CF Calculator**: Backend (Go) processes user certainty levels (Agree to Disagree) using the combination formula: `CF_combine = CF1 + CF2 * (1 - CF1)`.
+## 🧠 Certainty Factor (CF) Algorithm Implementation
+
+ViMind uses the **Certainty Factor (CF)** method, a classic expert system algorithm designed to handle uncertainty in diagnosis.
+
+### 1. Data Components
+*   **Expert CF (MB - Measure of Belief)**: Pre-defined weights in our database (`cf_rules` table) that represent how strongly a symptom indicates a specific mental health condition. Range: `(0.0 to 1.0)`.
+*   **User Value (MD - Measure of Disbelief/Certainty)**: Input from the patient during the questionnaire.
+    *   *Sangat Setuju*: `1.0`
+    *   *Setuju*: `0.8`
+    *   *Ragu-ragu*: `0.5`
+    *   *Tidak Setuju*: `0.2`
+    *   *Sangat Tidak Setuju*: `0.0`
+
+### 2. Calculation Logic (Backend Go)
+The diagnosis process follows these mathematical steps:
+
+#### A. Individual Symptom Calculation
+For every symptom answered by the user, we calculate the individual certainty:
+`CF(h,e) = User_Value * Expert_CF`
+
+#### B. Combination Formula (Aggregation)
+To combine multiple symptoms for the same disease, we use the sequential combination formula:
+`CF_combine(CF_old, CF_new) = CF_old + CF_new * (1 - CF_old)`
+
+*This ensures that as more symptoms are confirmed, the overall certainty increases asymptotically towards 100%, but never exceeds it.*
+
+#### C. Final Diagnosis
+The system processes all 9 supported conditions simultaneously. The condition with the highest `CF_combine` value is selected as the top result and presented to the user with a percentage (`CF * 100`).
+
+### 3. Database Mapping
+The logic is fully decoupled and data-driven:
+*   **symptoms**: Dynamic inventory of mental health symptoms.
+*   **disease**: Descriptions and professional recommendations.
+*   **cf_rules**: The "Knowledge Base" connecting symptoms to diseases with expert weights.
 
 ### 2. Result Page & UX Enhancements
 - **Dynamic Content**: Displays real descriptions and professional solutions fetched from the database top-match result.
