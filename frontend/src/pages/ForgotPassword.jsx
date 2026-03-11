@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import illustration from "../assets/logovimind.png";
 import logo from "../assets/logovimind2.png";
 import "../App.css";
+import "../css/ForgotPasswordCSS.css"
 
 import { supabase } from "../services/supabaseClient";
 
