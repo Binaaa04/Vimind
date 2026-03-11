@@ -118,20 +118,17 @@ func main() {
 	// GET /api/questions - Fetch up to 5 representative symptoms for each of the 9 diseases
 	app.Get("/api/questions", func(c *fiber.Ctx) error {
 		query := `
-			WITH RankedSymptoms AS (
-				SELECT 
-					s.symptoms_id, 
-					s.symptoms_code, 
-					s.symptoms_name,
-					r.disease_id,
-					ROW_NUMBER() OVER(PARTITION BY r.disease_id ORDER BY r.expert_cf_value DESC) as rank
-				FROM symptoms s
-				JOIN cf_rules r ON s.symptoms_id = r.symptoms_id
+			SELECT symptoms_id, symptoms_code, symptoms_name
+			FROM symptoms
+			WHERE symptoms_id IN (
+				SELECT symptoms_id FROM (
+					SELECT symptoms_id, 
+						   ROW_NUMBER() OVER(PARTITION BY disease_id ORDER BY expert_cf_value DESC) as rank
+					FROM cf_rules
+				) r
+				WHERE r.rank <= 10
 			)
-			SELECT DISTINCT symptoms_id, symptoms_code, symptoms_name
-			FROM RankedSymptoms
-			WHERE rank <= 5
-			ORDER BY symptoms_id ASC;
+			ORDER BY RANDOM();
 		`
 		rows, err := dbpool.Query(context.Background(), query)
 		if err != nil {
@@ -139,7 +136,7 @@ func main() {
 		}
 		defer rows.Close()
 
-		var questions []Question
+		questions := []Question{}
 		for rows.Next() {
 			var q Question
 			if err := rows.Scan(&q.ID, &q.Code, &q.Name); err != nil {
