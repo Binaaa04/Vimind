@@ -1,4 +1,4 @@
-import "./ArticleModal.css";
+import "../css/ArticleCSS.css";
 
 const ArticleModal = ({ isOpen, article, onClose }) => {
   if (!isOpen || !article) return null;
