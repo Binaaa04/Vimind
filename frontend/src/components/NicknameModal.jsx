@@ -47,7 +47,7 @@ const NicknameModal = ({ isOpen, onClose, onSave }) => {
             </h2>
 
             <form onSubmit={handleSubmit}>
-              <label htmlFor="nickname">Masukan Nickname</label>
+              <label htmlFor="nickname">Masukan Nickname Kamu</label>
 
               <input
                 id="nickname"
