@@ -19,39 +19,41 @@ export default function Detection() {
   const [phase1Results, setPhase1Results] = useState([]); // {disease_id, value}
 
   useEffect(() => {
+    let ignore = false; // StrictMode fix: ignore stale async results from unmounted render
+
     const init = async () => {
       try {
         let email = "";
         const { data: { session } } = await supabase.auth.getSession();
+        if (ignore) return; // Component was unmounted mid-fetch, abort
+
         if (session?.user) {
           email = session.user.email;
           setUserEmail(email);
         }
 
-        // Start Phase 1: Try Refined first
-        let response = await getQuestions("refined", [], email);
-        
-        // If Refined returns an empty array (due to missing DB rule data for that disease ID), fallback to screening
-        if (!response.data || response.data.length === 0) {
-            console.warn("Refined diagnosis returned empty. Falling back to Screening.");
-            response = await getQuestions("screening", [], "");
+        // Request questions (refined if logged in, backend auto-falls-back to screening)
+        const response = await getQuestions("refined", [], email);
+        if (ignore) return; // Unmounted while waiting for questions
+
+        if (response.data && response.data.length > 0) {
+          setQuestions(response.data);
+        } else {
+          // Should not happen (backend does fallback), but safeguard:
+          const fallback = await getQuestions("screening");
+          if (!ignore) setQuestions(fallback.data);
         }
-        
-        setQuestions(response.data);
       } catch (err) {
-        console.warn("Refined diagnosis failed, falling back to Screening:", err.message);
-        try {
-            // Attempt fallback to screening if the refined request threw a network error
-            const fallbackResponse = await getQuestions("screening");
-            setQuestions(fallbackResponse.data);
-        } catch (fallbackErr) {
-            console.error("Initialization completely failed:", fallbackErr);
+        if (!ignore) {
+          console.error("Initialization failed:", err);
         }
       } finally {
-        setLoading(false);
+        if (!ignore) setLoading(false);
       }
     };
+
     init();
+    return () => { ignore = true; }; // Cleanup: mark stale render, prevent setState on unmount
   }, []);
 
   const nextQuestion = async () => {
