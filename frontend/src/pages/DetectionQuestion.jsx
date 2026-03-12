@@ -17,6 +17,7 @@ export default function Detection() {
   // Adaptive Logic States
   const [phase, setPhase] = useState(1); // 1: Screening, 2: Discovery
   const [phase1Results, setPhase1Results] = useState([]); // {disease_id, value}
+  const [isRefinedMode, setIsRefinedMode] = useState(false); // Skip Phase 2 for returning users
 
   useEffect(() => {
     let ignore = false; // StrictMode fix: ignore stale async results from unmounted render
@@ -38,8 +39,11 @@ export default function Detection() {
 
         if (response.data && response.data.length > 0) {
           setQuestions(response.data);
+          // Mark as refined if user is logged in AND backend returned questions
+          // (backend only returns refined questions if user has a non-healthy history)
+          if (email) setIsRefinedMode(true);
         } else {
-          // Should not happen (backend does fallback), but safeguard:
+          // Fallback: no history or healthy history, use general screening
           const fallback = await getQuestions("screening");
           if (!ignore) setQuestions(fallback.data);
         }
@@ -75,10 +79,18 @@ export default function Detection() {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else if (phase === 1) {
-      // END OF PHASE 1 -> ANALYZE & MOVE TO PHASE 2
+      // END OF PHASE 1
+
+      // REFINED MODE: User has known history → questions were already targeted → skip Phase 2
+      if (isRefinedMode) {
+        await finalizeDiagnosis(newAnswers);
+        return;
+      }
+
+      // SCREENING MODE: General questions → analyze and move to Phase 2 (Discovery)
       setLoading(true);
       
-      // Find suspect diseases (score > 0.5)
+      // Find suspect diseases (score >= 0.7)
       const suspects = newAnswers
         .filter(a => a.value >= 0.7)
         .map(a => a.disease_id);
@@ -93,7 +105,7 @@ export default function Detection() {
           .map(a => a.disease_id);
       }
 
-      // If still empty (user said NO to everything), just finish or pick random 2
+      // If still empty (user said NO to everything), just finish
       if (finalSuspects.length === 0) {
         finalSuspects = [1, 2]; // Fallback
       }
