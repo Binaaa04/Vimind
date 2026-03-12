@@ -119,11 +119,13 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 	}
 
 	if internalUserID != nil {
-		levelID := 1
+		levelID := 1 // Default: Low
 		if top.Percentage > 70 {
-			levelID = 3
+			levelID = 3 // High
 		} else if top.Percentage > 40 {
-			levelID = 1
+			levelID = 2 // Moderate
+		} else {
+			levelID = 1 // Low
 		}
 
 		topDiseaseID, err := h.Repo.GetDiseaseIDByName(top.DiseaseName)
