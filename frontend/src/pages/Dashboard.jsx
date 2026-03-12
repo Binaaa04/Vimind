@@ -315,7 +315,7 @@ const Dashboard = () => {
               className="feature-card"
               onClick={() => {
                 if (!mood) {
-                  alert("Isi mood dulu ya 🙂");
+                  setShowMood(true);
                   return;
                 }
                 setShowResult(true);
