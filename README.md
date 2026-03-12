@@ -35,10 +35,11 @@ npm install
 **Environment Variables:**
 Create a `.env` file in the `frontend/` directory:
 ```env
-VITE_API_BASE_URL=http://localhost:8080
+VITE_API_BASE_URL=http://127.0.0.1:8080
 VITE_SUPABASE_URL=https://ujhyykkpfrizkgmtyvee.supabase.co
 VITE_SUPABASE_ANON_KEY=[YOUR_SUPABASE_ANON_KEY]
 ```
+> **⚠️ Note:** Use `127.0.0.1` instead of `localhost` to avoid IPv4/IPv6 resolution issues on some Windows machines.
 *(Contact the project owner for the keys)*
 
 ## Running the Application
@@ -63,7 +64,7 @@ Open `http://localhost:5173` in your browser.
 Google Login integration is powered by Supabase Auth. Ensure the Redirect URI in the Google Cloud Console is set to:
 `https://ujhyykkpfrizkgmtyvee.supabase.co/auth/v1/callback`
 
-## Core Features Implemented (March 10, 2026)
+## Core Features Implemented (March 12, 2026)
 
 ## 🧠 Certainty Factor (CF) Algorithm Implementation
 
@@ -73,10 +74,9 @@ ViMind uses the **Certainty Factor (CF)** method, a classic expert system algori
 *   **Expert CF (MB - Measure of Belief)**: Pre-defined weights in our database (`cf_rules` table) that represent how strongly a symptom indicates a specific mental health condition. Range: `(0.0 to 1.0)`.
 *   **User Value (MD - Measure of Disbelief/Certainty)**: Input from the patient during the questionnaire.
     *   *Sangat Setuju*: `1.0`
-    *   *Setuju*: `0.8`
-    *   *Ragu-ragu*: `0.5`
-    *   *Tidak Setuju*: `0.2`
-    *   *Sangat Tidak Setuju*: `0.0`
+    *   *Setuju*: `0.7`
+    *   *Ragu-ragu*: `0.4`
+    *   *Tidak Setuju*: `0.0`
 
 ### 2. Calculation Logic (Backend Go)
 The diagnosis process follows these mathematical steps:
@@ -101,9 +101,16 @@ The logic is fully decoupled and data-driven:
 - **cf_rules**: The "Knowledge Base" connecting symptoms to diseases with expert weights. Recently **clinically validated** against WHO and APA diagnostic standards (March 2026) to ensure mapping accuracy for conditions like PTSD and Anxiety.
 
 ### 4. Adaptive Discovery Flow (Intelligent Questioning)
-To improve diagnostic accuracy and user experience, ViMind employs a **2-Phase Discovery Flow**:
+To improve diagnostic accuracy and user experience, ViMind employs a **2-Phase Discovery Flow** for new users, and a **Refined Diagnosis Flow** for returning users:
+
+**For New Users (No Prior History):**
 - **Phase 1 (Screening)**: The system samples broad, high-impact symptoms across all supported conditions to identify potential "signals".
 - **Phase 2 (Targeted Discovery)**: Based on real-time scoring of Phase 1 answers, the frontend intelligently requests additional, specific symptoms for suspected conditions. This provides a deep-dive analysis without asking irrelevant questions.
+
+**For Returning Users (Has Prior Diagnosis):**
+- **Refined Mode**: The backend detects the user's last diagnosis and immediately returns 10 targeted questions for that specific condition. Phase 2 is skipped entirely.
+- **Diagnosis Anchoring**: The prior condition is given a historical CF weight (`+0.5` baseline) and is always promoted as the primary result, ensuring consistency between tests. The CF percentage still reflects current answers accurately.
+- **`is_refined` flag**: The `/api/questions` endpoint returns `{ questions, is_refined: true, history_disease_id }` so the frontend knows to skip Phase 2 and pass back the `history_disease_id` to `/api/diagnose` for anchoring.
 
 ### 5. Dynamic News & Resource Optimization
 ViMind features a real-time mental health news feed on the Dashboard:
