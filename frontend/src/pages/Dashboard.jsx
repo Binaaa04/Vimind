@@ -47,13 +47,17 @@ const Dashboard = () => {
         setUserEmail(session.user.email);
         try {
           const res = await getProfile(session.user.email);
-          if (res.data?.name) {
-            setNickname(res.data.name);
-            localStorage.setItem("nickname", res.data.name);
-          }
-          if (res.data?.avatar_url) {
-            setAvatarUrl(res.data.avatar_url);
-            localStorage.setItem("avatar_url", res.data.avatar_url);
+          const name = res.data?.name || session.user.user_metadata?.full_name || session.user.email.split("@")[0];
+          const avatar = res.data?.avatar_url || "";
+
+          setNickname(name);
+          setAvatarUrl(avatar);
+          
+          localStorage.setItem("nickname", name);
+          if (avatar) {
+            localStorage.setItem("avatar_url", avatar);
+          } else {
+            localStorage.removeItem("avatar_url");
           }
         } catch (err) {
           console.error("Profile not found, using default.");
@@ -102,6 +106,7 @@ const Dashboard = () => {
     try {
       await supabase.auth.signOut();
       localStorage.removeItem("nickname");
+      localStorage.removeItem("avatar_url"); // Fix: clear avatar
       localStorage.removeItem("mood");
       localStorage.removeItem("quizFrom");
       setShowLogoutModal(false);
@@ -243,17 +248,18 @@ const Dashboard = () => {
             {carouselSlides.map((slide, index) => (
               <div className="dashboard-hero" key={slide.id} style={{ minWidth: "100%", flexShrink: 0, marginBottom: 0 }}>
                 {/* Banner Kiri */}
-                <div className="hero-big promo-left">
+                <div 
+                  className="hero-big promo-left" 
+                  onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
+                  style={{ cursor: slide.link !== "#" ? "pointer" : "default", display: "flex", justifyContent: "center", textAlign: "center" }}
+                >
                   <div className="promo-content">
-                    <h2 onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")} style={{ cursor: slide.link !== "#" ? "pointer" : "default" }}>
+                    <h2>
                       {slide.title} <span className="highlight">{slide.highlight}</span>
                     </h2>
-                    <div className="sponsor-logo">
+                    <div className="sponsor-logo" style={{ justifyContent: "center", display: "flex" }}>
                       <img src={kemenkesLogo} alt="Sponsor" />
                     </div>
-                  </div>
-                  <div className="promo-image">
-                    <img src={slide.image} alt="Ilustrasi" />
                   </div>
                 </div>
 
