@@ -7,7 +7,7 @@ const moodData = {
 };
 
 export default function MoodResultModal({ mood, onClose }) {
-  const data = moodData[mood] || moodData["😐"];
+  const data = moodData[mood] || moodData["😐"]; 
 
   return (
     <div className="modal-overlay">

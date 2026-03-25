@@ -1,4 +1,4 @@
-import "../css/LogoutModal.css";
+import "../css/LogoutCSS.css";
 
 const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;

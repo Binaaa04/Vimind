@@ -6,11 +6,11 @@ const NicknameModal = ({ isOpen, onClose, onSave }) => {
   const [nickname, setNickname] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      setNickname(localStorage.getItem("nickname") || "");
-    }
-  }, [isOpen]);
+    useEffect(() => {
+      if (isOpen) {
+        setNickname(localStorage.getItem("nickname") || "");
+      }
+    }, [isOpen]);
 
   if (!isOpen) return null;
 
