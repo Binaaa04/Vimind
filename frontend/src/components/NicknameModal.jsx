@@ -5,21 +5,25 @@ import confetti from "canvas-confetti";
 const NicknameModal = ({ isOpen, onClose, onSave }) => {
   const [nickname, setNickname] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  
+  // State baru untuk mendeteksi kapan animasi keluar harus dimainkan
+  const [isClosing, setIsClosing] = useState(false);
 
-    useEffect(() => {
-      if (isOpen) {
-        setNickname(localStorage.getItem("nickname") || "");
-      }
-    }, [isOpen]);
+  useEffect(() => {
+    if (isOpen) {
+      setNickname(localStorage.getItem("nickname") || "");
+      setShowSuccess(false);
+      setIsClosing(false); // Reset saat dibuka lagi
+    }
+  }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen && !isClosing) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!nickname.trim()) return;
 
-    onSave(nickname);
+    // onSave(nickname);
 
     setShowSuccess(true);
 
@@ -31,13 +35,21 @@ const NicknameModal = ({ isOpen, onClose, onSave }) => {
   };
 
   const handleContinue = () => {
-    setShowSuccess(false);
-    onClose();
+    // 1. Mulai animasi keluar
+    setIsClosing(true);
+
+    // 2. Tunggu 300ms (sesuai durasi CSS), baru benar-benar tutup modalnya
+    setTimeout(() => {
+      setShowSuccess(false);
+      setIsClosing(false);
+      onClose();
+    }, 300);
   };
 
   return (
     <>
-      {!showSuccess && (
+      {/* BAGIAN FORM NICKNAME */}
+      {!showSuccess && !isClosing && (
         <div className="nickname-overlay">
           <div className="nickname-modal">
             <h2>
@@ -63,16 +75,16 @@ const NicknameModal = ({ isOpen, onClose, onSave }) => {
         </div>
       )}
 
+      {/* BAGIAN SUCCESS MODAL DENGAN ANIMASI KELUAR */}
       {showSuccess && (
-        <div className="success-overlay">
-          <div className="success-modal animate-pop">
+        <div className={`success-overlay ${isClosing ? "fade-out" : "fade-in"}`}>
+          <div className={`success-modal ${isClosing ? "animate-pop-out" : "animate-pop"}`}>
             <div className="success-icon">✓</div>
 
-            <h2>Berhasil!</h2>
+            <h2>Selamat !</h2>
 
-            <p>Nickname kamu berhasil diperbarui</p>
-
-            <button onClick={handleContinue}>Lanjutkan</button>
+            <p>Nama Pengguna baru berhasil disimpan</p>
+            <button className="continue-btn" onClick={handleContinue}>Lanjutkan</button>
           </div>
         </div>
       )}
