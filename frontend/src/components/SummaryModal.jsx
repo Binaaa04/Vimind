@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../services/supabaseClient";
 import { getHistory } from "../services/api";
+import "../css/SummaryModalCSS.css";
 
 export default function SummaryModal({ onClose }) {
   const [history, setHistory] = useState([]);
@@ -67,10 +68,23 @@ export default function SummaryModal({ onClose }) {
         <div className="summary-card small">
           <h3 className="center">Kondisi Terakhir</h3>
 
-          <div className="summary-gauge">
-            <div className="summary-gauge-fill" style={{ height: `${latest?.percentage || 0}%` }}></div>
+          <div className="summary-gauge-container">
 
-            <div className="gauge-center">
+            {/* 1. RUMAH KHUSUS GRAFIK */}
+            <div
+              className="gauge-graphic"
+              style={{
+                background: `conic-gradient(from 270deg at 50% 100%, 
+                  #9061f9 0deg, 
+                  #9061f9 ${(latest?.percentage || 0) * 1.8}deg, 
+                  #cdd2d8 ${(latest?.percentage || 0) * 1.8}deg, 
+                  #cdd2d8 180deg
+                )`
+              }}
+            ></div>
+
+            {/* 2. RUMAH KHUSUS TEKS (Bebas memanjang ke bawah) */}
+            <div className="gauge-text">
               {loading ? (
                 <p>Memuat...</p>
               ) : latest ? (
@@ -88,6 +102,7 @@ export default function SummaryModal({ onClose }) {
                 </>
               )}
             </div>
+
           </div>
         </div>
 
@@ -99,4 +114,3 @@ export default function SummaryModal({ onClose }) {
     </div>
   );
 }
-/*SUMMARY*/
