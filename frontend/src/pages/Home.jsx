@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "../css/HomeCSS.css";
 import logo from "../assets/logovimind2.png";
+import heroImg from "../assets/hero.png"; // ✅ TAMBAHAN
 
 export default function Home() {
   const navigate = useNavigate();
@@ -43,18 +44,20 @@ export default function Home() {
         </div>
       </div>
 
-      {/* HERO */}
+      {/* ✅ HERO BARU */}
       <div className="hero">
-        <div className="hero-shape"></div>
+        <img src={heroImg} alt="hero" className="hero-bg" />
 
         <div className="hero-content">
           <h1>
             Kadang kita ngerasa ga baik-baik aja,
             tapi sulit jelasin kenapa.
           </h1>
+
           <p>
             Vimind bantu kamu memahami kondisi kesehatan mentalmu
           </p>
+
           <button onClick={() => navigate("/welcome")}>
             Coba tes gratis →
           </button>
@@ -102,7 +105,7 @@ export default function Home() {
 
         <div className="testimoni-grid">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className={`card ${i === 2 ? "active" : ""}`}>
+            <div key={i} className="testimonial-card">
               
               <div className="card-content">
                 <h4>Operasional jadi lebih cepat dan rapi.</h4>
@@ -119,7 +122,7 @@ export default function Home() {
             </div>
           ))}
         </div>
-      </div> {/* ✅ INI YANG TADI KURANG */}
+      </div>
 
       {/* FAQ */}
       <div className="faq">
