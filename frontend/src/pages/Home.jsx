@@ -3,6 +3,7 @@ import { useState } from "react";
 import "../css/HomeCSS.css";
 import logo from "../assets/logovimind2.png";
 import heroImg from "../assets/hero.png"; // ✅ TAMBAHAN
+import fiturImg from "../assets/fitur.png"; // ✅ TAMBAHAN
 
 export default function Home() {
   const navigate = useNavigate();
@@ -75,21 +76,8 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="fitur-wrapper">
-          <div className="fitur-bubble left">
-            <h3>Rangkuman Kondisi Mood</h3>
-            <p>Melacak perubahan mood harian kamu.</p>
-          </div>
-
-          <div className="fitur-bubble right">
-            <h3>Cek Kondisi Mentalmu</h3>
-            <p>Mengetahui kondisi mental melalui tes.</p>
-          </div>
-
-          <div className="fitur-bubble bottom">
-            <h3>Rangkuman Test</h3>
-            <p>Lihat perkembangan hasil tes kamu.</p>
-          </div>
+        <div className="fitur-image">
+          <img src={fiturImg} alt="fitur" />
         </div>
       </div>
 

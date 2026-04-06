@@ -102,34 +102,53 @@ body{
 }
 
 /* FITUR */
-.fitur{
-  padding:80px 20px;
-  text-align:center;
-  background: white ;
+.fitur {
+  padding: 80px 20px;
+  text-align: center;
+  background: white;
 }
 
-.badge{
-  background:#e9ddff;
-  padding:5px 12px;
-  border-radius:20px;
+/* Badge tetap */
+.badge {
+  background: #e9ddff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
 }
 
-.fitur-wrapper{
-  position:relative;
-  height:400px;
+/* HEADER */
+.fitur-header h2 {
+  margin-top: 15px;
+  font-size: 28px;
 }
 
-.fitur-bubble{
-  position:absolute;
-  width:250px;
-  background:#eae4ff;
-  padding:20px;
-  border-radius:50%;
+.fitur-header p {
+  margin-top: 10px;
+  color: #555;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.left{ left:10%; top:50px; }
-.right{ right:10%; top:100px; }
-.bottom{ left:40%; bottom:0; }
+/* GAMBAR FITUR */
+.fitur-image {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.fitur-image img {
+  width: 80%;
+  max-width: 900px;
+  height: auto;
+  border-radius: 20px;
+  transition: transform 0.3s ease;
+}
+
+/* efek hover biar hidup */
+.fitur-image img:hover {
+  transform: scale(1.03);
+}
 
 /* TESTIMONI */
 /* HEADER */
