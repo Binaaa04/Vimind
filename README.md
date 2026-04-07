@@ -231,7 +231,7 @@ All conditions are evaluated simultaneously. Highest CF value is selected as the
 ## Mental Health News
 <p align="center">
 <img src="frontend\src\assets\news.PNG" width="250"/>
-<img src="frontend\src\assets\news2.PNG" width="250"/>
+<img src="frontend\src\assets\news2.PNG"  width="250"/>
 </p>
 
 ## Profile
