@@ -14,6 +14,7 @@ import { getProfile, updateProfile, diagnose } from "../services/api";
 import logo from "../assets/logovimind2.png";
 import kemenkesLogo from "../assets/kemenkes_logo.png";
 import familyBanner from "../assets/family_banner.png";
+import chatbotIcon from "../assets/chatbot.png";
 import "../css/DashboardCSS.css";
 
 const Dashboard = () => {
@@ -27,6 +28,7 @@ const Dashboard = () => {
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [showNicknameSuccessModal, setShowNicknameSuccessModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
 
   const [userEmail, setUserEmail] = useState("");
   const [nickname, setNickname] = useState(
@@ -52,7 +54,7 @@ const Dashboard = () => {
 
           setNickname(name);
           setAvatarUrl(avatar);
-          
+
           localStorage.setItem("nickname", name);
           if (avatar) {
             localStorage.setItem("avatar_url", avatar);
@@ -135,36 +137,36 @@ const Dashboard = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Data isi carousel (Dinamis dari News API + Fallback Statis)
-  const carouselSlides = news.length > 0 
+  const carouselSlides = news.length > 0
     ? news.slice(0, 3).map((item, index) => ({
-        id: index,
-        title: item.title,
-        highlight: item.highlight,
-        rightText: "Mari baca berita kesehatan selengkapnya untuk wawasan lebih luas.",
-        bgRight: index === 0 ? "#E9004C" : index === 1 ? "#8B5CF6" : "#10B981",
-        image: item.image,
-        link: item.link
-      }))
+      id: index,
+      title: item.title,
+      highlight: item.highlight,
+      rightText: "Mari baca berita kesehatan selengkapnya untuk wawasan lebih luas.",
+      bgRight: index === 0 ? "#E9004C" : index === 1 ? "#8B5CF6" : "#10B981",
+      image: item.image,
+      link: item.link
+    }))
     : [
-        {
-          id: 0,
-          title: "Vimind Didukung",
-          highlight: "Kementerian Kesehatan RI",
-          rightText: "Lembaga Penyelenggara Pelatihan Bidang Kesehatan yang Telah Diakreditasi oleh Kemenkes RI",
-          bgRight: "#E9004C",
-          image: familyBanner,
-          link: "#"
-        },
-        {
-          id: 1,
-          title: "Kesehatan Mental",
-          highlight: "Adalah Prioritas",
-          rightText: "Mari jaga kesehatan mentalmu bersama para ahli terbaik dari Vimind.",
-          bgRight: "#8B5CF6",
-          image: familyBanner,
-          link: "#"
-        }
-      ];
+      {
+        id: 0,
+        title: "Vimind Didukung",
+        highlight: "Kementerian Kesehatan RI",
+        rightText: "Lembaga Penyelenggara Pelatihan Bidang Kesehatan yang Telah Diakreditasi oleh Kemenkes RI",
+        bgRight: "#E9004C",
+        image: familyBanner,
+        link: "#"
+      },
+      {
+        id: 1,
+        title: "Kesehatan Mental",
+        highlight: "Adalah Prioritas",
+        rightText: "Mari jaga kesehatan mentalmu bersama para ahli terbaik dari Vimind.",
+        bgRight: "#8B5CF6",
+        image: familyBanner,
+        link: "#"
+      }
+    ];
 
   // Efek Auto-Slide setiap 3 detik (3000 ms)
   useEffect(() => {
@@ -262,8 +264,8 @@ const Dashboard = () => {
             {carouselSlides.map((slide, index) => (
               <div className="dashboard-hero" key={slide.id} style={{ minWidth: "100%", flexShrink: 0, marginBottom: 0 }}>
                 {/* Banner Kiri */}
-                <div 
-                  className="hero-big promo-left" 
+                <div
+                  className="hero-big promo-left"
                   onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
                   style={{ cursor: slide.link !== "#" ? "pointer" : "default", display: "flex", justifyContent: "center", textAlign: "center" }}
                 >
@@ -402,6 +404,31 @@ const Dashboard = () => {
         article={selectedArticle}
         onClose={() => setShowArticleModal(false)}
       />
+      {/* ================= CHATBOT FLOAT ================= */}
+      <button
+        className="chatbot-float-btn"
+        onClick={() => setShowChatbot(!showChatbot)}
+      >
+        <img src={chatbotIcon} alt="chatbot" />
+      </button>
+
+      {showChatbot && (
+        <div className="chatbot-panel">
+          <div className="chatbot-header">
+            <span>Vivi <small>AI Bot</small></span>
+            <button onClick={() => setShowChatbot(false)}>✕</button>
+          </div>
+
+          <div className="chatbot-body">
+            <p>Apa keluhanmu hari ini?</p>
+          </div>
+
+          <div className="chatbot-input">
+            <input placeholder="Mari ceritakan keluhanmu..." />
+            <button>➤</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
