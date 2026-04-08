@@ -9,6 +9,7 @@ import NicknameModal from "../components/NicknameModal";
 import NicknameSuccessModal from "../components/NicknameSuccessModal";
 import LogoutModal from "../components/LogoutModal";
 import ArticleModal from "../components/ArticleModal";
+import TestOptionsModal from "../components/TestOptionsModal";
 import { articlesList } from "../data/articlesData";
 import { getProfile, updateProfile, diagnose } from "../services/api";
 import logo from "../assets/logovimind2.png";
@@ -27,6 +28,7 @@ const Dashboard = () => {
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [showNicknameSuccessModal, setShowNicknameSuccessModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showTestOptions, setShowTestOptions] = useState(false);
 
   const [userEmail, setUserEmail] = useState("");
   const [nickname, setNickname] = useState(
@@ -333,7 +335,11 @@ const Dashboard = () => {
               className="feature-card"
               onClick={() => {
                 localStorage.setItem("quizFrom", "dashboard");
-                navigate("/deteksi");
+                if (userEmail) {
+                  setShowTestOptions(true);
+                } else {
+                  navigate("/deteksi");
+                }
               }}
             >
               <div className="icon">🧠</div>
@@ -402,6 +408,21 @@ const Dashboard = () => {
         article={selectedArticle}
         onClose={() => setShowArticleModal(false)}
       />
+
+      {/* TEST OPTIONS MODAL */}
+      {showTestOptions && (
+        <TestOptionsModal
+          onClose={() => setShowTestOptions(false)}
+          onResume={() => {
+            setShowTestOptions(false);
+            navigate("/deteksi");
+          }}
+          onNewTest={() => {
+            setShowTestOptions(false);
+            navigate("/deteksi", { state: { forceNewTest: true } });
+          }}
+        />
+      )}
     </div>
   );
 };
