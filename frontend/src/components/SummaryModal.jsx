@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../services/supabaseClient";
 import { getHistory } from "../services/api";
-import { useNavigate } from "react-router-dom";
+import "../css/SummaryModalCSS.css";
 
 export default function SummaryModal({ onClose }) {
   const [history, setHistory] = useState([]);
@@ -184,38 +184,23 @@ export default function SummaryModal({ onClose }) {
           <p>Hasil ini bukan merupakan diagnosis medis resmi. Konsultasikan dengan profesional kesehatan mental untuk penanganan lebih lanjut.</p>
         </div>
 
-        <script>window.onload = () => { window.print(); }<\/script>
-      </body>
-      </html>
-    `);
-    printWindow.document.close();
-  };
+          <div className="summary-gauge-container">
 
-  return (
-    <div className="sm-overlay">
-      <div className="sm-container">
+            {/* 1. RUMAH KHUSUS GRAFIK */}
+            <div
+              className="gauge-graphic"
+              style={{
+                background: `conic-gradient(from 270deg at 50% 100%, 
+                  #9061f9 0deg, 
+                  #9061f9 ${(latest?.percentage || 0) * 1.8}deg, 
+                  #cdd2d8 ${(latest?.percentage || 0) * 1.8}deg, 
+                  #cdd2d8 180deg
+                )`
+              }}
+            ></div>
 
-        {/* HEADER */}
-        <div className="sm-header">
-          <div>
-            <h2 className="sm-title">Track Progress</h2>
-            <p className="sm-subtitle">Pantau perkembangan kesehatan mentalmu</p>
-          </div>
-          <button className="sm-close-btn" onClick={onClose} aria-label="Tutup">✕</button>
-        </div>
-
-        <div className="sm-body">
-
-          {/* LEFT: CHART */}
-          <div className="sm-chart-card">
-            <div className="sm-card-header">
-              <span className="sm-card-label">📈 Grafik Perkembangan</span>
-              <button className="sm-export-btn" onClick={handleExport}>
-                📄 Export PDF
-              </button>
-            </div>
-
-            <div className="sm-chart-box">
+            {/* 2. RUMAH KHUSUS TEKS (Bebas memanjang ke bawah) */}
+            <div className="gauge-text">
               {loading ? (
                 <p className="sm-empty-msg">Memuat data...</p>
               ) : chartData.length < 2 ? (
@@ -267,67 +252,6 @@ export default function SummaryModal({ onClose }) {
               )}
             </div>
 
-            {/* History list */}
-            {!loading && history.length > 0 && (
-              <div className="sm-history-list">
-                {history.slice(0, 4).map((item, i) => (
-                  <div key={i} className="sm-history-item">
-                    <span className="sm-history-dot" style={{ background: levelColor(item.level) }} />
-                    <span className="sm-history-disease">{item.disease}</span>
-                    <span className="sm-history-pct">{Math.round(item.percentage)}%</span>
-                    <span className="sm-history-date">{formatDate(item.date)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* RIGHT: LATEST CONDITION */}
-          <div className="sm-latest-card">
-            <p className="sm-card-label" style={{ textAlign: "center", marginBottom: "12px" }}>🧠 Kondisi Terakhir</p>
-
-            {loading ? (
-              <p className="sm-empty-msg">Memuat...</p>
-            ) : latest ? (
-              <>
-                {/* Circular progress ring */}
-                <div className="sm-ring-wrapper">
-                  <svg viewBox="0 0 120 120" className="sm-ring-svg">
-                    <circle cx="60" cy="60" r="50" fill="none" stroke="#EDE9FE" strokeWidth="12" />
-                    <circle
-                      cx="60" cy="60" r="50" fill="none"
-                      stroke="#8B5CF6" strokeWidth="12"
-                      strokeLinecap="round"
-                      strokeDasharray={`${2 * Math.PI * 50}`}
-                      strokeDashoffset={`${2 * Math.PI * 50 * (1 - (latest.percentage / 100))}`}
-                      transform="rotate(-90 60 60)"
-                      style={{ transition: "stroke-dashoffset 1s ease" }}
-                    />
-                  </svg>
-                  <div className="sm-ring-center">
-                    <span className="sm-ring-pct">{Math.round(latest.percentage)}%</span>
-                  </div>
-                </div>
-
-                <div className="sm-latest-info">
-                  <h3 className="sm-latest-disease">{latest.disease}</h3>
-                  <span className="sm-level-badge" style={{ background: levelColor(latest.level) + "22", color: levelColor(latest.level), border: `1px solid ${levelColor(latest.level)}44` }}>
-                    {latest.level}
-                  </span>
-                  <p className="sm-latest-date">Terakhir diuji: {formatDate(latest.date)}</p>
-                </div>
-
-                <button className="sm-detail-btn" onClick={handleGoToDetail}>
-                  Lihat Detail Hasil Tes →
-                </button>
-              </>
-            ) : (
-              <div className="sm-no-data">
-                <span>📋</span>
-                <p>Belum ada data</p>
-                <small>Lakukan deteksi terlebih dahulu</small>
-              </div>
-            )}
           </div>
         </div>
 

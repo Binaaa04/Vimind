@@ -1,0 +1,182 @@
+/* BACKGROUND & LAYOUT UTAMA (GRID) */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+  padding: 20px;
+}
+
+.summary-container {
+  background: #9061f9; 
+  padding: 28px;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 900px; 
+  display: grid;
+  grid-template-columns: 1.6fr 1fr; 
+  gap: 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  height: auto !important;
+  align-items: start;
+}
+
+.summary-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: auto !important;
+  overflow: visible !important;
+  padding-bottom: 30px;
+}
+
+/* KOTAK KIRI (Kondisi Mental Bulan Ini) */
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.card-header h3 {
+  color: #2a1b54;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.export-btn {
+  background: #9061f9;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.export-btn:hover {
+  background: #7c4dff;
+}
+
+.chart-box {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-svg {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  overflow: visible;
+}
+
+
+/* KOTAK KANAN (Kondisi Mental Saat Ini) */
+
+.center {
+  text-align: center;
+  color: #2a1b54;
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0 0 30px 0;
+}
+
+.summary-gauge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 10px;
+}
+
+/* Kunci ukuran grafik dan potong jadi bentuk donat */
+.gauge-graphic {
+  position: relative;
+  width: 240px;
+  height: 120px;
+  border-radius: 120px 120px 0 0; 
+  /* Masking ini yang bikin tengahnya bolong */
+  -webkit-mask: radial-gradient(farthest-side at bottom, transparent 65%, black 66%);
+  mask: radial-gradient(farthest-side at bottom, transparent 65%, black 66%);
+}
+
+/* Posisi Teks (Ditarik sedikit ke atas agar masuk ke dalam lengkungan) */
+.gauge-text {
+  position: relative;
+  z-index: 3;
+  margin-top: -45px; /* Menarik teks masuk ke dalam area kosong setengah lingkaran */
+  text-align: center;
+  width: 100%;
+  background: transparent;
+}
+
+.gauge-text h2 {
+  font-size: 36px;
+  color: #2a1b54;
+  font-weight: 800;
+  margin: 0;
+}
+
+.gauge-text p {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin: 4px 0 8px;
+}
+
+.gauge-text h4 {
+  font-size: 18px;
+  color: #2a1b54;
+  font-weight: 700;
+  margin: 0 0 12px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 12px;
+  display: inline-block;
+  width: 90%;
+  line-height: 1.3;
+}
+
+.gauge-text small {
+  display: block;
+  font-size: 12px;
+  color: #a0aec0;
+}
+
+/* FOOTER (Tombol Tutup Bawah) */
+
+.summary-footer {
+  grid-column: 1 / -1; 
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  position: relative;
+}
+
+.summary-footer button {
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.6); 
+  color: white;
+  padding: 10px 32px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.summary-footer button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: white;
+}

@@ -14,7 +14,7 @@ const ResetSuccess = () => {
 
         <p>
           Password berhasil direset mari coba cek kesehatan mental kamu
-        </p>
+        </p> 
 
         <button
           className="primary-btn modal-btn"

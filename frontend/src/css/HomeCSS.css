@@ -1,55 +1,54 @@
 /* BASE */
-body{
-  margin:0;
-  font-family:sans-serif;
+body {
+  margin: 0;
+  font-family: sans-serif;
   background-color: white !important;
 }
 
-.home{
-  color:#ffffff;
+.home {
+  color: #ffffff;
 }
 
 /* NAVBAR */
-.navbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:20px 60px;
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
   background: white !important;
 }
 
-.nav-left{
-  display:flex;
-  align-items:center;
-  gap:12px;
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.nav-left img{
+.nav-left img {
   width: 240px !important;
   height: auto;
   display: block;
 }
 
-.nav-left h2{
+.nav-left h2 {
   font-size: 22px;
   font-weight: 700;
 }
 
-.nav-right{
-  display:flex;
-  gap:20px;
-  align-items:center;
+.nav-right {
+  display: flex;
+  gap: 20px;
+  align-items: center;
 }
 
-.nav-right button{
-  background:#7a5cff;
-  color:white;
-  border:none;
-  padding:8px 16px;
-  border-radius:10px;
+.nav-right button {
+  background: #7a5cff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
 }
 
-/* HERO */
 /* HERO */
 .hero {
   position: relative;
@@ -59,7 +58,7 @@ body{
   align-items: center;
   overflow: hidden;
 
-  background: #FFFFFF !important;  /*🔥 HILANGKAN UNGU */
+  background: #FFFFFF !important;
 }
 
 /* BACKGROUND IMAGE */
@@ -77,7 +76,7 @@ body{
   z-index: 2;
   text-align: center;
   max-width: 700px;
-  color: #2e1c6b; /* biar kontras di gambar */
+  color: #2e1c6b;
 }
 
 .hero-content h1 {
@@ -96,7 +95,7 @@ body{
   padding: 12px 20px;
   border: none;
   border-radius: 20px;
-  background: linear-gradient(135deg,#7a5cff,#6d28d9);
+  background: linear-gradient(135deg, #7a5cff, #6d28d9);
   color: white !important;
   font-weight: 600;
 }
@@ -114,6 +113,9 @@ body{
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 14px;
+  color: #9c84ff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
 /* HEADER */
@@ -150,160 +152,391 @@ body{
   transform: scale(1.03);
 }
 
-/* TESTIMONI */
-/* HEADER */
+/* TESTIMONI CAROUSEL UPDATE */
+
 .testimoni {
-  padding:80px 20px;
-  text-align:center;
-  background: white ;
+  padding: 80px 20px;
+  text-align: center;
+  background: white;
 }
 
-.testimoni-header{
-  text-align:center;
-  margin-bottom:50px;
+.testimoni-header {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #9c84ff;
+  font-weight: 600;
+  letter-spacing: 2px;
 }
 
-.testimoni-header h2{
-  font-size:32px;
-  font-weight:800;
-  color:#2e1c6b;
+.testimoni-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #2e1c6b;
+  margin-top: 15px;
 }
 
-.testimoni-header p{
-  max-width:700px;
-  margin:auto;
-  color:#6b5ca5;
+.testimoni-header p {
+  max-width: 700px;
+  margin: 8px auto 0 auto;
+  color: #6b5ca5;
 }
 
-/* GRID */
-.testimoni-grid{
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  justify-content:center;
-  gap:25px;
-  margin-top:40px;
+/* Pembungkus utama untuk menyembunyikan card yang keluar garis */
+.carousel-wrapper {
+  overflow: hidden;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 0 20px 0;
 }
 
-/* CARD */
-.testimonial-card{
-  background:white;
-  padding:20px;
-  border-radius:20px;
-  border:1px solid #eee;
-  box-shadow:0 10px 20px rgba(0,0,0,0.05);
-
-  max-height: 600px; /* 🔥 FIX */
+/* Trek panjang yang akan bergeser */
+.carousel-track {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  /* Efek geser super smooth */
 }
 
-/* ACTIVE (tengah highlight) */
-/* .card.active{
-  border:2px solid #7a5cff;
-  box-shadow:0 10px 30px rgba(122,92,255,0.3);
-  transform:scale(1.05);
-  opacity:1;
-  z-index:2;
-} */
+/* Pembagian lebar (menampilkan 3 card sekaligus) */
+.carousel-item {
+  flex: 0 0 33.3333%;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+/* Desain per-Card (Rata Kiri) */
+.testimonial-card {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid #eee;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+  text-align: left;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: 0.3s ease;
+}
+
+.testimonial-card:hover {
+  border-color: #7a5cff;
+  transform: translateY(-5px);
+}
+
+/* Teks Testimoni (Paling Atas) */
+.testimoni-text {
+  font-size: 20px;
+  font-weight: 200;
+  color: #725faf;
+  margin: 0 0 2px 0;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+/* Pembungkus Bintang & Angka */
+.testimoni-rating {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+/* Bintang */
+.testimoni-rating .stars {
+  color: #f5b301;
+  letter-spacing: 2px;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+/* Angka Rating (ex: 5/5) */
+.testimoni-rating .rating-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: #8a7eb8;
+}
+
+/* Nama Pengguna (Paling Bawah) */
+.testimoni-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2e1c6b;
+  display: block;
+}
 
 /* TEXT */
-.card h4{
-  font-size:14px;
-  font-weight:700;
-  color:#2e1c6b;
-  margin-bottom:8px;
+.card h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2e1c6b;
+  margin-bottom: 8px;
 }
 
-.card p{
-  font-size:13px;
-  color:#6b5ca5;
-  line-height:1.4;
+.card p {
+  font-size: 13px;
+  color: #6b5ca5;
+  line-height: 1.4;
 }
 
-.name{
-  font-weight:600;
-  display:block;
-  margin-bottom:5px;
+.name {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 5px;
 }
 
-.stars{
-  color:#f5b301;
-}
-.card-content{
-  margin-bottom:15px;
+.stars {
+  color: #f5b301;
 }
 
-.card-footer{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:15px;
+.card-content {
+  margin-bottom: 15px;
 }
 
-.name{
-  font-size:13px;
-  font-weight:600;
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
 }
 
-.stars{
-  color:#f5b301;
+.name {
+  font-size: 13px;
+  font-weight: 600;
 }
+
+.stars {
+  color: #f5b301;
+}
+
 /* .card:not(.active){
   filter: blur(1px);
 } */
-.card:hover{
-  opacity:1;
-  transform:scale(1.02);
+.card:hover {
+  opacity: 1;
+  transform: scale(1.02);
 }
 
 /* FAQ */
-.faq{
-  width:100%;              /* 🔥 penting */
-  background:#ffffff;      /* full putih */
-  padding:80px 0;          /* atas bawah aja */
+
+
+/* Bagian kontainer luar untuk memusatkan di halaman */
+.faq-section {
+  padding: 80px 0;
+  background-color: #ffffff;
+}
+
+/* Bagian kontainer dalam yang dipusatkan */
+.faq-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
   text-align: center;
 }
 
-.faq-item{
-  border:1px solid #ddd;
-  margin-bottom:10px;
-  border-radius:10px;
+/* 1. Label FAQ (Badge) */
+.faq-badge {
+  display: inline-block;
+  background-color: rgba(233, 221, 255, 0.7);
+  color: #a888ff;
+  border-radius: 50px;
+  padding: 8px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: lowercase;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+  text-transform: uppercase;
 }
 
-.faq-q{
-  padding:15px;
-  display:flex;
-  justify-content:space-between;
-  cursor:pointer;
+/* 2. Judul Utama Besar */
+.faq-title {
+  font-size: 42px;
+  font-weight: 800;
+  color: #2e1c6b;
+  margin: 0 0 30px 0;
+  display: flex;
+  justify-content: center;
+  /* Memusatkan judul secara horizontal */
+  align-items: center;
 }
 
-.faq-a{
-  max-height:0;
-  overflow:hidden;
-  transition:0.3s;
+/* Tanda tanya merah besar */
+.faq-title .question-mark {
+  color: #ff3333;
+  font-size: 1.1em;
+  margin-right: 15px;
 }
 
-.faq-item.active .faq-a{
-  max-height:100px;
-  padding:10px;
+/* 3. Paragraf Penjelasan */
+.faq-subtitle {
+  font-size: 16px;
+  color: #777777;
+  line-height: 1.6;
+  margin-bottom: 50px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 4. Placeholder untuk Daftar Tanya Jawab (FAQ List) */
+/* --- Daftar FAQ --- */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* Jarak antar kotak FAQ */
+  max-width: 800px;
+  margin: 0 auto;
+  /* Supaya ke tengah */
+}
+
+/* Desain Kotak Per Item */
+.faq-item {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  /* Supaya isi jawaban tidak keluar dari lengkungan kotak */
+  transition: all 0.3s ease;
+}
+
+/* Baris Pertanyaan */
+.faq-question {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  color: #2e1c6b;
+  text-align: left;
+}
+
+.faq-question:hover {
+  background-color: #fafafa;
+}
+
+/* Icon Panah Bawah */
+.faq-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  /* Animasi putar */
+}
+
+/* Jika FAQ Aktif (terbuka), panahnya muter ke atas */
+.faq-item.active .faq-icon {
+  transform: rotate(180deg);
+}
+
+/* Bagian Jawaban (Animasi Tinggi) */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+}
+
+.faq-answer-inner {
+  padding: 0 20px 20px 20px;
+  color: #888888;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+/* Saat aktif, beri tinggi yang cukup agar jawaban terlihat */
+.faq-item.active .faq-answer {
+  max-height: 300px;
+}
+
+.faq-item.active {
+  border-color: #4da6ff;
 }
 
 /* FOOTER */
-.footer{
-  background:linear-gradient(135deg,#7a5cff,#9c84ff);
-  color:white;
-  padding:40px;
+.footer {
+  background-color: #8A5CFF;
+  color: white;
+  padding: 60px 40px;
+  font-family: sans-serif;
 }
 
-.footer-container{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:20px;
+.footer-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr 1.5fr;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.hero {
-  position: relative;
-  height: 600px;
+/* Kolom 1: Logo & Sosial Media */
+.footer-brand {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.footer-logo {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+  display: flex;
   align-items: center;
-  overflow: hidden;
+}
+
+.social-icons {
+  display: flex;
+  gap: 15px;
+}
+
+.social-icon {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Kolom 2 & 3: Tautan */
+.footer-col h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-col ul li {
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+}
+
+.footer-col ul li:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+/* Kolom 4: Contact */
+.footer-contact .contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.contact-icon {
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.footer-contact p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
 }
