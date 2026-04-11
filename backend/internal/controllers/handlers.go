@@ -245,3 +245,17 @@ func (h *Handler) GetHistory(c *fiber.Ctx) error {
 
 	return c.JSON(history)
 }
+
+func (h *Handler) DeleteAccount(c *fiber.Ctx) error {
+	email := c.Query("email")
+	if email == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
+	}
+
+	err := h.Repo.DeleteUser(email)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to delete account"})
+	}
+
+	return c.JSON(fiber.Map{"message": "Account deleted successfully"})
+}

@@ -9,6 +9,7 @@ import NicknameModal from "../components/NicknameModal";
 import NicknameSuccessModal from "../components/NicknameSuccessModal";
 import LogoutModal from "../components/LogoutModal";
 import ArticleModal from "../components/ArticleModal";
+import TestOptionsModal from "../components/TestOptionsModal";
 import { articlesList } from "../data/articlesData";
 import { getProfile, updateProfile, diagnose, sendChatMessage } from "../services/api";
 import logo from "../assets/logovimind2.png";
@@ -29,6 +30,7 @@ const Dashboard = () => {
   const [showNicknameSuccessModal, setShowNicknameSuccessModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
+  const [showTestOptions, setShowTestOptions] = useState(false);
 
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
@@ -73,19 +75,6 @@ const Dashboard = () => {
           setNickname(name);
         }
 
-        // SYNC PENDING DIAGNOSIS FROM GUEST
-        const pendingAnswersRaw = localStorage.getItem("pending_answers");
-        if (pendingAnswersRaw) {
-          try {
-            const parsedAnswers = JSON.parse(pendingAnswersRaw);
-            const diagRes = await diagnose(parsedAnswers, session.user.email);
-            localStorage.setItem("latest_diagnosis", JSON.stringify(diagRes.data));
-            localStorage.removeItem("pending_answers");
-            console.log("Successfully synced pending diagnosis to DB.");
-          } catch (syncErr) {
-            console.error("Failed to sync pending diagnosis:", syncErr);
-          }
-        }
       }
     };
     const fetchNews = async () => {
@@ -175,6 +164,18 @@ const Dashboard = () => {
       console.error("Logout error:", error.message);
       alert("Gagal logout: " + error.message);
     }
+  };
+
+  const handleResumeTest = () => {
+    localStorage.setItem("quizFrom", "dashboard");
+    navigate("/deteksi", { state: { refinedMode: true } });
+    setShowTestOptions(false);
+  };
+
+  const handleNewTest = () => {
+    localStorage.setItem("quizFrom", "dashboard");
+    navigate("/deteksi", { state: { refinedMode: false } });
+    setShowTestOptions(false);
   };
 
   // --- STATE UNTUK CAROUSEL ---
@@ -378,8 +379,7 @@ const Dashboard = () => {
             <div
               className="feature-card"
               onClick={() => {
-                localStorage.setItem("quizFrom", "dashboard");
-                navigate("/deteksi");
+                setShowTestOptions(true);
               }}
             >
               <div className="icon">🧠</div>
@@ -403,6 +403,14 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {showTestOptions && (
+        <TestOptionsModal
+          onResume={handleResumeTest}
+          onNewTest={handleNewTest}
+          onClose={() => setShowTestOptions(false)}
+        />
+      )}
 
       {/* NICKNAME MODAL */}
       <NicknameModal

@@ -14,8 +14,36 @@ import ResetSuccess from "./pages/ResetSuccess";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AuthCallback from "./pages/AuthCallback";
+import { useEffect } from "react";
+import { supabase } from "./services/supabaseClient";
+import { diagnose } from "./services/api";
 
 function App() {
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session?.user?.email) {
+        const pendingAnswersRaw = localStorage.getItem("pending_answers");
+        if (pendingAnswersRaw) {
+          try {
+            const parsedAnswers = JSON.parse(pendingAnswersRaw);
+            const diagRes = await diagnose(parsedAnswers, session.user.email);
+            localStorage.setItem("latest_diagnosis", JSON.stringify(diagRes.data));
+            localStorage.removeItem("pending_answers");
+            console.log("App: Successfully synced pending diagnosis to DB.");
+            // 2. Redirect to Results page immediately
+            window.location.href = "/hasil";
+          } catch (syncErr) {
+            console.error("App: Failed to sync pending diagnosis:", syncErr);
+          }
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>

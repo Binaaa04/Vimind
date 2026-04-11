@@ -13,6 +13,7 @@ func RegisterRoutes(app *fiber.App, handler *controllers.Handler) {
 	api.Post("/diagnose", handler.Diagnose)
 	api.Get("/profile", handler.GetProfile)
 	api.Post("/profile", handler.UpdateProfile)
+	api.Delete("/profile", handler.DeleteAccount)
 	api.Get("/history", handler.GetHistory)
 	api.Get("/news", handler.GetDynamicNews)
 	api.Post("/chat", handler.Chatbot)

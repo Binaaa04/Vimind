@@ -1,182 +1,266 @@
-/* BACKGROUND & LAYOUT UTAMA (GRID) */
-
+/* TEMA WARNA & MODAL OVERLAY */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(15, 12, 41, 0.7); /* Darker glassmorphism */
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 5000;
+  z-index: 9999;
   padding: 20px;
 }
 
-.summary-container {
-  background: #9061f9; 
-  padding: 28px;
-  border-radius: 24px;
+/* KARTU UTAMA */
+.sm-card {
+  background: #f8fbff;
   width: 100%;
-  max-width: 900px; 
-  display: grid;
-  grid-template-columns: 1.6fr 1fr; 
-  gap: 20px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-  height: auto !important;
-  align-items: start;
-}
-
-.summary-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
+  max-width: 900px;
+  border-radius: 28px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
-  height: auto !important;
-  overflow: visible !important;
-  padding-bottom: 30px;
+  overflow: hidden;
+  max-height: 94vh;
 }
 
-/* KOTAK KIRI (Kondisi Mental Bulan Ini) */
-
-.card-header {
+/* HEADER */
+.sm-header {
+  padding: 20px 32px;
+  background: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  border-bottom: 1px solid #edf2f7;
 }
 
-.card-header h3 {
-  color: #2a1b54;
+.sm-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a202c;
+  display: flex;
+  flex-direction: column;
+}
+
+.sm-title p {
+  font-size: 13px;
+  font-weight: 400;
+  color: #718096;
+  margin-top: 2px;
+}
+
+/* BODY LAYOUT (GRID) */
+.sm-body {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+/* GAUGE & CHART AREA (KIRI) */
+.summary-gauge-container {
+  background: white;
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gauge-graphic {
+  width: 260px;
+  height: 130px;
+  border-radius: 130px 130px 0 0;
+  -webkit-mask: radial-gradient(farthest-side at bottom, transparent 65%, black 66%);
+  mask: radial-gradient(farthest-side at bottom, transparent 65%, black 66%);
+  margin-bottom: 15px;
+  transition: all 0.5s ease-out;
+}
+
+.gauge-text {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sm-chart-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #a0aec0;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    width: 100%;
+}
+
+.sm-empty-msg {
+    color: #a0aec0;
+    font-size: 13px;
+    margin: 40px 0;
+    line-height: 1.5;
+    max-width: 240px;
+}
+
+.sm-svg {
+    width: 100%;
+    height: 140px;
+}
+
+/* LIST RIWAYAT (KANAN) */
+.sm-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  max-height: 500px;
+  padding-right: 4px;
+}
+
+.sm-history-list h4 {
   font-size: 16px;
   font-weight: 700;
-  margin: 0;
+  color: #2d3748;
+  margin-bottom: 4px;
 }
 
-.export-btn {
-  background: #9061f9;
+.sm-history-list::-webkit-scrollbar {
+    width: 6px;
+}
+.sm-history-list::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+.sm-history-item {
+  background: white;
+  padding: 14px 18px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  border: 1px solid #f1f5f9;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item-disease {
+    font-weight: 700;
+    color: #2d3748;
+    font-size: 14px;
+    line-height: 1.2;
+    max-width: 180px;
+}
+
+.item-date {
+    font-size: 11px;
+    color: #a0aec0;
+}
+
+.item-results {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.item-level {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+.item-percentage {
+    font-weight: 800;
+    color: #8b5cf6;
+    font-size: 16px;
+}
+
+.item-detail-btn {
+    background: #f1f5f9;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 2px;
+}
+
+.item-detail-btn:hover {
+    background: #e2e8f0;
+    color: #1a202c;
+}
+
+/* EXPORT & CLOSE BUTTONS */
+.sm-export-btn {
+  background: #8b5cf6;
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 12px;
+  padding: 10px 20px;
+  border-radius: 12px;
   font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.sm-export-btn:hover {
+    background: #7c3aed;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.sm-footer {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  background: white;
+  border-top: 1px solid #edf2f7;
+}
+
+.sm-tutup-btn {
+  background: #f7fafc;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+  padding: 10px 48px;
+  border-radius: 14px;
+  font-weight: 700;
   cursor: pointer;
   transition: 0.2s;
 }
 
-.export-btn:hover {
-  background: #7c4dff;
+.sm-tutup-btn:hover {
+    background: #edf2f7;
+    color: #1a202c;
 }
 
-.chart-box {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.sm-empty-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    text-align: center;
 }
 
-.chart-svg {
-  width: 100%;
-  height: 100%;
-  min-height: 200px;
-  overflow: visible;
-}
-
-
-/* KOTAK KANAN (Kondisi Mental Saat Ini) */
-
-.center {
-  text-align: center;
-  color: #2a1b54;
-  font-size: 18px;
-  font-weight: 800;
-  margin: 0 0 30px 0;
-}
-
-.summary-gauge-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding-bottom: 10px;
-}
-
-/* Kunci ukuran grafik dan potong jadi bentuk donat */
-.gauge-graphic {
-  position: relative;
-  width: 240px;
-  height: 120px;
-  border-radius: 120px 120px 0 0; 
-  /* Masking ini yang bikin tengahnya bolong */
-  -webkit-mask: radial-gradient(farthest-side at bottom, transparent 65%, black 66%);
-  mask: radial-gradient(farthest-side at bottom, transparent 65%, black 66%);
-}
-
-/* Posisi Teks (Ditarik sedikit ke atas agar masuk ke dalam lengkungan) */
-.gauge-text {
-  position: relative;
-  z-index: 3;
-  margin-top: -45px; /* Menarik teks masuk ke dalam area kosong setengah lingkaran */
-  text-align: center;
-  width: 100%;
-  background: transparent;
-}
-
-.gauge-text h2 {
-  font-size: 36px;
-  color: #2a1b54;
-  font-weight: 800;
-  margin: 0;
-}
-
-.gauge-text p {
-  font-size: 13px;
-  color: #8c8c8c;
-  margin: 4px 0 8px;
-}
-
-.gauge-text h4 {
-  font-size: 18px;
-  color: #2a1b54;
-  font-weight: 700;
-  margin: 0 0 12px;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 12px;
-  display: inline-block;
-  width: 90%;
-  line-height: 1.3;
-}
-
-.gauge-text small {
-  display: block;
-  font-size: 12px;
-  color: #a0aec0;
-}
-
-/* FOOTER (Tombol Tutup Bawah) */
-
-.summary-footer {
-  grid-column: 1 / -1; 
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-  position: relative;
-}
-
-.summary-footer button {
-  background: transparent;
-  border: 1px dashed rgba(255, 255, 255, 0.6); 
-  color: white;
-  padding: 10px 32px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.summary-footer button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: white;
+.sm-mulai-btn {
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-top: 16px;
+    cursor: pointer;
 }

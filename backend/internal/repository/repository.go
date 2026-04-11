@@ -215,3 +215,17 @@ func (r *Repository) GetLatestDiagnosisDiseaseID(email string) (int, error) {
 	return diseaseID, err
 }
 
+// DeleteUser removes a user and all their related diagnostic data
+func (r *Repository) DeleteUser(email string) error {
+	uid, err := r.GetUserIDByEmail(email)
+	if err != nil {
+		return err
+	}
+
+	// Manual cascade delete to ensure all records are wiped
+	_, _ = r.pool.Exec(context.Background(), "DELETE FROM diagnosis_detail WHERE symptoms_id IN (SELECT symptoms_id FROM symptoms) AND diagnosis_id IN (SELECT diagnosis_id FROM diagnosis WHERE user_id=$1)", uid)
+	_, _ = r.pool.Exec(context.Background(), "DELETE FROM diagnosis WHERE user_id=$1", uid)
+	_, err = r.pool.Exec(context.Background(), "DELETE FROM users WHERE user_id=$1", uid)
+	
+	return err
+}

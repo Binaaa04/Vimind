@@ -3,7 +3,7 @@ import logo from "../assets/logovimind2.png";
 import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { supabase } from "../services/supabaseClient";
-import { updateProfile } from "../services/api";
+import { updateProfile, deleteAccount } from "../services/api";
 
 const ProfileSidebar = ({
   isOpen,
@@ -117,6 +117,27 @@ const ProfileSidebar = ({
               }}
             >
               Forgot Password
+            </button>
+
+            <button
+              className="profile-menu-btn"
+              style={{ color: '#ef4444', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', marginTop: '10px' }}
+              onClick={async () => {
+                if (window.confirm("Yakin mau hapus akun? Semua riwayat tesmu bakal hilang permanen lho!")) {
+                  try {
+                    await deleteAccount(userEmail);
+                    await supabase.auth.signOut();
+                    localStorage.clear();
+                    alert("Akun berhasil dihapus.");
+                    navigate("/login");
+                  } catch (err) {
+                    console.error("Gagal hapus akun:", err);
+                    alert("Gagal menghapus akun.");
+                  }
+                }
+              }}
+            >
+              Hapus Akun
             </button>
           </div>
         </div>

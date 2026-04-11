@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabaseClient";
 import { getHistory } from "../services/api";
 import "../css/SummaryModalCSS.css";
@@ -53,15 +54,28 @@ export default function SummaryModal({ onClose }) {
   // Y-axis grid lines
   const yLines = [0, 25, 50, 75, 100];
 
-  // Format date: "08 Apr"
+  // Format date: "08 Apr, 14:30"
   const formatDate = (dateStr) => {
+    if (!dateStr) return "—";
     const d = new Date(dateStr);
-    return d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
+    return d.toLocaleDateString("id-ID", { 
+      day: "2-digit", 
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
   };
 
   const formatDateLong = (dateStr) => {
+    if (!dateStr) return "—";
     const d = new Date(dateStr);
-    return d.toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
+    return d.toLocaleDateString("id-ID", { 
+      day: "2-digit", 
+      month: "long", 
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
   };
 
   // Level badge color
@@ -81,7 +95,12 @@ export default function SummaryModal({ onClose }) {
   // ============ EXPORT TO PRINT (rapi) ============
   const handleExport = () => {
     const printWindow = window.open("", "_blank", "width=800,height=700");
-    const tableRows = history.map((item, i) => `
+    if (!printWindow) {
+      alert("Please allow popups to export the report.");
+      return;
+    }
+
+    const tableRows = history.length > 0 ? history.map((item, i) => `
       <tr style="background:${i % 2 === 0 ? '#f9f5ff' : '#ffffff'}">
         <td style="padding:10px 14px;">${i + 1}</td>
         <td style="padding:10px 14px; font-weight:600;">${item.disease}</td>
@@ -100,9 +119,9 @@ export default function SummaryModal({ onClose }) {
         <td style="padding:10px 14px; font-weight:700; color:#7C3AED;">${Math.round(item.percentage)}%</td>
         <td style="padding:10px 14px; color:#64748B;">${formatDateLong(item.date)}</td>
       </tr>
-    `).join("");
+    `).join("") : '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94A3B8;">Belum ada data tes.</td></tr>';
 
-    const nowStr = new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
+    const nowStr = new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
     printWindow.document.write(`
       <!DOCTYPE html>
@@ -128,9 +147,7 @@ export default function SummaryModal({ onClose }) {
           thead th { padding: 12px 14px; text-align: left; font-size: 13px; font-weight: 600; }
           tbody tr { border-bottom: 1px solid #EDE9FE; }
           .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #EDE9FE; font-size: 11px; color: #94A3B8; text-align: center; }
-          @media print {
-            body { padding: 20px; }
-          }
+          @media print { body { padding: 20px; } }
         </style>
       </head>
       <body>
@@ -142,7 +159,6 @@ export default function SummaryModal({ onClose }) {
             <p>Dicetak: ${nowStr}</p>
           </div>
         </div>
-
         <div class="summary-box">
           <div class="stat-card">
             <div class="val">${history.length}</div>
@@ -161,9 +177,8 @@ export default function SummaryModal({ onClose }) {
             <div class="lbl">Tanggal Tes Terakhir</div>
           </div>
         </div>
-
         <h2>Riwayat Tes</h2>
-        <p style="font-size:12px;color:#94A3B8;margin-bottom:16px;">10 tes terakhir yang tercatat dalam sistem.</p>
+        <p style="font-size:12px;color:#94A3B8;margin-bottom:16px;">Hasil tes terakhir yang tercatat dalam sistem.</p>
         <table>
           <thead>
             <tr>
@@ -175,36 +190,60 @@ export default function SummaryModal({ onClose }) {
             </tr>
           </thead>
           <tbody>
-            ${tableRows || '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94A3B8;">Belum ada data tes.</td></tr>'}
+            ${tableRows}
           </tbody>
         </table>
-
         <div class="footer">
           <p>Dokumen ini digenerate otomatis oleh ViMind — Platform Kesehatan Mental.</p>
           <p>Hasil ini bukan merupakan diagnosis medis resmi. Konsultasikan dengan profesional kesehatan mental untuk penanganan lebih lanjut.</p>
         </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
 
+  return (
+    <div className="modal-overlay">
+      <div className="sm-card">
+        {/* HEADER */}
+        <div className="sm-header">
+          <div className="sm-title">
+            📊 Rangkuman Progress
+            <p>Pantau perkembangan kesehatan mental kamu</p>
+          </div>
+          <button className="sm-export-btn" onClick={handleExport}>Ekspor Laporan</button>
+        </div>
+
+        {/* BODY */}
+        <div className="sm-body">
           <div className="summary-gauge-container">
-
-            {/* 1. RUMAH KHUSUS GRAFIK */}
+            <div className="sm-chart-label">Kondisi Terakhir Anda</div>
+            {/* 1. GAUGE GRAFIK */}
             <div
               className="gauge-graphic"
               style={{
                 background: `conic-gradient(from 270deg at 50% 100%, 
                   #9061f9 0deg, 
                   #9061f9 ${(latest?.percentage || 0) * 1.8}deg, 
-                  #cdd2d8 ${(latest?.percentage || 0) * 1.8}deg, 
-                  #cdd2d8 180deg
+                  #cbd5e0 ${(latest?.percentage || 0) * 1.8}deg, 
+                  #cbd5e0 180deg
                 )`
               }}
             ></div>
 
-            {/* 2. RUMAH KHUSUS TEKS (Bebas memanjang ke bawah) */}
+            {/* 2. CHART GRAFIK */}
             <div className="gauge-text">
+              <div className="sm-chart-label" style={{ marginTop: '10px', borderTop: '1px solid #edf2f7', paddingTop: '15px', width: '100%' }}>
+                Tren Perkembangan
+              </div>
               {loading ? (
                 <p className="sm-empty-msg">Memuat data...</p>
               ) : chartData.length < 2 ? (
-                <p className="sm-empty-msg">Butuh minimal 2 data tes untuk melihat grafik perkembangan.</p>
+                <p className="sm-empty-msg">
+                  <span style={{ fontSize: '24px', display: 'block', marginBottom: '8px' }}>📈</span>
+                  Butuh minimal 2 data tes untuk melihat grafik perkembangan.
+                </p>
               ) : (
                 <svg viewBox={`0 0 ${W} ${H}`} className="sm-svg" preserveAspectRatio="xMidYMid meet">
                   {/* Y grid lines */}
@@ -251,7 +290,45 @@ export default function SummaryModal({ onClose }) {
                 </svg>
               )}
             </div>
+          </div>
 
+          {/* HISTORY LIST */}
+          <div className="sm-history-list">
+            <h4>Riwayat Lengkap</h4>
+            {loading ? (
+              <p className="sm-empty-msg">Sedang mengambil riwayat...</p>
+            ) : history.length === 0 ? (
+              <div className="sm-empty-container">
+                <p className="sm-empty-msg">Belum ada riwayat tes.</p>
+                <button className="sm-mulai-btn" onClick={handleGoToDetail}>Mulai Tes Sekarang</button>
+              </div>
+            ) : (
+              history.map((item, idx) => (
+                <div key={idx} className="sm-history-item">
+                  <div className="item-info">
+                    <div className="item-disease">{item.disease}</div>
+                    <div className="item-date">{formatDate(item.date)}</div>
+                  </div>
+                  <div className="item-results">
+                    <div className="item-level" style={{ 
+                      backgroundColor: `${levelColor(item.level)}15`, 
+                      color: levelColor(item.level),
+                      border: `1px solid ${levelColor(item.level)}40`
+                    }}>
+                      {item.level}
+                    </div>
+                    <div className="item-percentage">{Math.round(item.percentage)}%</div>
+                    <button 
+                      className="item-detail-btn" 
+                      onClick={() => navigate("/hasil", { state: { ...item } })}
+                      title="Lihat Detail & Rekomendasi"
+                    >
+                      👁️ Lihat Detail
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -259,7 +336,6 @@ export default function SummaryModal({ onClose }) {
         <div className="sm-footer">
           <button className="sm-tutup-btn" onClick={onClose}>Tutup</button>
         </div>
-
       </div>
     </div>
   );
