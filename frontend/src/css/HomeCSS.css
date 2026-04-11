@@ -35,10 +35,16 @@ body {
   font-weight: 700;
 }
 
-.nav-right {
-  display: flex;
-  gap: 20px;
-  align-items: center;
+.nav-right span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2e1c6b;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.nav-right span:hover {
+  color: #7a5cff;
 }
 
 .nav-right button {
@@ -47,6 +53,13 @@ body {
   border: none;
   padding: 8px 16px;
   border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-right button:hover {
+    background: #6d28d9;
+    transform: scale(1.05);
 }
 
 /* HERO */
@@ -87,17 +100,33 @@ body {
 
 .hero-content p {
   margin-bottom: 25px;
-  color: #ffffff;
+  color: #725faf; /* Softer readable indigo */
+}
+
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-content {
+    animation: fadeInSlide 1.2s ease-out;
 }
 
 .hero button {
   margin-top: 20px;
-  padding: 12px 20px;
+  padding: 12px 28px;
   border: none;
   border-radius: 20px;
   background: linear-gradient(135deg, #7a5cff, #6d28d9);
   color: white !important;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hero button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(122, 92, 255, 0.3);
 }
 
 /* FITUR */
@@ -154,112 +183,122 @@ body {
 
 /* TESTIMONI CAROUSEL UPDATE */
 
-.testimoni {
-  padding: 80px 20px;
-  text-align: center;
-  background: white;
-}
-
-.testimoni-header {
-  text-align: center;
-  margin-bottom: 40px;
-  color: #9c84ff;
-  font-weight: 600;
-  letter-spacing: 2px;
-}
-
-.testimoni-header h2 {
-  font-size: 32px;
-  font-weight: 800;
-  color: #2e1c6b;
-  margin-top: 15px;
-}
-
-.testimoni-header p {
-  max-width: 700px;
-  margin: 8px auto 0 auto;
-  color: #6b5ca5;
-}
-
-/* Pembungkus utama untuk menyembunyikan card yang keluar garis */
-.carousel-wrapper {
-  overflow: hidden;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 10px 0 20px 0;
-}
-
-/* Trek panjang yang akan bergeser */
-.carousel-track {
-  display: flex;
-  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-  /* Efek geser super smooth */
-}
-
-/* Pembagian lebar (menampilkan 3 card sekaligus) */
-.carousel-item {
-  flex: 0 0 33.3333%;
-  padding: 0 15px;
-  box-sizing: border-box;
-}
-
-/* Desain per-Card (Rata Kiri) */
-.testimonial-card {
-  background: white;
-  padding: 30px;
-  border-radius: 20px;
-  border: 1px solid #eee;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
-  text-align: left;
-  height: 100%;
+/* MARQUEE TESTIMONI SECTION */
+.marquee-container {
+  padding: 40px 0;
   display: flex;
   flex-direction: column;
-  transition: 0.3s ease;
+  gap: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Gradient Mask for fading sides */
+.marquee-container::before,
+.marquee-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 150px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.marquee-container::before {
+  left: 0;
+  background: linear-gradient(to right, white, transparent);
+}
+
+.marquee-container::after {
+  right: 0;
+  background: linear-gradient(to left, white, transparent);
+}
+
+.marquee-row {
+  display: flex;
+  width: max-content;
+}
+
+.marquee-content {
+  display: flex;
+  gap: 24px;
+  padding: 10px 0;
+}
+
+.marquee-left .marquee-content {
+  animation: scroll-left 40s linear infinite;
+}
+
+.marquee-right .marquee-content {
+  animation: scroll-right 40s linear infinite;
+}
+
+.marquee-row:hover .marquee-content {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.testimonial-card {
+  background: white;
+  padding: 24px;
+  border-radius: 24px;
+  border: 1.5px solid #8A5CFF; 
+  width: 320px; /* Diperkecil dari 380px */
+  flex-shrink: 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .testimonial-card:hover {
-  border-color: #7a5cff;
-  transform: translateY(-5px);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(138, 92, 255, 0.1);
 }
 
-/* Teks Testimoni (Paling Atas) */
+.testimoni-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
 .testimoni-text {
-  font-size: 20px;
-  font-weight: 200;
-  color: #725faf;
-  margin: 0 0 2px 0;
-  line-height: 1.5;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 20px;
   flex-grow: 1;
 }
 
-/* Pembungkus Bintang & Angka */
-.testimoni-rating {
+.testimoni-footer {
   display: flex;
   flex-direction: column;
-  margin-bottom: 8px;
+  gap: 4px;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 16px;
 }
 
-/* Bintang */
-.testimoni-rating .stars {
-  color: #f5b301;
-  letter-spacing: 2px;
-  font-size: 16px;
-  margin-bottom: 2px;
-}
-
-/* Angka Rating (ex: 5/5) */
-.testimoni-rating .rating-number {
-  font-size: 14px;
-  font-weight: 600;
-  color: #8a7eb8;
-}
-
-/* Nama Pengguna (Paling Bawah) */
 .testimoni-name {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
-  color: #2e1c6b;
-  display: block;
+  color: #374151;
+}
+
+.stars {
+  color: #fbbf24;
+  font-size: 12px;
+  letter-spacing: 2px;
 }
 
 /* TEXT */

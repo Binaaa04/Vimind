@@ -2,13 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import illustration from "../assets/logovimind.png";
 import logo from "../assets/logovimind2.png";
-import "../App.css";
+import "../css/ResetPasswordCSS.css"
 
 import { supabase } from "../services/supabaseClient";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  const [showPass, setShowPass] = useState(false);
+  const [showConf, setShowConf] = useState(false);
 
   const [form, setForm] = useState({
     password: "",
@@ -54,8 +57,8 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="page-wrapper">
-      <div className="card">
+    <div className="page-wrapper reset-password-page">
+      <div className="reset-card">
 
         {/* LEFT IMAGE */}
         <div className="card-left">
@@ -67,39 +70,40 @@ const ResetPassword = () => {
 
           <img src={logo} alt="logo" className="reset-logo" />
 
-          <h3 className="reset-title">Reset password</h3>
+          <h3 className="reset-title">Reset Password</h3>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="reset-form">
 
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              className="input-field"
-              value={form.email}
-              onChange={handleChange}
-            />
+            <div className="password-wrapper">
+              <input
+                type={showPass ? "text" : "password"}
+                name="password"
+                placeholder="Password baru"
+                className="input-field"
+                value={form.password}
+                onChange={handleChange}
+              />
+              <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
+                {showPass ? "🙈" : "👁️"}
+              </span>
+            </div>
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Password baru"
-              className="input-field"
-              value={form.password}
-              onChange={handleChange}
-            />
+            <div className="password-wrapper">
+              <input
+                type={showConf ? "text" : "password"}
+                name="confirm"
+                placeholder="Konfirmasi password baru"
+                className="input-field"
+                value={form.confirm}
+                onChange={handleChange}
+              />
+              <span className="eye-icon" onClick={() => setShowConf(!showConf)}>
+                {showConf ? "🙈" : "👁️"}
+              </span>
+            </div>
 
-            <input
-              type="password"
-              name="confirm"
-              placeholder="Konfirmasi password baru"
-              className="input-field"
-              value={form.confirm}
-              onChange={handleChange}
-            />
-
-            <button type="submit" className="primary-btn">
-              Kembali ke Halaman Login
+            <button type="submit" className="primary-btn" disabled={loading}>
+              {loading ? "Menyimpan..." : "Simpan Password Baru"}
             </button>
 
           </form>

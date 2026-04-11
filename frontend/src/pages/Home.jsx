@@ -11,8 +11,6 @@ export default function Home() {
   // ==========================================
   // 1. STATE & DATA
   // ==========================================
-  const [active, setActive] = useState(null);
-  const [currentTesti, setCurrentTesti] = useState(0);
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
   // Data FAQ
@@ -74,14 +72,6 @@ export default function Home() {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
-  // Efek Carousel Otomatis
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTesti((prev) => (prev >= testimonialsData.length - 3 ? 0 : prev + 1));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [testimonialsData.length]);
-
 
   // ==========================================
   // 2. TAMPILAN UI (RENDER)
@@ -124,31 +114,61 @@ export default function Home() {
         </div>
       </div>
 
-      {/* TESTIMONI CAROUSEL */}
+      {/* TESTIMONI MARQUEE SECTION */}
       <div className="testimoni">
         <div className="testimoni-header">
           <span className="badge">Testimoni</span>
           <h2>Kisah para teman teman yang udah pernah pake vimind</h2>
-          <p>Temukan cerita dari para pengguna yang telah merasakan manfaat memahami kesehatan mental</p>
+          <p>Temukan cerita dari para pengguna yang telah merasakan manfaat memahami kesehatan mental bersama ViMind.</p>
         </div>
 
-        <div className="carousel-wrapper">
-          <div
-            className="carousel-track"
-            style={{ transform: `translateX(-${currentTesti * 33.3333}%)` }}
-          >
-            {testimonialsData.map((item) => (
-              <div key={item.id} className="carousel-item">
-                <div className="testimonial-card">
+        <div className="marquee-container">
+          {/* Row 1: Slide Left */}
+          <div className="marquee-row marquee-left">
+            <div className="marquee-content">
+              {[...testimonialsData, ...testimonialsData].map((item, idx) => (
+                <div key={idx} className="testimonial-card">
+                   <h4 className="testimoni-title">Operasional jadi lebih cepat dan rapi.</h4>
                   <p className="testimoni-text">"{item.text}"</p>
-                  <div className="testimoni-rating">
-                    <span className="stars">{"⭐".repeat(item.rating)}</span>
-                    <span className="rating-number">{item.rating}/5</span>
+                  <div className="testimoni-footer">
+                    <span className="testimoni-name">{item.name}</span>
+                    <div className="stars">{"⭐".repeat(item.rating)}</div>
                   </div>
-                  <span className="testimoni-name">{item.name}</span>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          {/* Row 2: Slide Right */}
+          <div className="marquee-row marquee-right">
+            <div className="marquee-content">
+              {[...testimonialsData, ...testimonialsData].reverse().map((item, idx) => (
+                <div key={idx} className="testimonial-card">
+                  <h4 className="testimoni-title">Vimind sangat membantu sekali.</h4>
+                  <p className="testimoni-text">"{item.text}"</p>
+                  <div className="testimoni-footer">
+                    <span className="testimoni-name">{item.name}</span>
+                    <div className="stars">{"⭐".repeat(item.rating)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Row 3: Slide Left (Offset) */}
+          <div className="marquee-row marquee-left" style={{ animationDuration: '45s' }}>
+            <div className="marquee-content">
+              {[...testimonialsData, ...testimonialsData].map((item, idx) => (
+                <div key={idx} className="testimonial-card">
+                  <h4 className="testimoni-title">Sangat direkomendasikan untu teman-teman.</h4>
+                  <p className="testimoni-text">"{item.text}"</p>
+                  <div className="testimoni-footer">
+                    <span className="testimoni-name">{item.name}</span>
+                    <div className="stars">{"⭐".repeat(item.rating)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
