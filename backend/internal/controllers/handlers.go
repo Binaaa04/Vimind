@@ -76,6 +76,10 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 
 	userAnswers := make(map[int]float64)
 	for _, ans := range req.Answers {
+		// Security: Validate that value is between 0 and 1
+		if ans.Value < 0 || ans.Value > 1 {
+			return c.Status(400).JSON(fiber.Map{"error": "Manipulasi data terdeteksi! Nilai harus antara 0 dan 1."})
+		}
 		userAnswers[ans.SymptomID] = ans.Value
 	}
 

@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 
 	"pbl-vimind/backend/config"
 	"pbl-vimind/backend/internal/controllers"
@@ -29,13 +30,24 @@ func main() {
 	app := fiber.New()
 
 	// Middlewares
-	app.Use(helmet.New())
-	app.Use(cors.New())
+	app.Use(recover.New()) // Prevent server from crashing on panics
+	app.Use(helmet.New())  // Security headers (Anti-XSS, etc.)
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*", // Keep it open for dev, or specify frontend URL
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
+
+	// Rate Limiting (Anti-DDoS & Anti-Spam)
 	app.Use(limiter.New(limiter.Config{
-		Max:        100,
-		Expiration: 15 * time.Minute,
+		Max:        50,               // 50 requests
+		Expiration: 1 * time.Minute,  // per 1 minute
 		KeyGenerator: func(c *fiber.Ctx) string {
 			return c.IP()
+		},
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(429).JSON(fiber.Map{
+				"error": "Mencurigakan! Kamu terlalu cepat, silakan istirahat 1 menit.",
+			})
 		},
 	}))
 
