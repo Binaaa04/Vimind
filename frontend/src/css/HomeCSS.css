@@ -1,3 +1,82 @@
+/* 1. NAVBAR STICKY */
+.navbar {
+  /* Tambahkan kode ini ke dalam class .navbar yang sudah ada */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #ffffff; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); 
+}
+
+/* Container untuk memposisikan tombol dan teks di layar */
+.scroll-nav-container-3d {
+  position: fixed;
+  bottom: 30px; /* Jarak dari bawah layar */
+  right: 30px;  /* Jarak dari kanan layar */
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Jarak antara tombol dan teks */
+  z-index: 1000; /* Memastikan di atas elemen lain */
+  
+  /* Logika visibilitas yang sama dengan kode asli Anda */
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.scroll-nav-container-3d.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* --- Gaya Tombol Lingkaran 3D --- */
+.scroll-btn-3d-circle {
+  /* Bentuk Lingkaran */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  
+  /* Reset Style Dasar */
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Warna Dasar (Menggunakan warna ungu dari icon) */
+  background-color: white !important ;
+  color: white;
+  box-shadow: 
+    inset 0 -4px 0 rgba(0, 0, 0, 0.15), 
+    0 4px 8px rgba(122, 92, 255, 0.3); 
+  transition: all 0.1s ease;
+  position: relative;
+  top: 0;
+}
+
+/* Efek Hover (sedikit lebih gelap) */
+.scroll-btn-3d-circle:hover {
+  background-color: transparent !important; 
+  box-shadow: 
+    inset 0 -4px 0 rgba(0, 0, 0, 0.2),
+    0 6px 12px rgba(122, 92, 255, 0.4);
+}
+
+/* Efek Klik (Tombol terlihat tertekan) */
+.scroll-btn-3d-circle:active {
+  top: 2px; 
+  box-shadow: 
+    inset 0 -2px 0 rgba(0, 0, 0, 0.15),
+    0 1px 4px rgba(122, 92, 255, 0.3); 
+}
+
+/* Gaya Teks Logo (mengasumsikan gaya yang ada) */
+.scroll-brand {
+  font-family: sans-serif;
+  font-weight: bold;
+  color: #7a5cff; 
+  font-size: 1.2rem;
+}
 /* BASE RESET */
 * {
   box-sizing: border-box;
