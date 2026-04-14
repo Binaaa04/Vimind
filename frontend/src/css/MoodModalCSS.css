@@ -1,0 +1,81 @@
+/*MODAL OVERLAY (Latar Belakang Gelap)*/
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 12, 41, 0.6); /* Latar belakang semi-transparan */
+  backdrop-filter: blur(4px); /* Efek blur pada background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+/*KARTU MODAL (Background Ungu Muda)*/
+.mood-card {
+  background-color: #f4ebff; /* Warna ungu sangat muda sesuai gambar */
+  border-radius: 24px;
+  padding: 40px 30px 24px 30px;
+  width: 100%;
+  max-width: 420px; /* Menyesuaikan lebar kotak figma (sekitar 359px + padding) */
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(46, 28, 107, 0.15);
+  animation: popIn 0.3s ease-out; /* Animasi muncul */
+}
+
+/* Animasi saat modal pertama kali dibuka */
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/*JUDUL TEKS*/
+.mood-card h2 {
+  color: #2e1c6b; /* Warna ungu gelap khas ViMind */
+  font-size: clamp(20px, 5vw, 24px);
+  font-weight: 800;
+  margin-bottom: 30px;
+  line-height: 1.3;
+}
+
+/*BARIS EMOJI*/
+.emoji-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(12px, 3vw, 20px); /* Jarak antar emoji responsif */
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+  /* Jika kamu ingin garis bawah seperti batas biru di Figma, buka komen di bawah: */
+  /* border-bottom: 2px solid rgba(46, 28, 107, 0.1); */
+}
+
+.emoji {
+  font-size: clamp(32px, 8vw, 42px); /* Ukuran emoji besar */
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  user-select: none; /* Mencegah emoji ter-highlight biru jika di-double click */
+  filter: grayscale(20%); /* Sedikit memudarkan warna dasar */
+}
+
+.emoji:hover {
+  transform: scale(1.25) translateY(-5px); /* Emoji membesar dan naik sedikit saat di-hover */
+  filter: grayscale(0%); /* Warna kembali penuh */
+}
+
+/*TOMBOL LEWATI (Skip)*/
+.skip {
+  color: #a0aec0; /* Abu-abu pudar sesuai gambar */
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  margin: 0;
+  display: inline-block;
+  padding: 5px 15px;
+}
+
+.skip:hover {
+  color: #2e1c6b; /* Berubah ungu gelap saat di-hover */
+  text-decoration: underline;
+}
