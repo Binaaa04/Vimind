@@ -211,12 +211,13 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #2b1b54  !important;
 }
 
 .logo-bottom span {
   font-size: 20px;
   font-weight: 800;
-  color: #2b1b54;
+  color: #2b1b54 !important;
 }
 
 .logo-icons {
