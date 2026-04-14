@@ -24,20 +24,22 @@ body {
    TOMBOL KELUAR (KIRI ATAS)
    ========================================== */
 .back-btn {
-  position: absolute;
-  top: 25px;
-  left: 25px;
-  background: #8a5cff;
+  position: absolute !important;
+  top: 30px !important;
+  left: 30px !important;
+  background: transparent;
   color: #8a5cff;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 12px;
+  border: 2px solid #8a5cff;
+  padding: 8px 20px;
+  border-radius: 9999px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   transition: all 0.3s ease;
-  z-index: 10;
-  box-shadow: 0 2px 4px rgba(138, 92, 255, 0.2);
+  z-index: 20;
 }
 
 .back-btn:hover {

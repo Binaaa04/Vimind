@@ -301,9 +301,6 @@ export default function Home() {
   <button className="scroll-btn-3d-circle" onClick={scrollToTop} title="Kembali ke atas">
     <img src={arrowUp} alt="Panah Ke Atas" style={{ width: '24px', height: '24px' }} />
   </button>
-  
-  {/* Teks Logo */}
-  <span className="scroll-brand">Vimind</span>
 </div>
     </div>
   );

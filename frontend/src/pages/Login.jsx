@@ -104,7 +104,7 @@ const Login = () => {
           {/* 👇 TOMBOL KEMBALI DITAMBAHKAN DI SINI 👇 */}
           <div className="back-button-container">
             <button onClick={handleBack} className="back-btn">
-              <span className="back-icon">←</span> Kembali
+              <span className="back-icon"></span> Kembali
             </button>
           </div>
 
