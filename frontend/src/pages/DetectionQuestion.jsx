@@ -5,6 +5,9 @@ import { supabase } from "../services/supabaseClient";
 import "../css/DetectionQuestionCSS.css";
 
 export default function Detection() {
+      useEffect(() => {
+      document.title = "Tes Gejala | Vimind";
+    }, []);
   const navigate = useNavigate();
   const location = useLocation();
 

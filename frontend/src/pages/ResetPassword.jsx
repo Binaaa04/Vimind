@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import illustration from "../assets/logovimind.png";
 import logo from "../assets/logovimind2.png";
@@ -7,6 +8,9 @@ import "../css/ResetPasswordCSS.css"
 import { supabase } from "../services/supabaseClient";
 
 const ResetPassword = () => {
+  useEffect(() => {
+    document.title = "Reset Password | Vimind";
+  }, []);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 

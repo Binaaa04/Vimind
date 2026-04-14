@@ -7,6 +7,9 @@ import fiturImg from "../assets/fitur.png";
 import arrowUp from "../assets/arrowUp.svg";
 
 export default function Home() {
+  useEffect(() => {
+    document.title = "Selamat Datang | Vimind";
+  }, []);
   const navigate = useNavigate();
 
   // ==========================================
@@ -110,7 +113,7 @@ export default function Home() {
         <div className="nav-left">
           <img src={logo} alt="logo" />
         </div>
-        
+
         {/* HAMBURGER BUTTON */}
         <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? "✕" : "☰"}
@@ -160,7 +163,7 @@ export default function Home() {
             <div className="marquee-content">
               {[...testimonialsData, ...testimonialsData].map((item, idx) => (
                 <div key={idx} className="testimonial-card">
-                   <h4 className="testimoni-title">Operasional jadi lebih cepat dan rapi.</h4>
+                  <h4 className="testimoni-title">Operasional jadi lebih cepat dan rapi.</h4>
                   <p className="testimoni-text">"{item.text}"</p>
                   <div className="testimoni-footer">
                     <span className="testimoni-name">{item.name}</span>
@@ -293,15 +296,15 @@ export default function Home() {
         </div>
       </footer>
 
-{/* SCROLL NAVIGATION BUTTONS (BARU) */}
-{/* Container tetap menampilkan teks Logo di sebelah tombol */}
-<div className={`scroll-nav-container-3d ${showScroll ? "show" : ""}`}>
-  
-  {/* Tombol Panah Atas (Single, Lingkaran, 3D) */}
-  <button className="scroll-btn-3d-circle" onClick={scrollToTop} title="Kembali ke atas">
-    <img src={arrowUp} alt="Panah Ke Atas" style={{ width: '24px', height: '24px' }} />
-  </button>
-</div>
+      {/* SCROLL NAVIGATION BUTTONS (BARU) */}
+      {/* Container tetap menampilkan teks Logo di sebelah tombol */}
+      <div className={`scroll-nav-container-3d ${showScroll ? "show" : ""}`}>
+
+        {/* Tombol Panah Atas (Single, Lingkaran, 3D) */}
+        <button className="scroll-btn-3d-circle" onClick={scrollToTop} title="Kembali ke atas">
+          <img src={arrowUp} alt="Panah Ke Atas" style={{ width: '24px', height: '24px' }} />
+        </button>
+      </div>
     </div>
   );
 }

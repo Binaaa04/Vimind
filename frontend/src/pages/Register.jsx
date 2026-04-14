@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import "../App.css"; // Tetap di-import untuk kerangka layout (.card, .page-wrapper)
 import "../css/RegisterCSS.css"; // CSS Spesifik yang sudah kita perbaiki
 
@@ -10,6 +11,9 @@ import { supabase } from "../services/supabaseClient";
 const Register = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    document.title = "Buat akun baru | Vimind";
+  }, []);
 
   // State untuk form & fitur mata (show/hide password)
   const [form, setForm] = useState({
@@ -66,7 +70,7 @@ const Register = () => {
 
       console.log("Register success:", data);
       alert("Pendaftaran berhasil! Silakan cek email kamu untuk verifikasi.");
-      navigate("/success"); 
+      navigate("/success");
     } catch (error) {
       console.error("Register error:", error.message);
       alert("Gagal mendaftar: " + error.message);
@@ -145,7 +149,7 @@ const Register = () => {
             <div className="small-text">
               Sudah punya akun? <Link to="/login">yuk cek kesehatanmu!</Link>
             </div>
-            
+
           </form>
 
           {/* Bagian Google Login */}

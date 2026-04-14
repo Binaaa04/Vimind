@@ -1,6 +1,10 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Finish() {
+      useEffect(() => {
+        document.title = "Selesai | Vimind";
+      }, []);
   const navigate = useNavigate();
   const location = useLocation();
 

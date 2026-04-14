@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import illustration from "../assets/logovimind.png";
 import logo from "../assets/logovimind2.png";
 import "../App.css";
@@ -7,6 +8,9 @@ import "../css/ForgotPasswordCSS.css";
 import { supabase } from "../services/supabaseClient";
 
 const ForgotPassword = () => {
+      useEffect(() => {
+        document.title = "Lupa Password | Vimind";
+      }, []);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);

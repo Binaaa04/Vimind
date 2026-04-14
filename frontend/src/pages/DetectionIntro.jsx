@@ -1,19 +1,23 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import "../css/DetectionIntroCSS.css"; 
+import { useEffect } from "react";
+import "../css/DetectionIntroCSS.css";
 
 export default function DetectionIntro() {
+  useEffect(() => {
+    document.title = "Tes Gejala | Vimind";
+  }, []);
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
 
   return (
     <div className="question-page">
-        
+
       {/* Tombol Back ke Dashboard */}
-      <button 
-        className="back-btn" 
+      <button
+        className="back-btn"
         onClick={() => navigate("/dashboard")}
       >
-       Keluar
+        Keluar
       </button>
 
       {/* Progress Bar di bagian atas */}
@@ -29,7 +33,7 @@ export default function DetectionIntro() {
           className="next-btn"
           onClick={() =>
             navigate("/deteksi/soal", {
-              state: location.state, 
+              state: location.state,
             })
           }
         >

@@ -1,7 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import "../App.css";
 
 const ResetSent = () => {
+        useEffect(() => {
+          document.title = "Reset Password | Vimind";
+        }, []);
     const navigate = useNavigate();
 
     return (

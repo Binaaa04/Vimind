@@ -4,6 +4,9 @@ import { supabase } from "../services/supabaseClient";
 import { getProfile } from "../services/api";
 
 export default function Result() {
+    useEffect(() => {
+        document.title = "Hasil Tes | Vimind";
+    }, []);
     const navigate = useNavigate();
     const location = useLocation();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -109,7 +112,7 @@ export default function Result() {
                             sangat disarankan untuk berkonsultasi dengan psikolog atau psikiater.
                         </p>
                     </div>
-                </div> 
+                </div>
 
                 {isLoggedIn && (
                     <div className="result-footer">

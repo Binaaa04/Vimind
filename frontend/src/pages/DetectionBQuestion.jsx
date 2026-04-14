@@ -1,8 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react"; 
 import { useState } from "react";
 import "./Detection.css"; // Pastikan nama file CSS-mu sesuai
 
 export default function Detection() {
+    useEffect(() => {
+      document.title = "Tes Gejala | Vimind";
+    }, []);
   const navigate = useNavigate();
   const questions = [
     "Apakah anda merasa lelah hampir setiap hari",
