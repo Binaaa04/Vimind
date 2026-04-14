@@ -48,7 +48,7 @@
 
 .logo-img {
   width: 360px;
-  margin-bottom: -50px;
+  margin-bottom: 16px;
   margin-left: auto;
   display: block;
 }
@@ -228,6 +228,42 @@
   .card-left img {
     max-width: 80%; 
   }
+}
+
+/* TOMBOL KEMBALI (BACK TO LANDING PAGE) */
+
+/* Wadah tombol agar rapi di kiri atas card-right */
+.back-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 10px; /* Jarak antara tombol kembali dengan logo */
+}
+
+/* Desain tombolnya */
+.back-btn {
+  background: transparent !important;
+  border: none;
+  color: #8a5cff; /* Sesuaikan dengan warna ungunya Vimind */
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 12px 20px;
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease-in-out;
+}
+
+.back-btn:hover {
+  color: #7241eb; /* Agak lebih gelap saat di-hover */
+  transform: translateX(-4px); /* Efek panah geser sedikit ke kiri saat di-hover */
+}
+
+.back-icon {
+  font-size: 1.1rem;
+  line-height: 1;
 }
 
 /* RESPONSIVE DESIGN */
