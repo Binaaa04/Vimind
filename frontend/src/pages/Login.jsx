@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useEffect } from "react";
 import "../App.css";
 import "../css/LoginCSS.css";
 
@@ -8,15 +9,18 @@ import logoTop from "../assets/logovimind2.png";
 import { supabase } from "../services/supabaseClient";
 
 const Login = () => {
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  useEffect(() => {
+    document.title = "Login | Vimind";
+  }, []);
   const [form, setForm] = useState({
     email: "",
     password: ""
   });
-  
+
   const [loading, setLoading] = useState(false);
-  
+
   // 1. STATE BARU UNTUK SHOW/HIDE PASSWORD
   const [showPassword, setShowPassword] = useState(false);
 
@@ -133,12 +137,12 @@ const Login = () => {
                 className="input-field"
                 onChange={handleChange}
               />
-              <span 
-                className="eye-icon" 
+              <span
+                className="eye-icon"
                 onClick={() => setShowPassword(!showPassword)}
                 style={{ cursor: "pointer" }}
               >
-                {showPassword ? "🙈" : "👁️"} 
+                {showPassword ? "🙈" : "👁️"}
               </span>
             </div>
 

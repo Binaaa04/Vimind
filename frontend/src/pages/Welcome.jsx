@@ -1,9 +1,14 @@
+import { useEffect } from "react"; 
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logovimind2.png";
 import "../css/LandingCSS.css";
 import "../index.css";
 
 export default function Landing() {
+  useEffect(() => {
+    document.title = "Gejala Mentalmu Gratis | Vimind";
+  }, []);
+  
   const navigate = useNavigate();
 
   return (

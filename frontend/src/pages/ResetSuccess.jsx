@@ -1,7 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import "../App.css";
 
 const ResetSuccess = () => {
+  useEffect(() => {
+    document.title = "Tes Gejala | Vimind";
+  }, []);
   const navigate = useNavigate();
 
   return (
@@ -14,7 +18,7 @@ const ResetSuccess = () => {
 
         <p>
           Password berhasil direset mari coba cek kesehatan mental kamu
-        </p> 
+        </p>
 
         <button
           className="primary-btn modal-btn"

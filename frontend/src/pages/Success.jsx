@@ -5,6 +5,9 @@ import logo from "../assets/logovimind2.png";
 import "../App.css";
 
 const Success = () => {
+  useEffect(() => {
+    document.title = "Berhasil | Vimind";
+  }, []);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,8 +33,8 @@ const Success = () => {
           <img src={logo} alt="logo" className="success-logo" />
 
           <h1 className="success-heading">
-            Selamat,<br/>
-            email berhasil<br/>
+            Selamat,<br />
+            email berhasil<br />
             dibuat
           </h1>
 

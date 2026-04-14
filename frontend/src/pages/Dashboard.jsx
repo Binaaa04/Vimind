@@ -18,7 +18,12 @@ import familyBanner from "../assets/family_banner.png";
 import chatbotIcon from "../assets/chatbot.png";
 import "../css/DashboardCSS.css";
 
+
+
 const Dashboard = () => {
+  useEffect(() => {
+    document.title = "Dashboard Utama | Vimind";
+  }, []);
   const [showMood, setShowMood] = useState(true);
   const [showSummary, setShowSummary] = useState(false);
   const [showResult, setShowResult] = useState(false);
