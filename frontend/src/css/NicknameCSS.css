@@ -1,16 +1,19 @@
 /* ===================================== */
-/* STYLE FORM NICKNAME                   */
+/* OVERLAY                               */
 /* ===================================== */
 .nickname-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4); /* Saya gelapkan sedikit agar fokus */
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 4000;
 }
 
+/* ===================================== */
+/* MODAL                                 */
+/* ===================================== */
 .nickname-modal {
   width: 320px;
   background: #ffffff;
@@ -28,6 +31,9 @@
   line-height: 1.25;
 }
 
+/* ===================================== */
+/* FORM                                  */
+/* ===================================== */
 .nickname-modal form {
   display: flex;
   flex-direction: column;
@@ -47,26 +53,67 @@
   padding: 0 12px;
   font-size: 14px;
   color: #2e1c6b;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
   outline: none;
 }
 
+/* ===================================== */
+/* BUTTON GROUP (FIX UTAMA)              */
+/* ===================================== */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* OVERRIDE GLOBAL BUTTON BIAR GA NGACO */
 .nickname-modal button {
-  width: 92px;
-  height: 32px;
-  margin: 0 auto;
+  width: 100%;
+  display: block;
+  position: relative;
+}
+
+/* ===================================== */
+/* BUTTON SIMPAN                         */
+/* ===================================== */
+.save-btn {
+  height: 42px;
   border: none;
-  border-radius: 8px;
-  background: #b595ff;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #7b5cff, #9f7aea);
   color: #ffffff;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
 
+/* ===================================== */
+/* BUTTON KEMBALI                        */
+/* ===================================== */
+.back-btn {
+  height: 40px;
+  border: 2px solid #b595ff;
+  border-radius: 10px;
+  background: transparent;
+  color: #7b5cff !important;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  top: -10px;   /* naik ke atas */
+  left: -19px;  /* geser ke kiri */
+  transition: all 0.2s ease;
+}
+
+/* Hover halus (optional) */
+.back-btn:hover {
+  background: #f3eaff !important;
+  color: #7c4dff !important;
+  transform: scale(1.05); 
+}
 
 /* ===================================== */
-/* STYLE SUCCESS MODAL                   */
+/* SUCCESS MODAL                         */
 /* ===================================== */
 .success-overlay {
   position: fixed;
@@ -125,16 +172,14 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .continue-btn:hover {
   background: #7c4dff;
 }
 
-
 /* ===================================== */
-/* ANIMASI MASUK & KELUAR                */
+/* ANIMASI                               */
 /* ===================================== */
 .fade-in { animation: fadeIn 0.3s ease forwards; }
 .fade-out { animation: fadeOut 0.3s ease forwards; }

@@ -70,14 +70,14 @@
 }
 
 /* Hover */
-.profile-photo-btn:hover, .profile-menu-btn:hover,
-.profile-logout-btn:hover  {
+.profile-photo-btn:hover,
+.profile-menu-btn:hover,
+.profile-logout-btn:hover {
   background-color: #8B5CF6 !important;
   border-color: #A78BFA !important;
   color: white !important;
   font-weight: 600;
 }
-
 
 /* =========================
    PHOTO BUTTON
@@ -92,7 +92,7 @@
   font-weight: 400;
   margin-bottom: 6px;
   background-color: #A78BFA !important;
-  color:white !important;
+  color: white !important;
 }
 
 /* =========================
@@ -142,12 +142,11 @@
 }
 
 .profile-logout-btn:hover {
-  background: #ea4d4d  !important;
+  background: #ea4d4d !important;
   border-color: #ffbaba !important;
   color: #fff5f5 !important;
 }
 
-/* Icon logout */
 .logout-icon {
   color: #888888 !important;
   font-size: 10px;
@@ -155,7 +154,7 @@
 }
 
 /* =========================
-   HEADER
+   HEADER & CLOSE BUTTON
 ========================= */
 
 .profile-top {
@@ -167,7 +166,7 @@
 
 .profile-header {
   width: 100%;
-  position: relative;
+  /* position: relative; */
   text-align: center;
   margin-bottom: 12px;
 }
@@ -182,23 +181,32 @@
   padding-bottom: 12px;
 }
 
-/* Close button */
-
+/* Tombol Back/Close di Kiri Atas */
 .profile-close {
   position: absolute;
-  top: -3px;
-  right: 2px;
-  border: none;
-  background: transparent;
-  color: #666;
-  font-size: 18px;
-  line-height: 1;
+  top: 20px;
+  left: 20px;
+  right: auto;
+  border: 1px solid #d1d5db;
+  background: #ffffff !important;
+  color: #8b5cf6 !important;
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
+  display: none;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
+  line-height: 1;
+  z-index: 10;
 }
 
 .profile-close:hover {
+  background-color: #f3f4f6;
   color: #333;
+  border-color: #9ca3af;
 }
 
 /* =========================
@@ -225,12 +233,10 @@
 
 .profile-bottom {
   width: 100%;
-  margin-top: auto;
+  margin-top: 6px;
   display: flex;
   flex-direction: column;
 }
-
-/* Brand */
 
 .profile-brand {
   width: 100%;
@@ -243,6 +249,212 @@
 .profile-brand img {
   width: 220px;
   height: auto;
-  margin-bottom: -55px;
+  margin-top: 12px;
+  margin-bottom: -20px;
   object-fit: contain;
+}
+
+/* =========================
+   DELETE ACCOUNT MODAL
+========================= */
+
+.custom-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  /* Harus lebih tinggi dari sidebar */
+}
+
+.custom-modal-content {
+  background: #ffffff;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: slideUpFade 0.3s ease;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.delete-modal-title {
+  color: #2e1065;
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.delete-modal-desc {
+  color: #4b5563;
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.delete-feedback-container {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.delete-feedback-container label {
+  display: block;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.delete-feedback-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+  background-color: #f9fafb;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.delete-feedback-input:focus {
+  border-color: #8b5cf6;
+  background-color: #ffffff !important;
+}
+
+.delete-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.delete-btn-cancel,
+.delete-btn-confirm {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.delete-btn-cancel {
+  background-color: #f3f4f6;
+  color: white;
+}
+
+.delete-btn-cancel:hover {
+  background-color: #e5e7eb;
+  color: white;
+}
+
+.delete-btn-confirm {
+  background-color: #ef4444;
+  color: white;
+}
+
+.delete-btn-confirm:hover {
+  background-color: #dc2626;
+}
+
+.delete-btn-confirm:disabled {
+  background-color: #fca5a5;
+  cursor: not-allowed;
+}
+
+/* =========================
+   RESPONSIVE (MOBILE)
+========================= */
+
+@media screen and (max-width: 768px) {
+  .profile-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    border-radius: 0;
+    padding: 24px 18px;
+    box-shadow: none;
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+
+  .profile-close {
+    top: 20px;
+    /* Sesuaikan posisi di mobile agar tidak terlalu rapat */
+    left: 20px;
+    right: auto;
+    display: flex;
+  }
+
+  .profile-top {
+    padding-bottom: 12px;
+  }
+
+  .profile-header h3 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+  }
+
+  .profile-photo-btn {
+    width: 100%;
+    height: 42px;
+    font-size: 13px;
+  }
+
+  .profile-menu-btn,
+  .profile-logout-btn {
+    height: 38px;
+    font-size: 12px;
+    border-radius: 6px;
+    padding: 12px 10px;
+    margin-bottom: 28px;
+  }
+
+  .profile-menu {
+    gap: 8px;
+    padding-top: 6px;
+  }
+
+  .profile-avatar-img {
+    width: 64px;
+    height: 64px;
+  }
+
+  .profile-bottom {
+    margin-top: 20px;
+  }
+
+  .profile-brand {
+    margin-top: 0;
+    justify-content: center;
+  }
+
+  .profile-brand img {
+    width: 180px;
+    margin-bottom: 0;
+  }
 }

@@ -5,15 +5,13 @@ import confetti from "canvas-confetti";
 const NicknameModal = ({ isOpen, onClose, onSave }) => {
   const [nickname, setNickname] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
-  
-  // State baru untuk mendeteksi kapan animasi keluar harus dimainkan
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setNickname(localStorage.getItem("nickname") || "");
       setShowSuccess(false);
-      setIsClosing(false); // Reset saat dibuka lagi
+      setIsClosing(false);
     }
   }, [isOpen]);
 
@@ -35,10 +33,8 @@ const NicknameModal = ({ isOpen, onClose, onSave }) => {
   };
 
   const handleContinue = () => {
-    // 1. Mulai animasi keluar
     setIsClosing(true);
 
-    // 2. Tunggu 300ms (sesuai durasi CSS), baru benar-benar tutup modalnya
     setTimeout(() => {
       setShowSuccess(false);
       setIsClosing(false);
@@ -48,7 +44,6 @@ const NicknameModal = ({ isOpen, onClose, onSave }) => {
 
   return (
     <>
-      {/* BAGIAN FORM NICKNAME */}
       {!showSuccess && !isClosing && (
         <div className="nickname-overlay">
           <div className="nickname-modal">
@@ -69,22 +64,36 @@ const NicknameModal = ({ isOpen, onClose, onSave }) => {
                 onChange={(e) => setNickname(e.target.value)}
               />
 
-              <button type="submit">Simpan</button>
+              {/* BUTTON GROUP FIX */}
+              <div className="button-group">
+                <button type="submit" className="save-btn">
+                  Simpan
+                </button>
+
+                <button
+                  type="button"
+                  className="back-btn"
+                  onClick={onClose}
+                >
+                  Kembali
+                </button>
+              </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* BAGIAN SUCCESS MODAL DENGAN ANIMASI KELUAR */}
       {showSuccess && (
         <div className={`success-overlay ${isClosing ? "fade-out" : "fade-in"}`}>
           <div className={`success-modal ${isClosing ? "animate-pop-out" : "animate-pop"}`}>
             <div className="success-icon">✓</div>
 
             <h2>Selamat !</h2>
-
             <p>Nama Pengguna baru berhasil disimpan</p>
-            <button className="continue-btn" onClick={handleContinue}>Lanjutkan</button>
+
+            <button className="continue-btn" onClick={handleContinue}>
+              Lanjutkan
+            </button>
           </div>
         </div>
       )}

@@ -15,10 +15,15 @@ const ProfileSidebar = ({
   userEmail,
   onAvatarUpdate
 }) => {
-
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
+
+  // === STATE BARU UNTUK MODAL HAPUS AKUN ===
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteFeedback, setDeleteFeedback] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  // =========================================
 
   const handlePhotoClick = () => {
     fileInputRef.current.click();
@@ -30,7 +35,6 @@ const ProfileSidebar = ({
 
     setIsUploading(true);
     try {
-      // 1. Upload ke Supabase Storage (Bucket: avatars)
       const fileName = `${Date.now()}_${file.name}`;
       const { data, error: uploadError } = await supabase.storage
         .from("avatars")
@@ -38,15 +42,11 @@ const ProfileSidebar = ({
 
       if (uploadError) throw uploadError;
 
-      // 2. Get Public URL
       const { data: { publicUrl } } = supabase.storage
         .from("avatars")
         .getPublicUrl(fileName);
 
-      // 3. Update Profile via Backend API
       await updateProfile(userEmail, nickname, publicUrl);
-
-      // 4. Notify Parent
       onAvatarUpdate(publicUrl);
       console.log("Foto Berhasil Diubah!");
     } catch (err) {
@@ -54,6 +54,27 @@ const ProfileSidebar = ({
       alert("Gagal ganti foto: " + err.message + "\n(Pastikan bucket 'avatars' sudah ada di Supabase)");
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  // === FUNGSI EKSEKUSI HAPUS AKUN ===
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      // Catatan: Jika API kamu mendukung pengiriman feedback, kamu bisa menyisipkan variabel `deleteFeedback` di sini.
+      console.log("Feedback user:", deleteFeedback);
+
+      await deleteAccount(userEmail);
+      await supabase.auth.signOut();
+      localStorage.clear();
+      alert("Akun berhasil dihapus.");
+      navigate("/login");
+    } catch (err) {
+      console.error("Gagal hapus akun:", err);
+      alert("Gagal menghapus akun.");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
     }
   };
 
@@ -65,8 +86,18 @@ const ProfileSidebar = ({
       />
 
       <aside className={`profile-sidebar ${isOpen ? "open" : ""}`}>
-        <div className="profile-top">
 
+        <button
+          className="profile-close"
+          onClick={() => {
+            onClose();
+            navigate("/dashboard");
+          }}
+        >
+          ←
+        </button>
+
+        <div className="profile-top">
           <div className="profile-header">
             <h3>Hai, {nickname}</h3>
           </div>
@@ -80,7 +111,6 @@ const ProfileSidebar = ({
             />
           </div>
 
-          {/* hidden input */}
           <input
             type="file"
             accept="image/*"
@@ -89,7 +119,6 @@ const ProfileSidebar = ({
             onChange={handleFileChange}
           />
 
-          {/* tombol */}
           <button
             className="profile-photo-btn"
             onClick={handlePhotoClick}
@@ -119,22 +148,12 @@ const ProfileSidebar = ({
               Forgot Password
             </button>
 
+            {/* === TOMBOL HAPUS AKUN (MEMBUKA MODAL) === */}
             <button
               className="profile-menu-btn"
               style={{ color: '#ef4444', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', marginTop: '10px' }}
-              onClick={async () => {
-                if (window.confirm("Yakin mau hapus akun? Semua riwayat tesmu bakal hilang permanen lho!")) {
-                  try {
-                    await deleteAccount(userEmail);
-                    await supabase.auth.signOut();
-                    localStorage.clear();
-                    alert("Akun berhasil dihapus.");
-                    navigate("/login");
-                  } catch (err) {
-                    console.error("Gagal hapus akun:", err);
-                    alert("Gagal menghapus akun.");
-                  }
-                }
+              onClick={() => {
+                setShowDeleteModal(true);
               }}
             >
               Hapus Akun
@@ -159,6 +178,47 @@ const ProfileSidebar = ({
           </div>
         </div>
       </aside>
+
+      {/* === MODAL KUSTOM HAPUS AKUN === */}
+      {showDeleteModal && (
+        <div className="custom-modal-overlay">
+          <div className="custom-modal-content">
+            <h3 className="delete-modal-title">Hapus Akun Permanen</h3>
+            <p className="delete-modal-desc">
+              Yakin mau hapus akun? Semua riwayat tesmu bakal hilang permanen lho!
+            </p>
+
+            <div className="delete-feedback-container">
+              <label>Beri tahu kami alasanmu (opsional):</label>
+              <textarea
+                className="delete-feedback-input"
+                placeholder="Misal: Saya ingin membuat akun baru..."
+                value={deleteFeedback}
+                onChange={(e) => setDeleteFeedback(e.target.value)}
+                rows="3"
+              />
+            </div>
+
+            <div className="delete-modal-actions">
+              <button
+                className="delete-btn-cancel"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+              >
+                Batal
+              </button>
+              <button
+                className="delete-btn-confirm"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Menghapus..." : "Ya, Hapus Akun"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* =============================== */}
     </>
   );
 };

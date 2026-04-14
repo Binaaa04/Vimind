@@ -4,6 +4,7 @@ import "../css/HomeCSS.css";
 import logo from "../assets/logovimind2.png";
 import heroImg from "../assets/hero.png";
 import fiturImg from "../assets/fitur.png";
+import arrowUp from "../assets/arrowUp.svg";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -13,6 +14,31 @@ export default function Home() {
   // ==========================================
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showScroll, setShowScroll] = useState(false);
+
+  // Deteksi scroll untuk memunculkan tombol Navigasi Scroll
+  useEffect(() => {
+    const checkScrollTop = () => {
+      if (!showScroll && window.scrollY > 300) {
+        setShowScroll(true);
+      } else if (showScroll && window.scrollY <= 300) {
+        setShowScroll(false);
+      }
+    };
+
+    window.addEventListener("scroll", checkScrollTop);
+    return () => window.removeEventListener("scroll", checkScrollTop);
+  }, [showScroll]);
+
+  // Fungsi untuk scroll mulus ke paling atas
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Fungsi untuk scroll mulus ke paling bawah
+  const scrollToBottom = () => {
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
+  };
 
   // Data FAQ
   const faqData = [
@@ -72,7 +98,6 @@ export default function Home() {
   const toggleFaq = (index) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
-
 
   // ==========================================
   // 2. TAMPILAN UI (RENDER)
@@ -183,16 +208,13 @@ export default function Home() {
       {/* FAQ SECTION */}
       <section className="faq-section">
         <div className="faq-container">
-
           <div className="faq-badge">
             FAQ
           </div>
-
           <h2 className="faq-title">
             <span className="question-mark">?</span>
             Frequently Asked Questions
           </h2>
-
           <p className="faq-subtitle">
             Temukan jawaban dari berbagai pertanyaan seputar Vimind. Di sini kamu bisa memahami cara kerja fitur, tes kesehatan mental, serta bagaimana Vimind membantu kamu lebih mengenali dan menjaga kondisi emosimu.
           </p>
@@ -220,20 +242,15 @@ export default function Home() {
               </div>
             ))}
           </div>
-
         </div>
       </section>
 
       {/* FOOTER */}
       <footer className="footer">
         <div className="footer-container">
-
-          {/* Kolom 1: Logo & Sosial Media */}
           <div className="footer-brand">
-            {/* Menggunakan h2 sementara, ganti dengan <img> jika kamu punya gambar logo putih */}
             <h2 className="footer-logo">Vimind</h2>
             <div className="social-icons">
-              {/* Ini adalah karakter unicode/emoji sebagai placeholder ikon */}
               <span className="social-icon">f</span>
               <span className="social-icon">📷</span>
               <span className="social-icon">🐦</span>
@@ -241,7 +258,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Kolom 2: Perusahaan */}
           <div className="footer-col">
             <h3>PERUSAHAAN</h3>
             <ul>
@@ -251,7 +267,6 @@ export default function Home() {
             </ul>
           </div>
 
-          {/* Kolom 3: Information */}
           <div className="footer-col">
             <h3>INFORMATION</h3>
             <ul>
@@ -264,7 +279,6 @@ export default function Home() {
             </ul>
           </div>
 
-          {/* Kolom 4: Contact */}
           <div className="footer-col footer-contact">
             <h3>CONTACT</h3>
             <div className="contact-item">
@@ -276,10 +290,18 @@ export default function Home() {
               <p>+62 811-9757-222</p>
             </div>
           </div>
-
         </div>
       </footer>
 
+{/* SCROLL NAVIGATION BUTTONS (BARU) */}
+{/* Container tetap menampilkan teks Logo di sebelah tombol */}
+<div className={`scroll-nav-container-3d ${showScroll ? "show" : ""}`}>
+  
+  {/* Tombol Panah Atas (Single, Lingkaran, 3D) */}
+  <button className="scroll-btn-3d-circle" onClick={scrollToTop} title="Kembali ke atas">
+    <img src={arrowUp} alt="Panah Ke Atas" style={{ width: '24px', height: '24px' }} />
+  </button>
+</div>
     </div>
   );
 }

@@ -84,6 +84,11 @@ const Login = () => {
     }
   };
 
+  // Fungsi untuk kembali ke Landing Page
+  const handleBack = () => {
+    navigate("/"); // Arahkan ke rute beranda / landing page
+  };
+
   return (
     <div className="page-wrapper">
       <div className="login-card">
@@ -95,6 +100,13 @@ const Login = () => {
 
         {/* RIGHT FORM */}
         <div className="card-right">
+
+          {/* 👇 TOMBOL KEMBALI DITAMBAHKAN DI SINI 👇 */}
+          <div className="back-button-container">
+            <button onClick={handleBack} className="back-btn">
+              <span className="back-icon"></span> Kembali
+            </button>
+          </div>
 
           <img src={logoTop} alt="logo" className="logo-img" />
 
@@ -124,6 +136,7 @@ const Login = () => {
               <span 
                 className="eye-icon" 
                 onClick={() => setShowPassword(!showPassword)}
+                style={{ cursor: "pointer" }}
               >
                 {showPassword ? "🙈" : "👁️"} 
               </span>
