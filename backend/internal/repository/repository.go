@@ -255,6 +255,29 @@ func (r *Repository) GetBanners() ([]models.Banner, error) {
 	return banners, nil
 }
 
+func (r *Repository) GetPublicBanners() ([]models.Banner, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT promotion_id, COALESCE(title,''), COALESCE(image_url,''), COALESCE(link_url,''), is_active, COALESCE(display_order,0)
+		FROM promotion 
+		WHERE is_active = true
+		ORDER BY display_order ASC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var banners []models.Banner
+	for rows.Next() {
+		var b models.Banner
+		if err := rows.Scan(&b.ID, &b.Title, &b.ImageURL, &b.LinkURL, &b.IsActive, &b.DisplayOrder); err != nil {
+			continue
+		}
+		banners = append(banners, b)
+	}
+	return banners, nil
+}
+
 func (r *Repository) UpsertBanner(req models.BannerUpsertReq) error {
 	if req.ID > 0 {
 		// Update existing row
@@ -465,7 +488,7 @@ func (r *Repository) UpdateDisease(d models.AdminDisease) error {
 
 func (r *Repository) GetAllCFRules() ([]models.AdminRule, error) {
 	rows, err := r.pool.Query(context.Background(), `
-		SELECT cf_rule_id, disease_id, symptoms_id, expert_cf_value FROM cf_rules ORDER BY cf_rule_id
+		SELECT rules_id, disease_id, symptoms_id, expert_cf_value FROM cf_rules ORDER BY rules_id
 	`)
 	if err != nil {
 		return nil, err
@@ -485,7 +508,7 @@ func (r *Repository) GetAllCFRules() ([]models.AdminRule, error) {
 
 func (r *Repository) UpdateCFRule(rule models.AdminRule) error {
 	_, err := r.pool.Exec(context.Background(), `
-		UPDATE cf_rules SET expert_cf_value=$1 WHERE cf_rule_id=$2
+		UPDATE cf_rules SET expert_cf_value=$1 WHERE rules_id=$2
 	`, rule.CFValue, rule.RuleID)
 	return err
 }

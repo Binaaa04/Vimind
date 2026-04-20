@@ -283,3 +283,14 @@ func (h *Handler) DeleteAccount(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"message": "Account deleted successfully"})
 }
+
+func (h *Handler) GetPublicBanners(c *fiber.Ctx) error {
+	list, err := h.Repo.GetPublicBanners()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch banners"})
+	}
+	if list == nil {
+		list = []models.Banner{}
+	}
+	return c.JSON(list)
+}

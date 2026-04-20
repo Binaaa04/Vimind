@@ -3,7 +3,8 @@ import "../css/AdminDashboard.css";
 import logo from "../assets/logovimind2.png";
 import { useState, useEffect, useRef } from "react";
 
-const AdminSidebar = ({ nickname = "Udean", avatarUrl }) => {
+const AdminSidebar = ({ avatarUrl }) => {
+  const nickname = localStorage.getItem("nickname") || "Admin";
   const navigate = useNavigate();
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);

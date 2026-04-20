@@ -23,7 +23,7 @@ func RegisterRoutes(app *fiber.App, handler *controllers.Handler) {
 	api.Get("/faq", handler.GetFAQ)
 
 	// Public Banners (untuk Dashboard carousel)
-	api.Get("/banners", handler.GetBanners)
+	api.Get("/banners", handler.GetPublicBanners)
 
 	// Feedback & Testimonials (Public)
 	api.Get("/testimonials", handler.GetPublicTestimonials)
