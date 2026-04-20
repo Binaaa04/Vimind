@@ -3,7 +3,7 @@ import logo from "../assets/logovimind2.png";
 import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { supabase } from "../services/supabaseClient";
-import { updateProfile, deleteAccount } from "../services/api";
+import { updateProfile, deleteAccount, submitAccountFeedback } from "../services/api";
 
 const ProfileSidebar = ({
   isOpen,
@@ -61,8 +61,13 @@ const ProfileSidebar = ({
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
     try {
-      // Catatan: Jika API kamu mendukung pengiriman feedback, kamu bisa menyisipkan variabel `deleteFeedback` di sini.
-      console.log("Feedback user:", deleteFeedback);
+      if (deleteFeedback.trim()) {
+        try {
+          await submitAccountFeedback({ email: userEmail, reason: deleteFeedback });
+        } catch (err) {
+          console.error("Gagal mengirim feedback penghapusan:", err);
+        }
+      }
 
       await deleteAccount(userEmail);
       await supabase.auth.signOut();

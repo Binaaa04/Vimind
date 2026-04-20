@@ -66,3 +66,79 @@ type NewsItem struct {
 	Source    string `json:"source"`
 	Highlight string `json:"highlight"`
 }
+
+// ============================================================
+// Admin Models
+// ============================================================
+
+// Matches existing `promotion` table in Supabase
+type Banner struct {
+	ID           int    `json:"id"`
+	Title        string `json:"title"`
+	ImageURL     string `json:"image_url"`
+	LinkURL      string `json:"link_url"`
+	IsActive     bool   `json:"is_active"`
+	DisplayOrder int    `json:"display_order"`
+}
+
+type BannerUpsertReq struct {
+	ID           int    `json:"id"` // 0 = insert, >0 = update
+	Title        string `json:"title"`
+	ImageURL     string `json:"image_url"`
+	LinkURL      string `json:"link_url"`
+	IsActive     bool   `json:"is_active"`
+	DisplayOrder int    `json:"display_order"`
+}
+
+// Matches existing `faq` table in Supabase (no position column)
+type FAQItem struct {
+	ID       int    `json:"id"`
+	Question string `json:"question"`
+	Answer   string `json:"answer"`
+}
+
+type FAQUpsertReq struct {
+	ID       int    `json:"id"`
+	Question string `json:"question"`
+	Answer   string `json:"answer"`
+}
+
+// ============================================================
+// Feedback Models
+// ============================================================
+
+type Testimonial struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	Rating      int    `json:"rating"`
+	Comment     string `json:"comment"`
+	IsDisplayed bool   `json:"is_displayed"`
+}
+
+type AccountFeedback struct {
+	ID        int    `json:"id"`
+	Email     string `json:"email"`
+	Reason    string `json:"reason"`
+	CreatedAt string `json:"created_at"`
+}
+
+type AdminSymptom struct {
+	ID   int    `json:"id"`
+	Code string `json:"code"`
+	Name string `json:"name"`
+}
+
+type AdminDisease struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Solutions   string `json:"solutions"`
+}
+
+type AdminRule struct {
+	RuleID    int     `json:"rule_id"`
+	DiseaseID int     `json:"disease_id"`
+	SymptomID int     `json:"symptom_id"`
+	CFValue   float64 `json:"cf_value"`
+}

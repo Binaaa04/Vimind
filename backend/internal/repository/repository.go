@@ -226,6 +226,267 @@ func (r *Repository) DeleteUser(email string) error {
 	_, _ = r.pool.Exec(context.Background(), "DELETE FROM diagnosis_detail WHERE symptoms_id IN (SELECT symptoms_id FROM symptoms) AND diagnosis_id IN (SELECT diagnosis_id FROM diagnosis WHERE user_id=$1)", uid)
 	_, _ = r.pool.Exec(context.Background(), "DELETE FROM diagnosis WHERE user_id=$1", uid)
 	_, err = r.pool.Exec(context.Background(), "DELETE FROM users WHERE user_id=$1", uid)
-	
+
 	return err
 }
+
+// ============================================================
+// Admin: Banners — uses existing `promotion` table in Supabase
+// ============================================================
+
+func (r *Repository) GetBanners() ([]models.Banner, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT promotion_id, COALESCE(title,''), COALESCE(image_url,''), COALESCE(link_url,''), is_active, COALESCE(display_order,0)
+		FROM promotion ORDER BY display_order ASC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var banners []models.Banner
+	for rows.Next() {
+		var b models.Banner
+		if err := rows.Scan(&b.ID, &b.Title, &b.ImageURL, &b.LinkURL, &b.IsActive, &b.DisplayOrder); err != nil {
+			continue
+		}
+		banners = append(banners, b)
+	}
+	return banners, nil
+}
+
+func (r *Repository) UpsertBanner(req models.BannerUpsertReq) error {
+	if req.ID > 0 {
+		// Update existing row
+		_, err := r.pool.Exec(context.Background(), `
+			UPDATE promotion
+			SET title=$1, image_url=$2, link_url=$3, is_active=$4, updated_at=NOW()
+			WHERE promotion_id=$5
+		`, req.Title, req.ImageURL, req.LinkURL, req.IsActive, req.ID)
+		return err
+	}
+	// Insert new row
+	_, err := r.pool.Exec(context.Background(), `
+		INSERT INTO promotion (title, image_url, link_url, is_active, display_order)
+		VALUES ($1, $2, $3, $4, $5)
+	`, req.Title, req.ImageURL, req.LinkURL, req.IsActive, req.DisplayOrder)
+	return err
+}
+
+// ============================================================
+// Admin: FAQ — uses existing `faq` table in Supabase
+// PK is faq_id, no position column
+// ============================================================
+
+func (r *Repository) GetFAQ() ([]models.FAQItem, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT faq_id, COALESCE(question,''), COALESCE(answer,'')
+		FROM faq ORDER BY faq_id ASC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var items []models.FAQItem
+	for rows.Next() {
+		var f models.FAQItem
+		if err := rows.Scan(&f.ID, &f.Question, &f.Answer); err != nil {
+			continue
+		}
+		items = append(items, f)
+	}
+	return items, nil
+}
+
+func (r *Repository) UpsertFAQ(req models.FAQUpsertReq) error {
+	if req.ID > 0 {
+		// Update existing FAQ
+		_, err := r.pool.Exec(context.Background(), `
+			UPDATE faq SET question=$1, answer=$2, updated_at=NOW() WHERE faq_id=$3
+		`, req.Question, req.Answer, req.ID)
+		return err
+	}
+	// Insert new FAQ
+	_, err := r.pool.Exec(context.Background(), `
+		INSERT INTO faq (question, answer) VALUES ($1, $2)
+	`, req.Question, req.Answer)
+	return err
+}
+
+// ============================================================
+// Feedback (Testimonials & Account Deletion)
+// ============================================================
+
+func (r *Repository) GetPublicTestimonials() ([]models.Testimonial, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT testimonial_id, name, email, rating, comment
+		FROM testimonials
+		WHERE is_displayed = true
+		ORDER BY rating DESC, created_at DESC LIMIT 6
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []models.Testimonial
+	for rows.Next() {
+		var t models.Testimonial
+		if err := rows.Scan(&t.ID, &t.Name, &t.Email, &t.Rating, &t.Comment); err != nil {
+			continue
+		}
+		list = append(list, t)
+	}
+	return list, nil
+}
+
+func (r *Repository) GetAllTestimonials() ([]models.Testimonial, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT testimonial_id, name, email, rating, comment, is_displayed
+		FROM testimonials ORDER BY created_at DESC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []models.Testimonial
+	for rows.Next() {
+		var t models.Testimonial
+		if err := rows.Scan(&t.ID, &t.Name, &t.Email, &t.Rating, &t.Comment, &t.IsDisplayed); err != nil {
+			continue
+		}
+		list = append(list, t)
+	}
+	return list, nil
+}
+
+func (r *Repository) InsertTestimonial(t models.Testimonial) error {
+	_, err := r.pool.Exec(context.Background(), `
+		INSERT INTO testimonials (name, email, rating, comment)
+		VALUES ($1, $2, $3, $4)
+	`, t.Name, t.Email, t.Rating, t.Comment)
+	return err
+}
+
+func (r *Repository) UpdateTestimonialDisplay(id int, isDisplayed bool) error {
+	_, err := r.pool.Exec(context.Background(), `
+		UPDATE testimonials SET is_displayed = $1 WHERE testimonial_id = $2
+	`, isDisplayed, id)
+	return err
+}
+
+func (r *Repository) InsertAccountFeedback(email, reason string) error {
+	_, err := r.pool.Exec(context.Background(), `
+		INSERT INTO account_feedbacks (email, reason) VALUES ($1, $2)
+	`, email, reason)
+	return err
+}
+
+func (r *Repository) GetAllAccountFeedbacks() ([]models.AccountFeedback, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT feedback_id, email, reason, TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI:SS')
+		FROM account_feedbacks ORDER BY created_at DESC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []models.AccountFeedback
+	for rows.Next() {
+		var f models.AccountFeedback
+		if err := rows.Scan(&f.ID, &f.Email, &f.Reason, &f.CreatedAt); err != nil {
+			continue
+		}
+		list = append(list, f)
+	}
+	return list, nil
+}
+
+// ============================================================
+// Admin: Knowledge Base (Symptoms, Diseases, Rules)
+// ============================================================
+
+func (r *Repository) GetAllSymptoms() ([]models.AdminSymptom, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT symptoms_id, symptoms_code, symptoms_name FROM symptoms ORDER BY symptoms_id
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []models.AdminSymptom
+	for rows.Next() {
+		var s models.AdminSymptom
+		if err := rows.Scan(&s.ID, &s.Code, &s.Name); err != nil {
+			continue
+		}
+		list = append(list, s)
+	}
+	return list, nil
+}
+
+func (r *Repository) UpdateSymptom(s models.AdminSymptom) error {
+	_, err := r.pool.Exec(context.Background(), `
+		UPDATE symptoms SET symptoms_code=$1, symptoms_name=$2 WHERE symptoms_id=$3
+	`, s.Code, s.Name, s.ID)
+	return err
+}
+
+func (r *Repository) GetAllDiseases() ([]models.AdminDisease, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT disease_id, disease_name, description, general_solutions FROM disease ORDER BY disease_id
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []models.AdminDisease
+	for rows.Next() {
+		var d models.AdminDisease
+		if err := rows.Scan(&d.ID, &d.Name, &d.Description, &d.Solutions); err != nil {
+			continue
+		}
+		list = append(list, d)
+	}
+	return list, nil
+}
+
+func (r *Repository) UpdateDisease(d models.AdminDisease) error {
+	_, err := r.pool.Exec(context.Background(), `
+		UPDATE disease SET disease_name=$1, description=$2, general_solutions=$3 WHERE disease_id=$4
+	`, d.Name, d.Description, d.Solutions, d.ID)
+	return err
+}
+
+func (r *Repository) GetAllCFRules() ([]models.AdminRule, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT cf_rule_id, disease_id, symptoms_id, expert_cf_value FROM cf_rules ORDER BY cf_rule_id
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []models.AdminRule
+	for rows.Next() {
+		var rule models.AdminRule
+		if err := rows.Scan(&rule.RuleID, &rule.DiseaseID, &rule.SymptomID, &rule.CFValue); err != nil {
+			continue
+		}
+		list = append(list, rule)
+	}
+	return list, nil
+}
+
+func (r *Repository) UpdateCFRule(rule models.AdminRule) error {
+	_, err := r.pool.Exec(context.Background(), `
+		UPDATE cf_rules SET expert_cf_value=$1 WHERE cf_rule_id=$2
+	`, rule.CFValue, rule.RuleID)
+	return err
+}
+

@@ -102,6 +102,18 @@ const AdminSidebar = ({ nickname = "Udean", avatarUrl }) => {
         </NavLink>
       </div>
 
+      <div className="menu-section">
+        {!isCollapsed && <p className="menu-title">FEEDBACK</p>}
+        <NavLink
+          to="/admin/feedback"
+          className={({ isActive }) =>
+            isActive ? "menu-item active" : "menu-item"
+          }
+        >
+          💬 {!isCollapsed && "User Feedback"}
+        </NavLink>
+      </div>
+
       {/* ================= BOTTOM ================= */}
       <div className="sidebar-bottom">
 

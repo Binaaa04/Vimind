@@ -1,12 +1,81 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>Vimind — Deteksi Kesehatan Mental</title>
+    <meta name="description" content="Vimind membantu kamu memahami kondisi kesehatan mental melalui tes psikologi sederhana dan daily mood check." />
+
+    <!-- Google Translate Element -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: 'id',
+            includedLanguages: 'en,id,ar,zh-CN,ja,ko,ms,fr,de,es',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
+          'google_translate_element'
+        );
+      }
+    </script>
+    <script type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+    </script>
+
+    <style>
+      /* Translate widget container */
+      #google_translate_widget_wrapper {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 99999;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        padding: 6px 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+        cursor: pointer;
+        border: 1.5px solid #e5e0ff;
+        transition: box-shadow 0.2s;
+      }
+      #google_translate_widget_wrapper:hover {
+        box-shadow: 0 6px 24px rgba(139,92,246,0.18);
+        border-color: #8b5cf6;
+      }
+      #google_translate_widget_wrapper .translate-icon {
+        font-size: 18px;
+      }
+      /* Hide Google's default top banner & branding */
+      .goog-te-banner-frame, .skiptranslate > font { display: none !important; }
+      body { top: 0 !important; }
+      .goog-te-gadget { font-size: 0 !important; }
+      .goog-te-gadget .goog-te-combo {
+        margin: 0 !important;
+        font-size: 13px !important;
+        border: none !important;
+        background: transparent !important;
+        color: #333 !important;
+        cursor: pointer;
+        outline: none;
+      }
+    </style>
   </head>
   <body>
+    <!-- Google Translate floating widget -->
+    <div id="google_translate_widget_wrapper">
+      <span class="translate-icon">🌐</span>
+      <div id="google_translate_element"></div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

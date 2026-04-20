@@ -1,128 +1,215 @@
-import { useState } from "react";
-import AdminSidebar from "../components/AdminSidebar";
+import { useState, useEffect } from "react";
+import {
+  adminGetRules, adminUpdateRule,
+  adminGetSymptoms, adminUpdateSymptom,
+  adminGetDiseases, adminUpdateDisease,
+} from "../services/api";
 import "../css/AdminDashboard.css";
 
 const AdminTest = () => {
-  const [rules, setRules] = useState([
-    { ruleId: 1, diseaseId: 1, symptomId: 75, cf: 0.0 },
-    { ruleId: 2, diseaseId: 1, symptomId: 35, cf: 0.0 },
-    { ruleId: 3, diseaseId: 1, symptomId: 98, cf: 0.0 },
-  ]);
+  const [rules, setRules] = useState([]);
+  const [symptoms, setSymptoms] = useState([]);
+  const [diseases, setDiseases] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [savingRules, setSavingRules] = useState(false);
+  const [savingSymptoms, setSavingSymptoms] = useState(false);
+  const [savingDiseases, setSavingDiseases] = useState(false);
 
-  const [symptoms, setSymptoms] = useState([
-    { name: "Gejala", desc: "Deskripsi" },
-    { name: "Gejala", desc: "Deskripsi" },
-  ]);
+  useEffect(() => {
+    Promise.all([
+      adminGetRules().then((r) => setRules(r.data || [])),
+      adminGetSymptoms().then((r) => setSymptoms(r.data || [])),
+      adminGetDiseases().then((r) => setDiseases(r.data || [])),
+    ])
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
-  const [diseases, setDiseases] = useState([
-    { name: "Disease", desc: "Deskripsi", solution: "Solusi" },
-    { name: "Disease", desc: "Deskripsi", solution: "Solusi" },
-  ]);
+  // ---- SAVE RULES ----
+  const handleSaveRules = async () => {
+    setSavingRules(true);
+    try {
+      await Promise.all(rules.map((r) => adminUpdateRule(r)));
+      alert("✔ Tabel CF berhasil disimpan!");
+    } catch {
+      alert("Gagal menyimpan rules.");
+    } finally {
+      setSavingRules(false);
+    }
+  };
+
+  // ---- SAVE SYMPTOMS ----
+  const handleSaveSymptoms = async () => {
+    setSavingSymptoms(true);
+    try {
+      await Promise.all(symptoms.map((s) => adminUpdateSymptom(s)));
+      alert("✔ Tabel Gejala berhasil disimpan!");
+    } catch {
+      alert("Gagal menyimpan symptoms.");
+    } finally {
+      setSavingSymptoms(false);
+    }
+  };
+
+  // ---- SAVE DISEASES ----
+  const handleSaveDiseases = async () => {
+    setSavingDiseases(true);
+    try {
+      await Promise.all(diseases.map((d) => adminUpdateDisease(d)));
+      alert("✔ Tabel Disease berhasil disimpan!");
+    } catch {
+      alert("Gagal menyimpan diseases.");
+    } finally {
+      setSavingDiseases(false);
+    }
+  };
+
+  if (loading) return <p style={{ color: "#aaa", padding: 20 }}>Memuat data knowledge base...</p>;
 
   return (
-    <div className="admin-container">
-      <AdminSidebar />
+    <>
+      <h1>Knowledge Base Management</h1>
 
-      <div className="admin-content">
-        <h1>Knowledge Base Management</h1>
-
-        {/* ================= RULE TABLE ================= */}
-        <h3>Tabel CF</h3>
-        <div className="table-box">
-          <table>
-            <thead>
-              <tr>
-                <th>Rules ID</th>
-                <th>Disease ID</th>
-                <th>Symptoms ID</th>
-                <th>CF Value</th>
+      {/* ================= RULE TABLE ================= */}
+      <h3>Tabel CF</h3>
+      <div className="table-box">
+        <table>
+          <thead>
+            <tr>
+              <th>Rule ID</th>
+              <th>Disease ID</th>
+              <th>Symptom ID</th>
+              <th>CF Value (0–1)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rules.map((item, index) => (
+              <tr key={item.rule_id}>
+                <td>{item.rule_id}</td>
+                <td>{item.disease_id}</td>
+                <td>{item.symptom_id}</td>
+                <td>
+                  <input
+                    type="number"
+                    value={item.cf_value}
+                    step="0.05"
+                    min="0"
+                    max="1"
+                    onChange={(e) => {
+                      const updated = [...rules];
+                      updated[index] = { ...updated[index], cf_value: parseFloat(e.target.value) || 0 };
+                      setRules(updated);
+                    }}
+                  />
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {rules.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.ruleId}</td>
-                  <td>{item.diseaseId}</td>
-                  <td>{item.symptomId}</td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item.cf}
-                      step="0.1"
-                      onChange={(e) => {
-                        const updated = [...rules];
-                        updated[index].cf = e.target.value;
-                        setRules(updated);
-                      }}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <button className="submit-btn">Submit</button>
-        </div>
-
-        {/* ================= SYMPTOMS ================= */}
-        <h3>Tabel Gejala</h3>
-        <div className="table-box">
-          <table>
-            <thead>
-              <tr>
-                <th>Gejala</th>
-                <th>Deskripsi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {symptoms.map((item, index) => (
-                <tr key={index}>
-                  <td>
-                    <input value={item.name} />
-                  </td>
-                  <td>
-                    <input value={item.desc} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <button className="submit-btn">Submit</button>
-        </div>
-
-        {/* ================= DISEASE ================= */}
-        <h3>Tabel Disease</h3>
-        <div className="table-box">
-          <table>
-            <thead>
-              <tr>
-                <th>Disease</th>
-                <th>Deskripsi</th>
-                <th>Solusi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {diseases.map((item, index) => (
-                <tr key={index}>
-                  <td>
-                    <input value={item.name} />
-                  </td>
-                  <td>
-                    <input value={item.desc} />
-                  </td>
-                  <td>
-                    <input value={item.solution} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <button className="submit-btn">Submit</button>
-        </div>
+            ))}
+          </tbody>
+        </table>
+        <button className="submit-btn" onClick={handleSaveRules} disabled={savingRules}>
+          {savingRules ? "Menyimpan..." : "Submit"}
+        </button>
       </div>
-    </div>
+
+      {/* ================= SYMPTOMS ================= */}
+      <h3>Tabel Gejala</h3>
+      <div className="table-box">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Kode</th>
+              <th>Nama Gejala</th>
+            </tr>
+          </thead>
+          <tbody>
+            {symptoms.map((item, index) => (
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>
+                  <input
+                    value={item.code}
+                    onChange={(e) => {
+                      const updated = [...symptoms];
+                      updated[index] = { ...updated[index], code: e.target.value };
+                      setSymptoms(updated);
+                    }}
+                  />
+                </td>
+                <td>
+                  <input
+                    value={item.name}
+                    onChange={(e) => {
+                      const updated = [...symptoms];
+                      updated[index] = { ...updated[index], name: e.target.value };
+                      setSymptoms(updated);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <button className="submit-btn" onClick={handleSaveSymptoms} disabled={savingSymptoms}>
+          {savingSymptoms ? "Menyimpan..." : "Submit"}
+        </button>
+      </div>
+
+      {/* ================= DISEASE ================= */}
+      <h3>Tabel Disease</h3>
+      <div className="table-box">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nama Penyakit</th>
+              <th>Deskripsi</th>
+              <th>Solusi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {diseases.map((item, index) => (
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>
+                  <input
+                    value={item.name}
+                    onChange={(e) => {
+                      const updated = [...diseases];
+                      updated[index] = { ...updated[index], name: e.target.value };
+                      setDiseases(updated);
+                    }}
+                  />
+                </td>
+                <td>
+                  <input
+                    value={item.description}
+                    onChange={(e) => {
+                      const updated = [...diseases];
+                      updated[index] = { ...updated[index], description: e.target.value };
+                      setDiseases(updated);
+                    }}
+                  />
+                </td>
+                <td>
+                  <input
+                    value={item.solutions}
+                    onChange={(e) => {
+                      const updated = [...diseases];
+                      updated[index] = { ...updated[index], solutions: e.target.value };
+                      setDiseases(updated);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <button className="submit-btn" onClick={handleSaveDiseases} disabled={savingDiseases}>
+          {savingDiseases ? "Menyimpan..." : "Submit"}
+        </button>
+      </div>
+    </>
   );
 };
 

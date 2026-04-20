@@ -280,3 +280,35 @@ body {
   .logo-bottom span { font-size: 16px; }
   .icon-box { width: 18px; height: 18px; }
 }
+
+/* ==========================================
+   OFFLINE / RETRY BANNERS
+   ========================================== */
+.offline-banner,
+.retry-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  animation: slideDown 0.3s ease;
+}
+
+.offline-banner {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+  color: #fff;
+}
+
+.retry-banner {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  color: #fff;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}

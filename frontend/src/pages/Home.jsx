@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "../css/HomeCSS.css";
+import { getPublicFAQ, getPublicTestimonials } from "../services/api";
 import logo from "../assets/logovimind2.png";
 import heroImg from "../assets/hero.png";
 import fiturImg from "../assets/fitur.png";
@@ -43,59 +44,49 @@ export default function Home() {
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
   };
 
-  // Data FAQ
-  const faqData = [
-    {
-      id: 1,
-      question: "Apa itu Vimind?",
-      answer: "Vimind adalah aplikasi yang membantu kamu memahami kondisi kesehatan mental melalui tes psikologi sederhana, daily mood check, serta rangkuman statistik yang menunjukkan perkembangan kondisi emosimu dari waktu ke waktu."
-    },
-    {
-      id: 2,
-      question: "Bagaimana cara menggunakan Vimind?",
-      answer: "Kamu hanya perlu menjawab beberapa pertanyaan pada tes yang tersedia di Vimind. Setelah selesai, kamu akan mendapatkan gambaran kondisi mentalmu beserta insight yang dapat membantu kamu lebih memahami perasaanmu."
-    },
-    {
-      id: 3,
-      question: "Apakah hasil tes di Vimind akurat?",
-      answer: "Tes di Vimind dirancang sebagai alat refleksi diri untuk membantu kamu memahami kondisi emosionalmu. Hasilnya bukan diagnosis medis, namun dapat menjadi gambaran awal sebelum berkonsultasi dengan profesional."
-    },
-    {
-      id: 4,
-      question: "Apa itu Daily Mood Test?",
-      answer: "Daily Mood Test adalah fitur untuk mencatat perasaanmu setiap hari agar kamu bisa memantau pola emosimu."
-    },
-    {
-      id: 5,
-      question: "Apakah data saya aman di Vimind?",
-      answer: "Ya, privasi dan keamanan data pengguna adalah prioritas utama kami."
-    },
-    {
-      id: 6,
-      question: "Apakah ada biaya berlangganan?",
-      answer: "Saat ini fitur dasar Vimind dapat digunakan secara gratis."
-    },
-    {
-      id: 7,
-      question: "Apakah saya harus login untuk menggunakan Vimind?",
-      answer: "Ya, login diperlukan agar kami bisa menyimpan riwayat perkembangan kondisimu dengan aman."
-    },
-    {
-      id: 8,
-      question: "Apakah Vimind tersedia di Android dan iOS?",
-      answer: "Saat ini Vimind dapat diakses melalui web browser di berbagai perangkat."
-    }
+  // Data FAQ — diambil dari API, fallback ke static
+  const STATIC_FAQ = [
+    { id: 1, question: "Apa itu Vimind?", answer: "Vimind adalah aplikasi yang membantu kamu memahami kondisi kesehatan mental melalui tes psikologi sederhana, daily mood check, serta rangkuman statistik yang menunjukkan perkembangan kondisi emosimu dari waktu ke waktu." },
+    { id: 2, question: "Bagaimana cara menggunakan Vimind?", answer: "Kamu hanya perlu menjawab beberapa pertanyaan pada tes yang tersedia di Vimind. Setelah selesai, kamu akan mendapatkan gambaran kondisi mentalmu beserta insight yang dapat membantu kamu lebih memahami perasaanmu." },
+    { id: 3, question: "Apakah hasil tes di Vimind akurat?", answer: "Tes di Vimind dirancang sebagai alat refleksi diri untuk membantu kamu memahami kondisi emosionalmu. Hasilnya bukan diagnosis medis, namun dapat menjadi gambaran awal sebelum berkonsultasi dengan profesional." },
+    { id: 4, question: "Apa itu Daily Mood Test?", answer: "Daily Mood Test adalah fitur untuk mencatat perasaanmu setiap hari agar kamu bisa memantau pola emosimu." },
+    { id: 5, question: "Apakah data saya aman di Vimind?", answer: "Ya, privasi dan keamanan data pengguna adalah prioritas utama kami." },
+    { id: 6, question: "Apakah ada biaya berlangganan?", answer: "Saat ini fitur dasar Vimind dapat digunakan secara gratis." },
+    { id: 7, question: "Apakah saya harus login untuk menggunakan Vimind?", answer: "Ya, login diperlukan agar kami bisa menyimpan riwayat perkembangan kondisimu dengan aman." },
+    { id: 8, question: "Apakah Vimind tersedia di Android dan iOS?", answer: "Saat ini Vimind dapat diakses melalui web browser di berbagai perangkat." },
   ];
+  const [faqData, setFaqData] = useState(STATIC_FAQ);
 
-  // Data Testimoni
-  const testimonialsData = [
-    { id: 1, name: "Andi Wijaya", text: "Vimind membantu saya lebih sadar dengan kondisi perasaan saya setiap hari...", rating: 5 },
-    { id: 2, name: "Siti Nurhaliza", text: "Sangat mudah dipahami dan hasilnya cukup akurat untuk introspeksi diri.", rating: 4 },
-    { id: 3, name: "Budi Santoso", text: "Desain UI-nya sangat nyaman dilihat dan fiturnya mudah digunakan.", rating: 5 },
-    { id: 4, name: "Rina Kartika", text: "Aplikasi yang bagus untuk mulai peduli pada mental health kita sehari-hari.", rating: 4 },
-    { id: 5, name: "Eko Prasetyo", text: "Operasional jadi lebih cepat dan rapi berkat fitur yang sangat membantu.", rating: 5 },
-    { id: 6, name: "Dian Pelangi", text: "Saya merasa lebih teratur dan tenang setelah rutin menggunakan fitur trackingnya.", rating: 5 }
+  // Fetch Data (FAQ & Testimonials)
+  useEffect(() => {
+    // Fetch FAQ
+    getPublicFAQ()
+      .then((res) => {
+        const data = res.data || [];
+        const filled = data.filter((f) => f.question?.trim());
+        if (filled.length > 0) setFaqData(filled);
+      })
+      .catch(() => {});
+      
+    // Fetch Testimonials
+    getPublicTestimonials()
+      .then((res) => {
+        const data = res.data || [];
+        if (data.length > 0) setTestimonialsData(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Data Testimoni — diambil dari API, fallback ke static
+  const STATIC_TESTIMONIALS = [
+    { id: 1, name: "Andi Wijaya", comment: "Vimind membantu saya lebih sadar dengan kondisi perasaan saya setiap hari...", rating: 5 },
+    { id: 2, name: "Siti Nurhaliza", comment: "Sangat mudah dipahami dan hasilnya cukup akurat untuk introspeksi diri.", rating: 4 },
+    { id: 3, name: "Budi Santoso", comment: "Desain UI-nya sangat nyaman dilihat dan fiturnya mudah digunakan.", rating: 5 },
+    { id: 4, name: "Rina Kartika", comment: "Aplikasi yang bagus untuk mulai peduli pada mental health kita sehari-hari.", rating: 4 },
+    { id: 5, name: "Eko Prasetyo", comment: "Operasional jadi lebih cepat dan rapi berkat fitur yang sangat membantu.", rating: 5 },
+    { id: 6, name: "Dian Pelangi", comment: "Saya merasa lebih teratur dan tenang setelah rutin menggunakan fitur trackingnya.", rating: 5 }
   ];
+  const [testimonialsData, setTestimonialsData] = useState(STATIC_TESTIMONIALS);
 
   // Fungsi Toggle FAQ
   const toggleFaq = (index) => {
@@ -161,13 +152,16 @@ export default function Home() {
           {/* Row 1: Slide Left */}
           <div className="marquee-row marquee-left">
             <div className="marquee-content">
-              {[...testimonialsData, ...testimonialsData].map((item, idx) => (
+              {[...testimonialsData, ...testimonialsData].map((t, idx) => (
                 <div key={idx} className="testimonial-card">
-                  <h4 className="testimoni-title">Operasional jadi lebih cepat dan rapi.</h4>
-                  <p className="testimoni-text">"{item.text}"</p>
-                  <div className="testimoni-footer">
-                    <span className="testimoni-name">{item.name}</span>
-                    <div className="stars">{"⭐".repeat(item.rating)}</div>
+                  <div className="testimoni-stars">
+                    {"★".repeat(t.rating)}
+                    <span style={{ color: "#d1d5db" }}>{"★".repeat(5 - t.rating)}</span>
+                  </div>
+                  <p>"{t.comment || t.text}"</p>
+                  <div className="testimoni-user">
+                    <div className="testimoni-avatar">{t.name ? t.name[0] : "?"}</div>
+                    <span className="testimoni-name">{t.name}</span>
                   </div>
                 </div>
               ))}

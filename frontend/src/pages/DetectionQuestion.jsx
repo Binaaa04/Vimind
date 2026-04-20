@@ -1,18 +1,41 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getQuestions, diagnose } from "../services/api";
 import { supabase } from "../services/supabaseClient";
 import "../css/DetectionQuestionCSS.css";
 
+// localStorage keys untuk offline resilience
+const LS_DRAFT_KEY = "quiz_draft";
+
+function saveDraft(data) {
+  try {
+    localStorage.setItem(LS_DRAFT_KEY, JSON.stringify(data));
+  } catch (_) {}
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(LS_DRAFT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function clearDraft() {
+  localStorage.removeItem(LS_DRAFT_KEY);
+}
+
 export default function Detection() {
-      useEffect(() => {
-      document.title = "Tes Gejala | Vimind";
-    }, []);
+  useEffect(() => {
+    document.title = "Tes Gejala | Vimind";
+  }, []);
+
   const navigate = useNavigate();
   const location = useLocation();
 
   const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState([]); 
+  const [answers, setAnswers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,19 +43,46 @@ export default function Detection() {
   const [userEmail, setUserEmail] = useState(null);
 
   // Adaptive Logic States
-  const [phase, setPhase] = useState(1); 
-  const [phase1Results, setPhase1Results] = useState([]); 
-  const [isRefinedMode, setIsRefinedMode] = useState(false); 
-  const [historyDiseaseID, setHistoryDiseaseID] = useState(0); 
+  const [phase, setPhase] = useState(1);
+  const [isRefinedMode, setIsRefinedMode] = useState(false);
+  const [historyDiseaseID, setHistoryDiseaseID] = useState(0);
 
+  // Offline banner state
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [retryAnswers, setRetryAnswers] = useState(null); // jawaban pending untuk di-retry
+
+  // ============================================================
+  // Online / Offline detection
+  // ============================================================
   useEffect(() => {
-    let ignore = false; 
+    const goOnline = () => setIsOffline(false);
+    const goOffline = () => setIsOffline(true);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => {
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
+  }, []);
+
+  // Auto-retry finalize saat kembali online
+  useEffect(() => {
+    if (!isOffline && retryAnswers) {
+      finalizeDiagnosis(retryAnswers, true);
+    }
+  }, [isOffline]);
+
+  // ============================================================
+  // Init — load pertanyaan + cek draft tersimpan
+  // ============================================================
+  useEffect(() => {
+    let ignore = false;
 
     const init = async () => {
       try {
         let email = "";
         const { data: { session } } = await supabase.auth.getSession();
-        if (ignore) return; 
+        if (ignore) return;
 
         if (session?.user) {
           email = session.user.email;
@@ -40,29 +90,41 @@ export default function Detection() {
         }
 
         const forceNewTest = location.state?.forceNewTest;
-        console.log("Questionnaire Mode:", forceNewTest ? "New Test (Screening)" : "Refined/Resume");
+
+        // Cek apakah ada draft soal yang tersimpan (sesi sebelumnya putus)
+        const draft = loadDraft();
+        if (draft && !forceNewTest && draft.questions?.length > 0) {
+          // Resume dari draft
+          setQuestions(draft.questions);
+          setAnswers(draft.answers || []);
+          setCurrentIndex(draft.currentIndex || 0);
+          setPhase(draft.phase || 1);
+          setIsRefinedMode(draft.isRefinedMode || false);
+          setHistoryDiseaseID(draft.historyDiseaseID || 0);
+          setLoading(false);
+          return;
+        }
 
         if (!forceNewTest) {
           const response = await getQuestions("refined", [], email);
-          if (ignore) return; 
+          if (ignore) return;
 
           const { questions: qs, is_refined } = response.data;
 
           if (qs && qs.length > 0) {
             setQuestions(qs);
             if (is_refined) {
-              console.log("Setting Refined Mode: ON");
-              setIsRefinedMode(true); 
+              setIsRefinedMode(true);
               const { history_disease_id } = response.data;
               if (history_disease_id > 0) setHistoryDiseaseID(history_disease_id);
             }
           } else {
-            console.log("Fallback to Screening (No History)");
             const fallback = await getQuestions("screening");
             if (!ignore) setQuestions(fallback.data?.questions || fallback.data || []);
           }
         } else {
-          console.log("Forcing New Test (Screening Mode)");
+          // Mulai tes baru — hapus draft lama
+          clearDraft();
           setIsRefinedMode(false);
           setHistoryDiseaseID(0);
           const fallback = await getQuestions("screening");
@@ -78,9 +140,26 @@ export default function Detection() {
     };
 
     init();
-    return () => { ignore = true; }; 
+    return () => { ignore = true; };
   }, []);
 
+  // Simpan draft ke localStorage setiap kali ada perubahan state penting
+  useEffect(() => {
+    if (questions.length > 0) {
+      saveDraft({
+        questions,
+        answers,
+        currentIndex,
+        phase,
+        isRefinedMode,
+        historyDiseaseID,
+      });
+    }
+  }, [answers, currentIndex, phase, questions]);
+
+  // ============================================================
+  // Next Question
+  // ============================================================
   const nextQuestion = async () => {
     if (selected === null) return;
 
@@ -89,7 +168,7 @@ export default function Detection() {
     const currentAnswer = {
       symptom_id: currentQuestion.id,
       value: weights[selected],
-      disease_id: currentQuestion.disease_id 
+      disease_id: currentQuestion.disease_id,
     };
 
     const newAnswers = [...answers, currentAnswer];
@@ -105,11 +184,11 @@ export default function Detection() {
       }
 
       setLoading(true);
-      
+
       const suspects = newAnswers
         .filter(a => a.value >= 0.7)
         .map(a => a.disease_id);
-      
+
       let finalSuspects = suspects;
       if (finalSuspects.length === 0) {
         finalSuspects = [...newAnswers]
@@ -120,7 +199,7 @@ export default function Detection() {
       }
 
       if (finalSuspects.length === 0) {
-        finalSuspects = [1, 2]; 
+        finalSuspects = [1, 2];
       }
 
       try {
@@ -145,26 +224,21 @@ export default function Detection() {
     }
   };
 
-  // FUNGSI KEMBALI KE SOAL SEBELUMNYA (DIPERBARUI)
-  const previousQuestion = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      setAnswers(answers.slice(0, -1));
-      setSelected(null);
-    }
-  };
+  // ============================================================
+  // Finalize Diagnosis (dengan offline resilience)
+  // ============================================================
+  const finalizeDiagnosis = async (finalAnswers, isRetry = false) => {
+    if (!isRetry) setSubmitting(true);
 
-  // FUNGSI BARU UNTUK TOMBOL KELUAR
-  const handleExit = () => {
-    if (userEmail) {
-      navigate("/dashboard"); // Arahkan ke dashboard jika sudah login
-    } else {
-      navigate("/"); // Arahkan ke landing page jika guest
+    // Kalau offline, simpan jawaban dan tampilkan banner
+    if (!navigator.onLine) {
+      const apiAnswers = finalAnswers.map(({ symptom_id, value }) => ({ symptom_id, value }));
+      localStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
+      setRetryAnswers(finalAnswers);
+      setSubmitting(false);
+      return;
     }
-  };
 
-  const finalizeDiagnosis = async (finalAnswers) => {
-    setSubmitting(true);
     try {
       const apiAnswers = finalAnswers.map(({ symptom_id, value }) => ({ symptom_id, value }));
       const result = await diagnose(apiAnswers, userEmail, historyDiseaseID);
@@ -173,18 +247,50 @@ export default function Detection() {
         localStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
         localStorage.removeItem("pending_answers");
       } else {
-        localStorage.removeItem("latest_diagnosis"); 
+        localStorage.removeItem("latest_diagnosis");
         localStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       }
+
+      // Berhasil — hapus draft
+      clearDraft();
+      setRetryAnswers(null);
 
       navigate("/selesai", { state: { diagnosis: result.data, isGuest: !userEmail } });
     } catch (err) {
       console.error("Diagnosis failed:", err);
-      alert("Terjadi kesalahan saat mengolah data. Silahkan coba lagi.");
+
+      // Simpan jawaban agar bisa di-retry
+      const apiAnswers = finalAnswers.map(({ symptom_id, value }) => ({ symptom_id, value }));
+      localStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
+      setRetryAnswers(finalAnswers);
       setSubmitting(false);
     }
   };
 
+  // ============================================================
+  // Previous Question
+  // ============================================================
+  const previousQuestion = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      setAnswers(answers.slice(0, -1));
+      setSelected(null);
+    }
+  };
+
+  // Exit
+  const handleExit = () => {
+    // Draft tetap tersimpan, user bisa resume nanti
+    if (userEmail) {
+      navigate("/dashboard");
+    } else {
+      navigate("/");
+    }
+  };
+
+  // ============================================================
+  // Render states
+  // ============================================================
   if (loading) return (
     <div className="question-page">
       <h1>{phase === 2 ? "Menyiapkan Pertanyaan Lanjutan..." : "Memuat Pertanyaan..."}</h1>
@@ -210,8 +316,22 @@ export default function Detection() {
 
   return (
     <div className="question-page">
-      
-      {/* TOMBOL KELUAR MENGGUNAKAN HANDLE EXIT */}
+
+      {/* OFFLINE BANNER */}
+      {isOffline && (
+        <div className="offline-banner">
+          📵 Koneksi terputus — jawabanmu tersimpan otomatis. Akan dilanjutkan saat kembali online.
+        </div>
+      )}
+
+      {/* RETRY BANNER — internet mati saat submit */}
+      {!isOffline && retryAnswers && (
+        <div className="retry-banner">
+          🔄 Koneksi kembali! Mengirim jawaban...
+        </div>
+      )}
+
+      {/* TOMBOL KELUAR */}
       <button className="back-btn" onClick={handleExit}>
         Keluar
       </button>
@@ -224,9 +344,9 @@ export default function Detection() {
       </div>
 
       <div className="question-container">
-        <div className="phase-indicator" style={{ 
-          fontSize: "0.8rem", 
-          color: "#888", 
+        <div className="phase-indicator" style={{
+          fontSize: "0.8rem",
+          color: "#888",
           marginBottom: "10px",
           fontWeight: "bold",
           textTransform: "uppercase",
@@ -234,7 +354,7 @@ export default function Detection() {
         }}>
           {phase === 1 ? "TAHAP 1: PENGECEKAN UMUM" : "TAHAP 2: PENDALAMAN GEJALA"}
         </div>
-        
+
         <h1>
           {currentIndex + 1}. {questions[currentIndex]?.name}
         </h1>
@@ -255,18 +375,17 @@ export default function Detection() {
           </div>
         </div>
 
-        {/* BUNGKUS TOMBOL KEMBALI DAN LANJUTKAN DI SINI */}
         <div className="action-buttons">
           {currentIndex > 0 && (
             <button className="prev-btn" onClick={previousQuestion}>
               Kembali
             </button>
           )}
-          
+
           <button
             className="next-btn"
             onClick={nextQuestion}
-            disabled={selected === null || submitting}
+            disabled={selected === null || submitting || (isOffline && currentIndex === questions.length - 1)}
             style={{
               opacity: selected === null || submitting ? 0.5 : 1,
               cursor: selected === null || submitting ? "not-allowed" : "pointer"

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../services/supabaseClient";
-import { getProfile } from "../services/api";
+import { getProfile, submitTestimonial } from "../services/api";
 
 export default function Result() {
     useEffect(() => {
@@ -14,6 +14,13 @@ export default function Result() {
     const [avatarUrl, setAvatarUrl] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    // Feedback States
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [rating, setRating] = useState(0);
+    const [comment, setComment] = useState("");
+    const [submittingFeedback, setSubmittingFeedback] = useState(false);
+    const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
     // Get data from location state (Passed from DetectionQuestion)
     const stateDiagnosis = location.state?.diagnosis;
@@ -46,6 +53,31 @@ export default function Result() {
     const handleLogout = async () => {
         await supabase.auth.signOut();
         navigate("/login");
+    };
+
+    const handleFeedbackSubmit = async () => {
+        if (rating === 0 || comment.trim() === "") {
+            alert("Harap berikan rating dan komentar.");
+            return;
+        }
+        setSubmittingFeedback(true);
+        try {
+            await submitTestimonial({
+                name: nickname || "Guest",
+                email: isLoggedIn ? (await supabase.auth.getSession()).data.session?.user?.email : "guest@vimind.com",
+                rating,
+                comment,
+            });
+            setFeedbackSubmitted(true);
+            setTimeout(() => {
+                setShowFeedbackModal(false);
+            }, 2500);
+        } catch (err) {
+            console.error(err);
+            alert("Gagal mengirim feedback.");
+        } finally {
+            setSubmittingFeedback(false);
+        }
     };
 
     return (
@@ -116,13 +148,24 @@ export default function Result() {
 
                 {isLoggedIn && (
                     <div className="result-footer">
-                        <button className="dashboard-btn" onClick={() => navigate("/dashboard")}>
+                        <button className="dashboard-btn" onClick={() => navigate("/dashboard")} style={{ marginRight: 10 }}>
                             Lihat Rangkuman di Dashboard
+                        </button>
+                        <button className="next-btn" onClick={() => setShowFeedbackModal(true)}>
+                            Berikan Penilaian Tes
                         </button>
                     </div>
                 )}
+                {!isLoggedIn && (
+                   <div className="result-footer">
+                       <button className="next-btn" onClick={() => setShowFeedbackModal(true)}>
+                           Berikan Ulasan Tes
+                       </button>
+                   </div>
+                )}
             </div>
 
+            {/* MODAL HASIL TERKUNCI (GUEST) */}
             {showModal && (
                 <div className="overlay">
                     <div className="login-modal">
@@ -139,6 +182,73 @@ export default function Result() {
                             {loading ? "Menuju Login..." : "Masuk Sekarang"}
                         </button>
                         <p className="guest-note">Akurasi deteksi mental health bisa berubah seiring waktu.</p>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL FEEDBACK / TESTIMONI */}
+            {showFeedbackModal && (
+                <div className="overlay">
+                    <div className="login-modal" style={{ width: '90%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        {!feedbackSubmitted ? (
+                            <>
+                                <h2>Berikan Penilaian</h2>
+                                <p style={{ fontSize: '13px', color: '#666' }}>Bantu kami menjadi lebih baik dengan membagikan pengalaman Anda.</p>
+                                
+                                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', margin: '10px 0' }}>
+                                    {[1, 2, 3, 4, 5].map(star => (
+                                        <span 
+                                            key={star} 
+                                            onClick={() => setRating(star)}
+                                            style={{ 
+                                                fontSize: '30px', 
+                                                cursor: 'pointer', 
+                                                color: rating >= star ? '#fbbf24' : '#e5e7eb',
+                                                transition: 'color 0.2s'
+                                            }}
+                                        >
+                                            ★
+                                        </span>
+                                    ))}
+                                </div>
+                                
+                                <textarea 
+                                    placeholder="Apa pendapatmu mengenai hasil tes ini?"
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}
+                                    rows="4"
+                                    style={{
+                                        width: '100%',
+                                        padding: '10px',
+                                        borderRadius: '8px',
+                                        border: '1px solid #d1d5db',
+                                        fontFamily: 'inherit',
+                                        resize: 'none'
+                                    }}
+                                />
+
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <button 
+                                        onClick={() => setShowFeedbackModal(false)}
+                                        style={{ background: '#f3f4f6', color: '#374151', border: 'none', padding: '10px', borderRadius: '8px', flex: 1, cursor: 'pointer', fontWeight: 600 }}
+                                    >
+                                        Nanti Saja
+                                    </button>
+                                    <button 
+                                        onClick={handleFeedbackSubmit}
+                                        disabled={submittingFeedback}
+                                        style={{ background: '#8a5cff', color: 'white', border: 'none', padding: '10px', borderRadius: '8px', flex: 1, cursor: 'pointer', fontWeight: 600 }}
+                                    >
+                                        {submittingFeedback ? 'Mengirim...' : 'Kirim Ulasan'}
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h2 style={{ color: '#10b981' }}>Terima Kasih! 🎉</h2>
+                                <p>Ulasan Anda telah kami terima.</p>
+                            </>
+                        )}
                     </div>
                 </div>
             )}
