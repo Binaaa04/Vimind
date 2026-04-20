@@ -112,37 +112,62 @@ ViMind uses the Certainty Factor (CF) method, a classic expert system approach f
 ## 📁 Technical API Reference
 
 <details>
-<summary><b>Click to expand Backend API Details</b></summary>
+<summary><b>Click to expand Full API Documentation</b></summary>
 
-### 📡 Diagnostic & Public Endpoints
+### 🔐 Security & Authorization (Admin)
+All endpoints under `/api/admin` require a security header for role-based authorization.
+- **Header**: `X-Admin-Email`
+- **Value**: An email registered with `role: 'admin'`.
+- **Logic**: Backend middleware verifies the role in the database before granting access.
 
-#### `GET /api/questions` | `POST /api/diagnose`
-Core diagnostic engine using CF algorithm.
+---
 
-#### `GET /api/banners` | `GET /api/faq` | `GET /api/testimonials`
-Dynamic public content used in Home and Dashboard pages.
+### 🌍 Public & User Endpoints
 
-### 👤 Feedback System
+#### `GET /api/questions`
+Fetches screening questions.
+- **Query Params**: `mode` (screening|refined), `email` (optional).
+- **Response**: `{"questions": [...], "is_refined": bool, "history_disease_id": int}`
 
-#### `POST /api/testimonials`
-Submit a new user testimonial with rating (1-5).
+#### `POST /api/questions/discovery`
+Analyzes Phase 1 answers and fetches follow-up questions.
+- **Body**: `{"answers": [{"symptom_id": int, "value": float}]}`
+- **Response**: `{"questions": [...]}`
 
-#### `POST /api/account_feedbacks`
-Submit reason for account deletion.
+#### `POST /api/diagnose`
+Final CF calculation and result saving.
+- **Body**: `{"answers": [...], "user_email": "...", "refined_disease_id": int}`
 
-### 👑 Admin Management
+#### `GET /api/faq` | `GET /api/banners` | `GET /api/testimonials`
+Fetches dynamic content for public pages.
+
+#### `POST /api/testimonials` | `POST /api/account_feedbacks`
+User engagement and feedback submission.
+
+#### `GET /api/profile` | `POST /api/profile` | `DELETE /api/profile`
+User account and preference management.
+
+---
+
+### 👑 Admin Management (Requires X-Admin-Email)
 
 #### `GET /api/admin/banners` | `POST /api/admin/banners`
-Manage promotions shown to users.
+Full CRUD for dashboard promotions.
+
+#### `GET /api/admin/faq` | `POST /api/admin/faq`
+Full CRUD for landing page FAQs.
 
 #### `GET /api/admin/symptoms` | `PUT /api/admin/symptoms`
-Manage the symptom knowledge base.
+Management of symptoms in the knowledge base.
 
 #### `GET /api/admin/rules` | `PUT /api/admin/rules`
-Manage expert CF weights and rule mappings.
+Direct management of Expert Weights (CF Values) and rule mappings.
 
-#### `PUT /api/admin/testimonials/:id/display`
-Moderate user testimonials for the public Landing Page.
+#### `GET /api/admin/testimonials` | `PUT /api/admin/testimonials/:id/display`
+Moderation of user feedback for landing page visibility.
+
+#### `GET /api/admin/account_feedbacks`
+Tracking and analysis of user exit surveys (deletion reasons).
 
 </details>
 
