@@ -6,7 +6,7 @@ import {
 } from "../services/api";
 import "../css/AdminDashboard.css";
 
-const AdminTest = () => {
+const AdminTest = ({ adminEmail }) => {
   const [rules, setRules] = useState([]);
   const [symptoms, setSymptoms] = useState([]);
   const [diseases, setDiseases] = useState([]);
@@ -16,20 +16,23 @@ const AdminTest = () => {
   const [savingDiseases, setSavingDiseases] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      adminGetRules().then((r) => setRules(r.data || [])),
-      adminGetSymptoms().then((r) => setSymptoms(r.data || [])),
-      adminGetDiseases().then((r) => setDiseases(r.data || [])),
-    ])
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+    if (adminEmail) {
+      Promise.all([
+        adminGetRules(adminEmail).then((r) => setRules(r.data || [])),
+        adminGetSymptoms(adminEmail).then((r) => setSymptoms(r.data || [])),
+        adminGetDiseases(adminEmail).then((r) => setDiseases(r.data || [])),
+      ])
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+  }, [adminEmail]);
 
   // ---- SAVE RULES ----
   const handleSaveRules = async () => {
+    if (!adminEmail) return;
     setSavingRules(true);
     try {
-      await Promise.all(rules.map((r) => adminUpdateRule(r)));
+      await Promise.all(rules.map((r) => adminUpdateRule(adminEmail, r)));
       alert("✔ Tabel CF berhasil disimpan!");
     } catch {
       alert("Gagal menyimpan rules.");
@@ -40,9 +43,10 @@ const AdminTest = () => {
 
   // ---- SAVE SYMPTOMS ----
   const handleSaveSymptoms = async () => {
+    if (!adminEmail) return;
     setSavingSymptoms(true);
     try {
-      await Promise.all(symptoms.map((s) => adminUpdateSymptom(s)));
+      await Promise.all(symptoms.map((s) => adminUpdateSymptom(adminEmail, s)));
       alert("✔ Tabel Gejala berhasil disimpan!");
     } catch {
       alert("Gagal menyimpan symptoms.");
@@ -53,9 +57,10 @@ const AdminTest = () => {
 
   // ---- SAVE DISEASES ----
   const handleSaveDiseases = async () => {
+    if (!adminEmail) return;
     setSavingDiseases(true);
     try {
-      await Promise.all(diseases.map((d) => adminUpdateDisease(d)));
+      await Promise.all(diseases.map((d) => adminUpdateDisease(adminEmail, d)));
       alert("✔ Tabel Disease berhasil disimpan!");
     } catch {
       alert("Gagal menyimpan diseases.");

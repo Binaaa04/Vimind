@@ -16,6 +16,9 @@ export const getQuestions = (mode = "default", diseaseIDs = [], email = "") => {
 };
 
 export const diagnose = (answers, userEmail = "", refinedDiseaseID = 0) => api.post("/api/diagnose", { answers, user_email: userEmail, refined_disease_id: refinedDiseaseID });
+
+export const getDiscoveryQuestions = (answers) => api.post("/api/questions/discovery", { answers });
+
 export const getHistory = (email) => api.get(`/api/history?email=${email}`);
 export const getProfile = (email) => api.get(`/api/profile?email=${email}`);
 export const updateProfile = (email, name, avatarUrl = "") => api.post("/api/profile", { email, name, avatar_url: avatarUrl });
@@ -26,21 +29,26 @@ export const sendChatMessage = (email, messages) => api.post("/api/chat", { emai
 export const getPublicFAQ = () => api.get("/api/faq");
 export const getPublicBanners = () => api.get("/api/banners");
 
+// Admin - Helper for headers
+const adminConfig = (email) => ({
+  headers: { "X-Admin-Email": email }
+});
+
 // Admin - Banners
-export const adminGetBanners = () => api.get("/api/admin/banners");
-export const adminUpsertBanner = (data) => api.post("/api/admin/banners", data);
+export const adminGetBanners = (email) => api.get("/api/admin/banners", adminConfig(email));
+export const adminUpsertBanner = (email, data) => api.post("/api/admin/banners", data, adminConfig(email));
 
 // Admin - FAQ
-export const adminGetFAQ = () => api.get("/api/admin/faq");
-export const adminUpsertFAQ = (data) => api.post("/api/admin/faq", data);
+export const adminGetFAQ = (email) => api.get("/api/admin/faq", adminConfig(email));
+export const adminUpsertFAQ = (email, data) => api.post("/api/admin/faq", data, adminConfig(email));
 
 // Admin - Knowledge Base
-export const adminGetSymptoms = () => api.get("/api/admin/symptoms");
-export const adminUpdateSymptom = (data) => api.put("/api/admin/symptoms", data);
-export const adminGetDiseases = () => api.get("/api/admin/diseases");
-export const adminUpdateDisease = (data) => api.put("/api/admin/diseases", data);
-export const adminGetRules = () => api.get("/api/admin/rules");
-export const adminUpdateRule = (data) => api.put("/api/admin/rules", data);
+export const adminGetSymptoms = (email) => api.get("/api/admin/symptoms", adminConfig(email));
+export const adminUpdateSymptom = (email, data) => api.put("/api/admin/symptoms", data, adminConfig(email));
+export const adminGetDiseases = (email) => api.get("/api/admin/diseases", adminConfig(email));
+export const adminUpdateDisease = (email, data) => api.put("/api/admin/diseases", data, adminConfig(email));
+export const adminGetRules = (email) => api.get("/api/admin/rules", adminConfig(email));
+export const adminUpdateRule = (email, data) => api.put("/api/admin/rules", data, adminConfig(email));
 
 // Feedback (Public)
 export const getPublicTestimonials = () => api.get("/api/testimonials");
@@ -48,8 +56,8 @@ export const submitTestimonial = (data) => api.post("/api/testimonials", data);
 export const submitAccountFeedback = (data) => api.post("/api/account_feedbacks", data);
 
 // Feedback (Admin)
-export const adminGetTestimonials = () => api.get("/api/admin/testimonials");
-export const adminUpdateTestimonialDisplay = (id, isDisplayed) => api.put(`/api/admin/testimonials/${id}/display`, { is_displayed: isDisplayed });
-export const adminGetAccountFeedbacks = () => api.get("/api/admin/account_feedbacks");
+export const adminGetTestimonials = (email) => api.get("/api/admin/testimonials", adminConfig(email));
+export const adminUpdateTestimonialDisplay = (email, id, isDisplayed) => api.put(`/api/admin/testimonials/${id}/display`, { is_displayed: isDisplayed }, adminConfig(email));
+export const adminGetAccountFeedbacks = (email) => api.get("/api/admin/account_feedbacks", adminConfig(email));
 
 export default api;

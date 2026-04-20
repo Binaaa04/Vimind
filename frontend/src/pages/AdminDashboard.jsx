@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import { supabase } from "../services/supabaseClient";
 import AdminSidebar from "../components/AdminSidebar";
 import AdminFAQ from "./AdminFAQ";
 import AdminTest from "./AdminTest";
@@ -7,7 +8,7 @@ import AdminFeedback from "./AdminFeedback";
 import { adminGetBanners, adminUpsertBanner } from "../services/api";
 import "../css/AdminDashboard.css";
 
-const BannerCard = ({ bannerData, index }) => {
+const BannerCard = ({ bannerData, index, adminEmail }) => {
   const [linkUrl, setLinkUrl] = useState(bannerData?.link_url || "");
   const [imageUrl, setImageUrl] = useState(bannerData?.image_url || "");
   const [title, setTitle] = useState(bannerData?.title || "");
@@ -25,9 +26,10 @@ const BannerCard = ({ bannerData, index }) => {
   });
 
   const handleSubmit = async () => {
+    if (!adminEmail) return;
     setSaving(true);
     try {
-      await adminUpsertBanner(bannerPayload());
+      await adminUpsertBanner(adminEmail, bannerPayload());
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
@@ -38,9 +40,10 @@ const BannerCard = ({ bannerData, index }) => {
   };
 
   const handleToggle = async (newState) => {
+    if (!adminEmail) return;
     setIsActive(newState);
     try {
-      await adminUpsertBanner({ ...bannerPayload(), is_active: newState });
+      await adminUpsertBanner(adminEmail, { ...bannerPayload(), is_active: newState });
     } catch (_) {}
   };
 
@@ -100,12 +103,25 @@ const BannerCard = ({ bannerData, index }) => {
 const AdminDashboard = () => {
   const [banners, setBanners] = useState([]);
   const [loadingBanners, setLoadingBanners] = useState(true);
+  const [adminEmail, setAdminEmail] = useState("");
 
   useEffect(() => {
-    adminGetBanners()
-      .then((res) => setBanners(res.data || []))
-      .catch(() => {})
-      .finally(() => setLoadingBanners(false));
+    const fetchSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.email) {
+        setAdminEmail(session.user.email);
+        
+        // Fetch banners only after email is available
+        adminGetBanners(session.user.email)
+          .then((res) => setBanners(res.data || []))
+          .catch(() => {})
+          .finally(() => setLoadingBanners(false));
+      } else {
+        setLoadingBanners(false);
+      }
+    };
+    
+    fetchSession();
   }, []);
 
   // Tampilkan minimal 3 slot banner (isi dari DB kalau ada, kosong kalau belum)
@@ -127,7 +143,7 @@ const AdminDashboard = () => {
                   <p style={{ color: "#aaa" }}>Memuat data banner...</p>
                 ) : (
                   bannerSlots.map((b, i) => (
-                    <BannerCard key={i} bannerData={b} index={i} />
+                    <BannerCard key={i} bannerData={b} index={i} adminEmail={adminEmail} />
                   ))
                 )}
               </>
@@ -135,13 +151,13 @@ const AdminDashboard = () => {
           />
 
           {/* FAQ */}
-          <Route path="faq" element={<AdminFAQ />} />
+          <Route path="faq" element={<AdminFAQ adminEmail={adminEmail} />} />
 
           {/* TEST */}
-          <Route path="test" element={<AdminTest />} />
+          <Route path="test" element={<AdminTest adminEmail={adminEmail} />} />
 
           {/* FEEDBACK */}
-          <Route path="feedback" element={<AdminFeedback />} />
+          <Route path="feedback" element={<AdminFeedback adminEmail={adminEmail} />} />
         </Routes>
       </div>
     </div>

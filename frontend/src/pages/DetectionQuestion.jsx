@@ -185,25 +185,10 @@ export default function Detection() {
 
       setLoading(true);
 
-      const suspects = newAnswers
-        .filter(a => a.value >= 0.7)
-        .map(a => a.disease_id);
-
-      let finalSuspects = suspects;
-      if (finalSuspects.length === 0) {
-        finalSuspects = [...newAnswers]
-          .sort((a, b) => b.value - a.value)
-          .slice(0, 3)
-          .filter(a => a.value > 0)
-          .map(a => a.disease_id);
-      }
-
-      if (finalSuspects.length === 0) {
-        finalSuspects = [1, 2];
-      }
-
       try {
-        const response = await getQuestions("discovery", finalSuspects);
+        // Pindah ke backend: Biarkan backend yang menentukan soal discovery
+        const apiAnswers = newAnswers.map(({ symptom_id, value }) => ({ symptom_id, value, disease_id: 0 }));
+        const response = await getDiscoveryQuestions(apiAnswers);
         const newQuestions = response.data?.questions || response.data || [];
 
         if (newQuestions.length > 0) {

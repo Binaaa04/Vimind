@@ -11,6 +11,7 @@ func RegisterRoutes(app *fiber.App, handler *controllers.Handler) {
 
 	// ===================== PUBLIC =====================
 	api.Get("/questions", handler.GetQuestions)
+	api.Post("/questions/discovery", handler.GetDiscoveryQuestions) // NEW: Hidden logic
 	api.Post("/diagnose", handler.Diagnose)
 	api.Get("/profile", handler.GetProfile)
 	api.Post("/profile", handler.UpdateProfile)
@@ -31,7 +32,27 @@ func RegisterRoutes(app *fiber.App, handler *controllers.Handler) {
 	api.Post("/account_feedbacks", handler.SubmitAccountFeedback)
 
 	// ===================== ADMIN =====================
-	admin := api.Group("/admin")
+	// Satpam (Middleware) Admin: Cek role di database sebelum memproses request
+	adminOnly := func(c *fiber.Ctx) error {
+		email := c.Get("X-Admin-Email") // Frontend harus kirim header ini untuk identifikasi
+		if email == "" {
+			email = c.Query("admin_email") // Fallback ke query param
+		}
+
+		if email == "" {
+			return c.Status(403).JSON(fiber.Map{"error": "Unauthorized: Admin identification missing"})
+		}
+
+		// Cek ke DB
+		_, _, _, _, role, err := handler.Repo.GetProfile(email)
+		if err != nil || role != "admin" {
+			return c.Status(403).JSON(fiber.Map{"error": "Unauthorized: Admin access required"})
+		}
+
+		return c.Next()
+	}
+
+	admin := api.Group("/admin", adminOnly)
 
 	// Banners
 	admin.Get("/banners", handler.GetBanners)

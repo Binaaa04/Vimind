@@ -70,6 +70,45 @@ func (h *Handler) GetQuestions(c *fiber.Ctx) error {
 	})
 }
 
+// GetDiscoveryQuestions - Logic pemilihan tersangka pindah ke backend untuk keamanan
+func (h *Handler) GetDiscoveryQuestions(c *fiber.Ctx) error {
+	var body struct {
+		Answers []struct {
+			SymptomID int     `json:"symptom_id"`
+			Value     float64 `json:"value"`
+			DiseaseID int     `json:"disease_id"`
+		} `json:"answers"`
+	}
+	if err := c.BodyParser(&body); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
+	}
+
+	// Logic pemilihan tersangka (sebelumnya ada di frontend untuk keamanan data)
+	suspectMap := make(map[int]bool)
+	for _, a := range body.Answers {
+		if a.Value >= 0.7 {
+			suspectMap[a.DiseaseID] = true
+		}
+	}
+
+	var finalSuspects []int
+	for id := range suspectMap {
+		finalSuspects = append(finalSuspects, id)
+	}
+
+	// Fallback jika tidak ada tersangka kuat (ambil default atau logic tambahan)
+	if len(finalSuspects) == 0 {
+		finalSuspects = []int{1, 2} // Default suspects
+	}
+
+	questions, err := h.Repo.GetQuestions("discovery", finalSuspects)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch discovery questions"})
+	}
+
+	return c.JSON(fiber.Map{"questions": questions})
+}
+
 func (h *Handler) Diagnose(c *fiber.Ctx) error {
 	var req models.DiagnosisRequest
 	if err := c.BodyParser(&req); err != nil {

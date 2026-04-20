@@ -2,22 +2,25 @@ import { useState, useEffect } from "react";
 import { adminGetTestimonials, adminUpdateTestimonialDisplay, adminGetAccountFeedbacks } from "../services/api";
 import "../css/AdminDashboard.css";
 
-const AdminFeedback = () => {
+const AdminFeedback = ({ adminEmail }) => {
   const [testimonials, setTestimonials] = useState([]);
   const [accountFeedbacks, setAccountFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("testimonials");
 
   useEffect(() => {
-    Promise.all([
-      adminGetTestimonials().then((res) => setTestimonials(res.data || [])).catch(() => {}),
-      adminGetAccountFeedbacks().then((res) => setAccountFeedbacks(res.data || [])).catch(() => {})
-    ]).finally(() => setLoading(false));
-  }, []);
+    if (adminEmail) {
+      Promise.all([
+        adminGetTestimonials(adminEmail).then((res) => setTestimonials(res.data || [])).catch(() => {}),
+        adminGetAccountFeedbacks(adminEmail).then((res) => setAccountFeedbacks(res.data || [])).catch(() => {})
+      ]).finally(() => setLoading(false));
+    }
+  }, [adminEmail]);
 
   const toggleDisplay = async (id, currentStatus) => {
+    if (!adminEmail) return;
     try {
-      await adminUpdateTestimonialDisplay(id, !currentStatus);
+      await adminUpdateTestimonialDisplay(adminEmail, id, !currentStatus);
       setTestimonials((prev) => 
         prev.map(t => t.id === id ? { ...t, is_displayed: !currentStatus } : t)
       );

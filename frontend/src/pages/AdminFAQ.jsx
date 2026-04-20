@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { adminGetFAQ, adminUpsertFAQ } from "../services/api";
 import "../css/AdminDashboard.css";
 
-const AdminFAQ = () => {
+const AdminFAQ = ({ adminEmail }) => {
   const [faq, setFaq] = useState(
     Array.from({ length: 8 }, () => ({
       id: 0,
@@ -15,20 +15,22 @@ const AdminFAQ = () => {
 
   // Load existing FAQ dari API
   useEffect(() => {
-    adminGetFAQ()
-      .then((res) => {
-        const data = res.data || [];
-        // Isi faq state dari data DB, sisanya tetap kosong
-        setFaq((prev) =>
-          prev.map((item, i) => {
-            const found = data[i]; // urut by faq_id
-            return found ? { id: found.id, question: found.question, answer: found.answer } : item;
-          })
-        );
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+    if (adminEmail) {
+      adminGetFAQ(adminEmail)
+        .then((res) => {
+          const data = res.data || [];
+          // Isi faq state dari data DB, sisanya tetap kosong
+          setFaq((prev) =>
+            prev.map((item, i) => {
+              const found = data[i]; // urut by faq_id
+              return found ? { id: found.id, question: found.question, answer: found.answer } : item;
+            })
+          );
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+  }, [adminEmail]);
 
   const handleChange = (index, field, value) => {
     const updated = [...faq];
@@ -37,6 +39,7 @@ const AdminFAQ = () => {
   };
 
   const handleSubmit = async (index) => {
+    if (!adminEmail) return;
     const item = faq[index];
     if (!item.question.trim() || !item.answer.trim()) {
       alert("Pertanyaan dan jawaban wajib diisi!");
@@ -44,7 +47,7 @@ const AdminFAQ = () => {
     }
     setSavingIndex(index);
     try {
-      await adminUpsertFAQ({
+      await adminUpsertFAQ(adminEmail, {
         id: item.id,
         question: item.question,
         answer: item.answer,
