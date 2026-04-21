@@ -43,12 +43,14 @@ type Enclosure struct {
 }
 
 func (h *Handler) GetDynamicNews(c *fiber.Ctx) error {
-	cacheMutex.Lock()
+	// cacheMutex.Lock()
+	/*
 	if time.Since(cacheLastUpdate) < 15*time.Minute && len(newsCache) > 0 {
 		defer cacheMutex.Unlock()
 		return c.JSON(newsCache)
 	}
-	cacheMutex.Unlock()
+	*/
+	// cacheMutex.Unlock()
 
 	// Source: Google News (search for mental health in Indonesia)
 	query := "kesehatan+mental"
@@ -98,7 +100,7 @@ func (h *Handler) GetDynamicNews(c *fiber.Ctx) error {
 	}
 
 	for i, item := range rss.Channel.Items {
-		if i >= 10 {
+		if i >= 3 {
 			break
 		}
 

@@ -54,6 +54,7 @@ const Dashboard = () => {
   );
 
   const [news, setNews] = useState([]);
+  const [banners, setBanners] = useState([]);
   const navigate = useNavigate();
   const mood = localStorage.getItem("mood");
 
@@ -96,9 +97,19 @@ const Dashboard = () => {
         console.error("Failed to fetch news:", err);
       }
     };
+    const fetchBanners = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/banners`);
+        const data = await response.json();
+        setBanners(data);
+      } catch (err) {
+        console.error("Failed to fetch banners:", err);
+      }
+    };
 
     fetchUserAndProfile();
     fetchNews();
+    fetchBanners();
   }, []);
 
   const handleSaveNickname = async (newNickname) => {
@@ -192,37 +203,40 @@ const Dashboard = () => {
   // --- STATE UNTUK CAROUSEL ---
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Data isi carousel (Dinamis dari News API + Fallback Statis)
-  const carouselSlides = news.length > 0
-    ? news.slice(0, 3).map((item, index) => ({
-      id: index,
+  // Data isi carousel (Prioritaskan Banners dari Admin, lalu gabung News API)
+  const carouselSlides = [
+    ...(banners || []).map((b) => ({
+      id: `banner-${b.id}`,
+      title: b.title,
+      highlight: "Promo",
+      rightText: "Konten pilihan admin khusus buat kamu.",
+      bgRight: "#8B5CF6",
+      image: b.image_url,
+      link: b.link_url
+    })),
+    ...(news || []).slice(0, 2).map((item, index) => ({
+      id: `news-${index}`,
       title: item.title,
-      highlight: item.highlight,
+      highlight: item.highlight || "Update",
       rightText: "Mari baca berita kesehatan selengkapnya untuk wawasan lebih luas.",
-      bgRight: index === 0 ? "#E9004C" : index === 1 ? "#8B5CF6" : "#10B981",
+      bgRight: index === 0 ? "#E9004C" : "#10B981",
       image: item.image,
       link: item.link
     }))
-    : [
-      {
-        id: 0,
-        title: "Vimind Didukung",
-        highlight: "Kementerian Kesehatan RI",
-        rightText: "Lembaga Penyelenggara Pelatihan Bidang Kesehatan yang Telah Diakreditasi oleh Kemenkes RI",
-        bgRight: "#E9004C",
-        image: familyBanner,
-        link: "#"
-      },
-      {
-        id: 1,
-        title: "Kesehatan Mental",
-        highlight: "Adalah Prioritas",
-        rightText: "Mari jaga kesehatan mentalmu bersama para ahli terbaik dari Vimind.",
-        bgRight: "#8B5CF6",
-        image: familyBanner,
-        link: "#"
-      }
-    ];
+  ];
+  
+  // Fallback if empty
+  if (carouselSlides.length === 0) {
+    carouselSlides.push({
+      id: "fallback",
+      title: "Vimind Didukung",
+      highlight: "Kementerian Kesehatan RI",
+      rightText: "Lembaga Penyelenggara Pelatihan Bidang Kesehatan yang Telah Diakreditasi oleh Kemenkes RI",
+      bgRight: "#E9004C",
+      image: familyBanner,
+      link: "#"
+    });
+  }
 
   // Efek Auto-Slide setiap 3 detik (3000 ms)
   useEffect(() => {
@@ -254,7 +268,7 @@ const Dashboard = () => {
               {showArticleMenu && (
                 <div className="article-menu-dropdown">
                   {news.length > 0 ? (
-                    news.map((item) => (
+                    news.slice(0, 3).map((item) => (
                       <div
                         key={item.id}
                         className="article-menu-item"
@@ -328,7 +342,7 @@ const Dashboard = () => {
                 </button>
               </div>
               {news.length > 0 ? (
-                news.map((item) => (
+                news.slice(0, 3).map((item) => (
                   <div
                     key={item.id}
                     className="article-menu-item"
