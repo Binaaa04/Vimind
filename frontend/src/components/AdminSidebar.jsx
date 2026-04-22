@@ -1,35 +1,29 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import "../css/AdminDashboard.css";
+import "../css/AdminSidebar.css";
 import logo from "../assets/logovimind2.png";
-import { useState, useEffect, useRef } from "react";
+import logoSmall from "../assets/logo.png";
+import { useState, useEffect } from "react";
+import arrowVector from "../assets/arrowVector.svg";
+
+// Import SVG untuk menu
+import linkIcon from "../assets/link.svg";
+import faqIcon from "../assets/faq.svg";
+import testIcon from "../assets/test.svg";
+import feedbackIcon from "../assets/feedback.svg";
+import logoutIcon from "../assets/LogOut.svg"; // ✅ FIX: samakan nama
 
 const AdminSidebar = ({ avatarUrl }) => {
   const nickname = localStorage.getItem("nickname") || "Admin";
   const navigate = useNavigate();
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(true); // 🔥 default kecil
-
-  const hoverTimeout = useRef(null);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login");
   };
 
-  // 🔥 hover logic (anti flicker)
-  const handleMouseEnter = () => {
-    clearTimeout(hoverTimeout.current);
-    setIsCollapsed(false);
-  };
-
-  const handleMouseLeave = () => {
-    hoverTimeout.current = setTimeout(() => {
-      setIsCollapsed(true);
-    }, 200); // delay biar smooth
-  };
-
-  // close popup kalau klik luar
   useEffect(() => {
     const handleClick = (e) => {
       if (
@@ -45,23 +39,32 @@ const AdminSidebar = ({ avatarUrl }) => {
   }, []);
 
   return (
-    <div
-      className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}>
 
-      {/* 🔥 (opsional) toggle manual */}
+      {/* Toggle */}
       <button
         className="toggle-btn"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
-        {isCollapsed ? ">" : "<"}
+        <img
+          src={arrowVector}
+          alt="Toggle"
+          style={{
+            width: "14px",
+            height: "14px",
+            transition: "transform 0.3s ease",
+            transform: isCollapsed ? "rotate(180deg)" : "rotate(0deg)"
+          }}
+        />
       </button>
 
       {/* LOGO */}
       <div className="logo">
-        <img src={logo} alt="Vimind Logo" className="logo-img" />
+        <img
+          src={isCollapsed ? logoSmall : logo}
+          alt="Vimind Logo"
+          className={`logo-img ${isCollapsed ? "collapsed-logo" : ""}`}
+        />
         {!isCollapsed && <span></span>}
       </div>
 
@@ -75,7 +78,12 @@ const AdminSidebar = ({ avatarUrl }) => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          🔗 {!isCollapsed && "Link Promosi Dashboard"}
+          <img
+            src={linkIcon?.src || linkIcon}
+            alt="Promotion Icon"
+            className="menu-icon-img"
+          />
+          {!isCollapsed && <span>Promosi Dashboard</span>}
         </NavLink>
       </div>
 
@@ -87,7 +95,12 @@ const AdminSidebar = ({ avatarUrl }) => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          ❓ {!isCollapsed && "Ubah FAQ"}
+          <img
+            src={faqIcon?.src || faqIcon}
+            alt="FAQ Icon"
+            className="menu-icon-img"
+          />
+          {!isCollapsed && <span>Ubah FAQ</span>}
         </NavLink>
       </div>
 
@@ -99,7 +112,12 @@ const AdminSidebar = ({ avatarUrl }) => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          💡 {!isCollapsed && "Ubah Pertanyaan Test"}
+          <img
+            src={testIcon?.src || testIcon}
+            alt="Test Icon"
+            className="menu-icon-img"
+          />
+          {!isCollapsed && <span>Ubah Pertanyaan Test</span>}
         </NavLink>
       </div>
 
@@ -111,7 +129,12 @@ const AdminSidebar = ({ avatarUrl }) => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          💬 {!isCollapsed && "User Feedback"}
+          <img
+            src={feedbackIcon?.src || feedbackIcon}
+            alt="Feedback Icon"
+            className="menu-icon-img"
+          />
+          {!isCollapsed && <span>User Feedback</span>}
         </NavLink>
       </div>
 
@@ -160,7 +183,12 @@ const AdminSidebar = ({ avatarUrl }) => {
 
         {/* LOGOUT */}
         <button className="logout-btn" onClick={handleLogout}>
-          🚪 {!isCollapsed && "Log Out"}
+          <img
+            src={logoutIcon?.src || logoutIcon}
+            alt="Logout"
+            className="logout-icon"
+          />
+          {!isCollapsed && <span>Log Out</span>}
         </button>
 
       </div>

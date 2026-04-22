@@ -6,7 +6,7 @@ import AdminFAQ from "./AdminFAQ";
 import AdminTest from "./AdminTest";
 import AdminFeedback from "./AdminFeedback";
 import { adminGetBanners, adminUpsertBanner } from "../services/api";
-import "../css/AdminDashboard.css";
+import "../css/AdminDashboard.css"; 
 
 const BannerCard = ({ bannerData, index, adminEmail }) => {
   const [linkUrl, setLinkUrl] = useState(bannerData?.link_url || "");
