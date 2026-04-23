@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"pbl-vimind/backend/internal/models"
 
 	"github.com/gofiber/fiber/v2"
@@ -29,6 +30,7 @@ func (h *Handler) UpsertBanner(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
 	}
 	if err := h.Repo.UpsertBanner(req); err != nil {
+		log.Printf("ERROR UpsertBanner: %v", err) // MENGINTIP ERROR ASLI
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to save banner"})
 	}
 	return c.JSON(fiber.Map{"message": "Banner saved successfully"})
@@ -71,6 +73,7 @@ func (h *Handler) UpsertFAQ(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Question and answer are required"})
 	}
 	if err := h.Repo.UpsertFAQ(req); err != nil {
+		log.Printf("ERROR UpsertFAQ: %v", err) // MENGINTIP ERROR ASLI
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to save FAQ"})
 	}
 	return c.JSON(fiber.Map{"message": "FAQ saved successfully"})
@@ -202,6 +205,7 @@ func (h *Handler) UpsertAdminArticle(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Title is required"})
 	}
 	if err := h.Repo.UpsertArticle(req); err != nil {
+		log.Printf("ERROR UpsertAdminArticle: %v", err) // MENGINTIP ERROR ASLI
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to save article"})
 	}
 	return c.JSON(fiber.Map{"message": "Article saved successfully"})

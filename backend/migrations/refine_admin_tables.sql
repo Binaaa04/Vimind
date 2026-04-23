@@ -18,8 +18,10 @@ CREATE TABLE IF NOT EXISTS articles (
     updated_at  TIMESTAMP DEFAULT NOW()
 );
 
--- 💡 Ensure FAQ doesn't use fixed position constraints if needed
--- (The existing faq table already has faq_id as UUID based on user screenshots)
+-- 💡 Ensure FAQ doesn't use fixed position constraints
+-- FAQ table usually already exists with faq_id as UUID
 
--- 🚀 Ensure PROMOTION table matches the repository expectations
--- (Based on screenshots, it already haspromotion_id, title, image_url, link_url, is_active, display_order)
+-- 🚀 ENSURE PROMOTION & ARTICLES have automatic UUID generation
+ALTER TABLE promotion ALTER COLUMN promotion_id SET DEFAULT uuid_generate_v4();
+ALTER TABLE articles ALTER COLUMN article_id SET DEFAULT uuid_generate_v4();
+ALTER TABLE faq ALTER COLUMN faq_id SET DEFAULT uuid_generate_v4();

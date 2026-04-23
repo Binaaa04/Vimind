@@ -6,7 +6,7 @@ import AdminFAQ from "./AdminFAQ";
 import AdminTest from "./AdminTest";
 import AdminFeedback from "./AdminFeedback";
 import AdminNews from "./AdminNews";
-import { adminGetBanners, adminUpsertBanner } from "../services/api";
+import { adminGetBanners, adminUpsertBanner, getProfile } from "../services/api";
 import "../css/AdminDashboard.css";
 
 const BannerCard = ({ bannerData, index, adminEmail }) => {
@@ -105,6 +105,8 @@ const AdminDashboard = () => {
   const [banners, setBanners] = useState([]);
   const [loadingBanners, setLoadingBanners] = useState(true);
   const [adminEmail, setAdminEmail] = useState("");
+  const [adminName, setAdminName] = useState("Admin");
+  const [adminAvatar, setAdminAvatar] = useState("");
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -112,6 +114,17 @@ const AdminDashboard = () => {
       if (session?.user?.email) {
         setAdminEmail(session.user.email);
         
+        // Fetch Admin profile info
+        try {
+          const profileRes = await getProfile(session.user.email);
+          const name = profileRes.data?.name || session.user.user_metadata?.full_name || session.user.email.split("@")[0];
+          const avatar = profileRes.data?.avatar_url || "";
+          setAdminName(name);
+          setAdminAvatar(avatar);
+        } catch (err) {
+          console.warn("Could not fetch admin profile, using defaults.");
+        }
+
         // Fetch banners only after email is available
         adminGetBanners(session.user.email)
           .then((res) => setBanners(res.data || []))
@@ -130,7 +143,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-container">
-      <AdminSidebar />
+      <AdminSidebar nickname={adminName} avatarUrl={adminAvatar} />
 
       <div className="admin-content">
         <Routes>

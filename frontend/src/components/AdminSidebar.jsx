@@ -2,9 +2,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 import "../css/AdminDashboard.css";
 import logo from "../assets/logovimind2.png";
 import { useState, useEffect, useRef } from "react";
+import { supabase } from "../services/supabaseClient";
 
-const AdminSidebar = ({ avatarUrl }) => {
-  const nickname = localStorage.getItem("nickname") || "Admin";
+const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
   const navigate = useNavigate();
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -12,9 +12,14 @@ const AdminSidebar = ({ avatarUrl }) => {
 
   const hoverTimeout = useRef(null);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.clear();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error.message);
+    }
   };
 
   // 🔥 hover logic (anti flicker)
