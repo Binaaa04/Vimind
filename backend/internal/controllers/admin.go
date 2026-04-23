@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"log"
+	"os"
 	"pbl-vimind/backend/internal/models"
 
 	"github.com/gofiber/fiber/v2"
@@ -74,7 +75,12 @@ func (h *Handler) UpsertFAQ(c *fiber.Ctx) error {
 	}
 	if err := h.Repo.UpsertFAQ(req); err != nil {
 		log.Printf("ERROR UpsertFAQ: %v", err) // MENGINTIP ERROR ASLI
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to save FAQ"})
+		// Tulis ke file biar gampang di cek!
+		import_os_err := os.WriteFile("admin_error.log", []byte(err.Error()), 0644)
+		if import_os_err != nil {
+			log.Println("Gagal nulis error log", import_os_err)
+		}
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to save FAQ: " + err.Error()})
 	}
 	return c.JSON(fiber.Map{"message": "FAQ saved successfully"})
 }

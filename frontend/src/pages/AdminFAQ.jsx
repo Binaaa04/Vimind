@@ -72,7 +72,8 @@ const AdminFAQ = ({ adminEmail }) => {
       await fetchFAQ();
       alert(`✔ Berhasil disimpan!`);
     } catch (err) {
-      alert("Gagal menyimpan FAQ. Coba lagi.");
+      const serverErr = err.response?.data?.error || err.message;
+      alert(`Gagal menyimpan FAQ. Coba lagi.\nAlasan: ${serverErr}`);
     } finally {
       setSavingIndex(null);
     }
@@ -119,7 +120,7 @@ const AdminFAQ = ({ adminEmail }) => {
                 placeholder="Masukkan Jawaban"
                 value={item.answer}
                 onChange={(e) => handleChange(index, "answer", e.target.value)}
-                style={{ width: "100%", padding: 10, borderRadius: 8, background: "rgba(255,255,255,0.05)", color: "white", border: "1px solid rgba(255,255,255,0.1)", minHeight: 60, marginTop: 10 }}
+                style={{ width: "100%", padding: 10, borderRadius: 8, background: "#fff", color: "#333", border: "1px solid #ccc", minHeight: 60, marginTop: 10, fontFamily: "inherit" }}
               />
 
               <button

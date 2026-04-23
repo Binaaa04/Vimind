@@ -56,7 +56,7 @@ const ArticleCard = ({ article, adminEmail, onRefresh }) => {
           placeholder="Konten/Deskripsi Singkat" 
           value={formData.content} 
           onChange={(e) => setFormData({...formData, content: e.target.value})}
-          style={{ width: "100%", padding: 10, borderRadius: 8, background: "rgba(255,255,255,0.05)", color: "white", border: "1px solid rgba(255,255,255,0.1)", minHeight: 80 }}
+          style={{ width: "100%", padding: 10, borderRadius: 8, background: "#fff", color: "#333", border: "1px solid #ccc", minHeight: 80, fontFamily: "inherit" }}
         />
         <div style={{ display: "flex", gap: 10 }}>
           <input 

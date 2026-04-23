@@ -36,7 +36,7 @@ func main() {
 	app.Use(helmet.New())  // Security headers (Anti-XSS, etc.)
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
-		AllowHeaders: "Origin, Content-Type, Accept, X-Admin-Email", // REGISTER HEADER ADMIN!
+		AllowHeaders: "*", // ALLOW SEMUA HEADER BIAR GAK REWEL!
 	}))
 
 	// Rate Limiting (Anti-DDoS & Anti-Spam)
