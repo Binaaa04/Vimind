@@ -140,8 +140,7 @@ const BannerCard = ({ bannerData, index, adminEmail }) => {
                 textTransform: "uppercase",
                 fontFamily: "inherit"
               }}>
-                {title || "IKI TEST"}{" "}
-                <span style={{ color: "#ffeb3b", marginLeft: "5px" }}>Promo</span>
+                {title || "IKI TEST"}
               </h2>
             </div>
           </>
