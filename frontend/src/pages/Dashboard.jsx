@@ -460,7 +460,7 @@ const Dashboard = () => {
                     textAlign: "left"
                   }}>
                     <h2 style={{ color: slide.image ? "white" : "inherit", textShadow: slide.image ? "2px 2px 4px rgba(0,0,0,0.5)" : "none" }}>
-                      {slide.title} <span className="highlight" style={{ color: slide.image ? "#ffeb3b" : undefined }}>{slide.highlight}</span>
+                      {slide.title}
                     </h2>
                     {!slide.image && (
                       <div className="sponsor-logo">
