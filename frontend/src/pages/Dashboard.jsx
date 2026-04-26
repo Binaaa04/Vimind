@@ -407,74 +407,60 @@ const Dashboard = () => {
         </div>
 
         {/* HERO CAROUSEL */}
-        <div style={{ overflow: "hidden", width: "100%", marginBottom: "15px" }}>
-          <div
-            style={{
-              display: "flex",
-              transition: "transform 0.5s ease-in-out",
-              transform: `translateX(-${currentSlide * 100}%)`
-            }}
-          >
+        <div className="carousel-container">
+          {/* TRACK CAROUSEL */}
+          <div className="carousel-track"> 
             {carouselSlides.map((slide, index) => (
-              <div className="dashboard-hero" key={slide.id} style={{ minWidth: "100%", flexShrink: 0, marginBottom: 0 }}>
+              <div 
+                className="dashboard-hero" 
+                key={slide.id} 
+                style={{ 
+                  transform: `translateX(calc(-${currentSlide * 100}% - ${currentSlide * 15}px))`
+                }}
+              >
                 {/* Banner Kiri */}
                 <div
                   className="hero-big promo-left"
                   onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
-                  style={{ 
-                    cursor: slide.link !== "#" ? "pointer" : "default", 
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-start",
-                    overflow: "hidden",
-                    borderRadius: "20px"
-                  }}
+                  style={{ cursor: slide.link !== "#" ? "pointer" : "default" }}
                 >
                   {slide.image && (
                     <img 
                       src={slide.image} 
-                      alt="Promo" 
-                      style={{ 
-                        width: "100%", 
-                        height: "100%", 
-                        objectFit: "cover",
-                        position: "absolute",
-                        zIndex: 1
-                      }} 
+                      alt="Promo Left" 
+                      className="promo-image-cover"
                     />
                   )}
-                  
-                  {/* Overlay Content (Akan nampil di atas gambar kalau ada gambar) */}
-                  <div className="promo-content" style={{ 
-                    position: "relative", 
-                    zIndex: 2, 
-                    padding: "30px", 
-                    background: slide.image ? "linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%)" : "transparent",
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "flex-start",
-                    textAlign: "left"
-                  }}>
-                    <h2 style={{ color: slide.image ? "white" : "inherit", textShadow: slide.image ? "2px 2px 4px rgba(0,0,0,0.5)" : "none" }}>
-                      {slide.title}
-                    </h2>
-                    {!slide.image && (
-                      <div className="sponsor-logo">
-                        <img src={kemenkesLogo} alt="Sponsor" />
-                      </div>
-                    )}
+                  <div 
+                    className="promo-content" 
+                    style={{ 
+                      background: slide.image ? "linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)" : "transparent"
+                    }}
+                  >
+                    <h2 style={{ color: slide.image ? "white" : "inherit" }}>{slide.title}</h2>
                   </div>
                 </div>
 
                 {/* Banner Kanan */}
-                <div className="hero-small promo-right" style={{ backgroundColor: slide.bgRight }}>
-                  <div className="promo-right-content">
-                    <h2 className="academy-logo">🧠 Vimind <span>academy</span></h2>
-                    <p>{slide.rightText}</p>
+                <div 
+                  className="hero-small promo-right" 
+                  style={{ backgroundColor: slide.bgRight }}
+                >
+                  {slide.imageRight && (
+                    <img 
+                      src={slide.imageRight} 
+                      alt="Promo Right" 
+                      className="promo-image-cover"
+                    />
+                  )}
+                  <div 
+                    className="promo-right-content" 
+                    style={{ 
+                      background: slide.imageRight ? "rgba(0,0,0,0.3)" : "transparent"
+                    }}
+                  >
+                    <h2 className="academy-logo" style={{ color: "white" }}>🧠 Vimind <span>academy</span></h2>
+                    <p style={{ color: "white" }}>{slide.rightText}</p>
                   </div>
                 </div>
               </div>
@@ -482,14 +468,13 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* DOTS (Bisa diklik manual juga) */}
+        {/* DOTS NAVIGATION */}
         <div className="dots">
           {carouselSlides.map((_, index) => (
             <span
               key={index}
-              className={currentSlide === index ? "active" : ""}
               onClick={() => setCurrentSlide(index)}
-              style={{ cursor: "pointer" }}
+              className={currentSlide === index ? "active" : ""}
             />
           ))}
         </div>

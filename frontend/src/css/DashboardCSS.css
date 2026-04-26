@@ -240,151 +240,107 @@ body {
     border-radius: 12px;
 }
 
-/* --- STYLING BANNER KIRI --- */
-.promo-left {
-    background-color: #F8F9FA;
-    position: relative;
-    display: flex;
-    align-items: center;
+/* --- CAROUSEL CONTAINER --- */
+.carousel-container {
     overflow: hidden;
-    padding: 40px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    margin-bottom: 5px;
+    padding: 10px 0;
 }
 
-.promo-left:hover {
-    transform: translateY(-2px);
-    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.05);
+.carousel-track {
+    display: flex;
+    gap: 15px;
+    padding-left: 5px;
 }
 
-.promo-content {
-    flex: 1;
-    z-index: 2;
+/* Modifikasi .dashboard-hero */
+.dashboard-hero {
+    min-width: 90%;
+    flex-shrink: 0;
+    margin-bottom: 0;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: grab;
 }
 
-.promo-content h2 {
-    font-size: 2rem;
-    color: #111111;
-    font-weight: 800;
-    line-height: 1.25;
-    margin-bottom: 25px;
-    max-width: 800px;
+/* --- BANNER KIRI --- */
+.hero-big.promo-left {
+    flex: 2;
+    position: relative;
+    overflow: hidden;
+    padding: 0; /* Menghilangkan padding bawaan */
 }
 
-.promo-content .highlight {
-    color: #E9004C;
-}
-
-.sponsor-logo img {
-    height: 40px;
-    object-fit: contain;
-}
-
-.promo-image {
+/* Class baru untuk gambar cover banner supaya fit */
+.promo-image-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     position: absolute;
-    right: 20px;
-    bottom: 0;
-    height: 90%;
+    top: 0;
+    left: 0;
     z-index: 1;
 }
 
-.promo-image img {
-    height: 100%;
-    object-fit: contain;
-    filter: drop-shadow(-5px 5px 15px rgba(0, 0, 0, 0.1));
-}
-
-
-/* --- STYLING BANNER KANAN --- */
-.promo-right {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+/* Update .promo-content */
+.promo-content {
+    position: relative;
+    z-index: 2;
     padding: 30px;
-    color: #FFFFFF;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
+/* --- BANNER KANAN --- */
+.hero-small.promo-right {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    padding: 0; /* Menghilangkan padding bawaan */
+}
+
+/* Update .promo-right-content */
 .promo-right-content {
-    max-width: 90%;
-}
-
-.academy-logo {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+    height: 100%;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    gap: 8px;
-}
-
-.academy-logo span {
-    font-weight: 400;
-}
-
-.promo-right-content p {
-    font-size: 0.95rem;
-    line-height: 1.4;
-    font-weight: 600;
-    margin: 0;
-}
-
-.academy-logo {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 15px;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    text-align: center;
 }
 
-.academy-logo span {
-    font-weight: 400;
-}
-
-.promo-right-content p {
-    font-size: 0.95rem;
-    line-height: 1.4;
-    font-weight: 600;
-    margin: 0;
-}
-
-.hero-big {
-    flex: 1.8;
-    height: 350px;
-    background-color: #D9D9D9;
-    border-radius: 12px;
-}
-
-.hero-small {
-    flex: 1.2;
-    height: 350px;
-    background-color: #D9D9D9;
-    border-radius: 12px;
-}
-
+/* --- DOTS NAVIGATION --- */
 .dots {
     display: flex;
-    justify-content: flex-start;
-    gap: 6px;
-    margin-top: 20px; 
-    margin-bottom: 40px;
-    padding-left: 5px;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding-left: 0;
 }
 
 .dots span {
     width: 8px;
     height: 8px;
-    border-radius: 50%;
-    background-color: #D1C4E9;
+    border-radius: 10px;
+    background-color: #D1D5DB;
     display: inline-block;
-    transition: all 0.3s ease; 
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
+/* Dot yang aktif jadi lonjong dan ungu */
 .dots span.active {
-    width: 20px;
-    border-radius: 10px;
+    width: 24px;
     background-color: #8B5CF6;
 }
 
