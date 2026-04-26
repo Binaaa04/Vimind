@@ -229,7 +229,7 @@ const Dashboard = () => {
         link: item.link
       }))
   ];
-  
+
   // Fallback if empty
   if (carouselSlides.length === 0) {
     carouselSlides.push({
@@ -375,7 +375,7 @@ const Dashboard = () => {
 
           {/* PROFILE AREA */}
           <div className="nav-profile-area" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            
+
             {/* PROFILE */}
             <button
               className={`profile-trigger ${showSidebar ? "active" : ""}`}
@@ -409,13 +409,13 @@ const Dashboard = () => {
         {/* HERO CAROUSEL */}
         <div className="carousel-container">
           {/* TRACK CAROUSEL */}
-          <div className="carousel-track"> 
+          <div className="carousel-track">
             {carouselSlides.map((slide, index) => (
-              <div 
-                className="dashboard-hero" 
-                key={slide.id} 
-                style={{ 
-                  transform: `translateX(calc(-${currentSlide * 100}% - ${currentSlide * 15}px))`
+              <div
+                className="dashboard-hero"
+                key={slide.id}
+                style={{
+                  transform: `translateX(-${currentSlide * 100}%)`
                 }}
               >
                 {/* Banner Kiri */}
@@ -425,15 +425,15 @@ const Dashboard = () => {
                   style={{ cursor: slide.link !== "#" ? "pointer" : "default" }}
                 >
                   {slide.image && (
-                    <img 
-                      src={slide.image} 
-                      alt="Promo Left" 
+                    <img
+                      src={slide.image}
+                      alt="Promo Left"
                       className="promo-image-cover"
                     />
                   )}
-                  <div 
-                    className="promo-content" 
-                    style={{ 
+                  <div
+                    className="promo-content"
+                    style={{
                       background: slide.image ? "linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)" : "transparent"
                     }}
                   >
@@ -442,26 +442,18 @@ const Dashboard = () => {
                 </div>
 
                 {/* Banner Kanan */}
-                <div 
-                  className="hero-small promo-right" 
-                  style={{ backgroundColor: slide.bgRight }}
+                <div
+                  className="hero-small promo-right"
+                  onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
+                  style={{ cursor: slide.link !== "#" ? "pointer" : "default" }}
                 >
                   {slide.imageRight && (
-                    <img 
-                      src={slide.imageRight} 
-                      alt="Promo Right" 
+                    <img
+                      src={slide.imageRight}
+                      alt="Promo Right"
                       className="promo-image-cover"
                     />
                   )}
-                  <div 
-                    className="promo-right-content" 
-                    style={{ 
-                      background: slide.imageRight ? "rgba(0,0,0,0.3)" : "transparent"
-                    }}
-                  >
-                    <h2 className="academy-logo" style={{ color: "white" }}>🧠 Vimind <span>academy</span></h2>
-                    <p style={{ color: "white" }}>{slide.rightText}</p>
-                  </div>
                 </div>
               </div>
             ))}
