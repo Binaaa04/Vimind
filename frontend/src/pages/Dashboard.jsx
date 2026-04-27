@@ -8,9 +8,7 @@ import ProfileSidebar from "../components/ProfileSidebar";
 import NicknameModal from "../components/NicknameModal";
 import NicknameSuccessModal from "../components/NicknameSuccessModal";
 import LogoutModal from "../components/LogoutModal";
-import ArticleModal from "../components/ArticleModal";
 import TestOptionsModal from "../components/TestOptionsModal";
-import { articlesList } from "../data/articlesData";
 import { getProfile, updateProfile, diagnose, sendChatMessage } from "../services/api";
 import logo from "../assets/logovimind2.png";
 import kemenkesLogo from "../assets/kemenkes_logo.png";
@@ -27,9 +25,7 @@ const Dashboard = () => {
   const [showSummary, setShowSummary] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
-  const [showArticleMenu, setShowArticleMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showMobileArticleList, setShowMobileArticleList] = useState(false);
   const [showArticleModal, setShowArticleModal] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
@@ -52,7 +48,7 @@ const Dashboard = () => {
     localStorage.getItem("avatar_url") || ""
   );
 
-  const [news, setNews] = useState([]);
+
   const [banners, setBanners] = useState([]);
   const navigate = useNavigate();
   const mood = localStorage.getItem("mood");
@@ -87,15 +83,7 @@ const Dashboard = () => {
 
       }
     };
-    const fetchNews = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/news`);
-        const data = await response.json();
-        setNews(data);
-      } catch (err) {
-        console.error("Failed to fetch news:", err);
-      }
-    };
+
     const fetchBanners = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/banners`);
@@ -107,7 +95,6 @@ const Dashboard = () => {
     };
 
     fetchUserAndProfile();
-    fetchNews();
     fetchBanners();
   }, []);
 
@@ -205,7 +192,7 @@ const Dashboard = () => {
   // Data isi carousel (Prioritaskan Banners dari Admin, lalu gabung News API)
   const carouselSlides = [
     ...(banners || [])
-      .filter((b) => b.title?.trim() || b.image_url?.trim()) // ⚡ HANYA TAMPILIN YANG ADA ISINYA
+      .filter((b) => b.title?.trim() || b.image_url?.trim())
       .map((b) => ({
         id: `banner-${b.id}`,
         title: b.title || "Vimind Promo",
@@ -214,33 +201,10 @@ const Dashboard = () => {
         bgRight: "#8B5CF6",
         image: b.image_url,
         link: b.link_url
-      })),
-    ...(news || [])
-      .filter((item) => item.title?.trim()) // ⚡ PASTIKAN BERITA ADA JUDULNYA
-      .slice(0, 2)
-      .map((item, index) => ({
-        id: `news-${index}`,
-        title: item.title,
-        highlight: item.highlight || "Update",
-        rightText: "Mari baca berita kesehatan selengkapnya untuk wawasan lebih luas.",
-        bgRight: index === 0 ? "#E9004C" : "#10B981",
-        image: item.image,
-        link: item.link
       }))
   ];
 
-  // Fallback if empty
-  if (carouselSlides.length === 0) {
-    carouselSlides.push({
-      id: "fallback",
-      title: "Vimind Didukung",
-      highlight: "Kementerian Kesehatan RI",
-      rightText: "Lembaga Penyelenggara Pelatihan Bidang Kesehatan yang Telah Diakreditasi oleh Kemenkes RI",
-      bgRight: "#E9004C",
-      image: familyBanner,
-      link: "#"
-    });
-  }
+  // Tidak ada fallback — carousel hanya muncul kalau ada konten dari admin/news
 
   // Efek Auto-Slide setiap 3 detik (3000 ms)
   useEffect(() => {
@@ -258,43 +222,7 @@ const Dashboard = () => {
         <div className="dashboard-navbar">
           <div className="nav-left">
             <img src={logo} alt="logo" className="nav-logo" />
-            <div className="divider" />
-            <div className="article-menu-wrapper">
-              <button
-                className="nav-menu"
-                onClick={() => setShowArticleMenu(!showArticleMenu)}
-              >
-                <span>Artikel Kesehatan Mental</span>
-                <span className="dropdown-arrow">▾</span>
-              </button>
 
-              {/* DROPDOWN MENU */}
-              {showArticleMenu && (
-                <div className="article-menu-dropdown">
-                  {news.length > 0 ? (
-                    news.slice(0, 3).map((item) => (
-                      <div
-                        key={item.id}
-                        className="article-menu-item"
-                        onClick={() => window.open(item.link, "_blank")}
-                      >
-                        {item.title}
-                      </div>
-                    ))
-                  ) : (
-                    articlesList.map((article) => (
-                      <div
-                        key={article.id}
-                        className="article-menu-item"
-                        onClick={() => handleArticleClick(article.id)}
-                      >
-                        {article.title}
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
           </div>
 
           <button
@@ -314,63 +242,14 @@ const Dashboard = () => {
                 className="mobile-menu-item"
                 onClick={() => {
                   setShowSidebar(true);
-                  setShowMobileArticleList(false);
                   setShowMobileMenu(false);
                 }}
               >
                 Profile
               </button>
-              <button
-                type="button"
-                className="mobile-menu-item"
-                onClick={() => {
-                  setShowMobileArticleList(true);
-                  setShowMobileMenu(false);
-                }}
-              >
-                Artikel...
-              </button>
             </div>
           )}
 
-          {showMobileArticleList && (
-            <div className="mobile-article-list-dropdown">
-              <div className="mobile-article-list-header">
-                <span>Daftar Artikel</span>
-                <button
-                  type="button"
-                  className="mobile-article-list-close"
-                  onClick={() => setShowMobileArticleList(false)}
-                >
-                  ✕
-                </button>
-              </div>
-              {news.length > 0 ? (
-                news.slice(0, 3).map((item) => (
-                  <div
-                    key={item.id}
-                    className="article-menu-item"
-                    onClick={() => {
-                      window.open(item.link, "_blank");
-                      setShowMobileArticleList(false);
-                    }}
-                  >
-                    {item.title}
-                  </div>
-                ))
-              ) : (
-                articlesList.map((article) => (
-                  <div
-                    key={article.id}
-                    className="article-menu-item"
-                    onClick={() => handleArticleClick(article)}
-                  >
-                    {article.title}
-                  </div>
-                ))
-              )}
-            </div>
-          )}
 
           {/* PROFILE AREA */}
           <div className="nav-profile-area" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -405,78 +284,70 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* HERO CAROUSEL */}
-        <div className="carousel-container">
-          {/* TRACK CAROUSEL: Pindahkan transform ke sini agar gap juga terhitung saat bergeser */}
-          <div 
-            className="carousel-track"
-            style={{
-              transform: `translateX(calc(-${currentSlide * 100}% - ${currentSlide * 15}px))`
-            }}
-          >
-            {carouselSlides.map((slide, index) => {
-              // Ambil data slide selanjutnya untuk efek "peek" di kolom kanan
-              const nextSlide = carouselSlides[(index + 1) % carouselSlides.length];
+        {/* HERO CAROUSEL — hanya muncul kalau ada slide */}
+        {carouselSlides.length > 0 && (
+          <>
+            <div className="carousel-container">
+              <div 
+                className="carousel-track"
+                style={{
+                  transform: `translateX(calc(-${currentSlide * 100}% - ${currentSlide * 15}px))`
+                }}
+              >
+                {carouselSlides.map((slide, index) => {
+                  const nextSlide = carouselSlides[(index + 1) % carouselSlides.length];
 
-              return (
-                <div className="dashboard-hero" key={slide.id}>
-                  
-                  {/* Banner Kiri (Slide Aktif) */}
-                  <div
-                    className="hero-big promo-left"
-                    onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
-                    style={{ cursor: slide.link !== "#" ? "pointer" : "default" }}
-                  >
-                    {slide.image && (
-                      <img
-                        src={slide.image}
-                        alt="Promo Left"
-                        className="promo-image-cover"
-                      />
-                    )}
-                    <div
-                      className="promo-content"
-                      style={{
-                        background: slide.image 
-                          ? "linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)" 
-                          : "transparent"
-                      }}
-                    >
-                      <h2 style={{ color: slide.image ? "white" : "inherit" }}>{slide.title}</h2>
+                  return (
+                    <div className="dashboard-hero" key={slide.id}>
+                      
+                      {/* Banner Kiri (Slide Aktif) */}
+                      <div
+                        className="hero-big promo-left"
+                        onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
+                        style={{ cursor: slide.link !== "#" ? "pointer" : "default" }}
+                      >
+                        {slide.image && (
+                          <img
+                            src={slide.image}
+                            alt="Promo Left"
+                            className="promo-image-cover"
+                          />
+                        )}
+                      </div>
+
+                      {/* Banner Kanan (Peek Image Selanjutnya) */}
+                      <div
+                        className="hero-small promo-right"
+                        onClick={() => nextSlide.link !== "#" && window.open(nextSlide.link, "_blank")}
+                        style={{ cursor: nextSlide.link !== "#" ? "pointer" : "default" }}
+                      >
+                        {nextSlide.image && (
+                          <img
+                            src={nextSlide.image}
+                            alt="Promo Right Peek"
+                            className="promo-image-cover"
+                          />
+                        )}
+                      </div>
+
                     </div>
-                  </div>
+                  );
+                })}
+              </div>
+            </div>
 
-                  {/* Banner Kanan (Peek Image Selanjutnya) */}
-                  <div
-                    className="hero-small promo-right"
-                    onClick={() => nextSlide.link !== "#" && window.open(nextSlide.link, "_blank")}
-                    style={{ cursor: nextSlide.link !== "#" ? "pointer" : "default" }}
-                  >
-                    {nextSlide.image && (
-                      <img
-                        src={nextSlide.image}
-                        alt="Promo Right Peek"
-                        className="promo-image-cover"
-                      />
-                    )}
-                  </div>
-
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* DOTS NAVIGATION */}
-        <div className="dots">
-          {carouselSlides.map((_, index) => (
-            <span
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={currentSlide === index ? "active" : ""}
-            />
-          ))}
-        </div>
+            {/* DOTS NAVIGATION */}
+            <div className="dots">
+              {carouselSlides.map((_, index) => (
+                <span
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={currentSlide === index ? "active" : ""}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
         {/* FEATURE */}
         <div className="bottom-section">

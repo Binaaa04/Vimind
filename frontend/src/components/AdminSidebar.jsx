@@ -7,7 +7,7 @@ import arrowVector from "../assets/arrowVector.svg";
 // Import SVG untuk menu
 import linkIcon from "../assets/link.svg";
 import faqIcon from "../assets/faq.svg";
-import testIcon from "../assets/test.svg";
+import testIcon from "../assets/Test.svg";
 import feedbackIcon from "../assets/feedback.svg";
 import logoutIcon from "../assets/LogOut.svg"; 
 
