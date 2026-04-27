@@ -43,8 +43,10 @@ func (h *Handler) DeleteBanner(c *fiber.Ctx) error {
 	if id == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Banner ID is required"})
 	}
-	// Note: You'll need to add DeleteBanner to repository.go if not there
-	// For now, let's assume it's added or we use a generic exec
+	if err := h.Repo.DeleteBanner(id); err != nil {
+		log.Printf("ERROR DeleteBanner: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to delete banner"})
+	}
 	return c.JSON(fiber.Map{"message": "Banner deleted successfully"})
 }
 

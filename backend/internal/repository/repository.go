@@ -306,6 +306,11 @@ func (r *Repository) UpsertBanner(req models.BannerUpsertReq) error {
 	return err
 }
 
+func (r *Repository) DeleteBanner(id string) error {
+	_, err := r.pool.Exec(context.Background(), "DELETE FROM promotion WHERE promotion_id=$1", id)
+	return err
+}
+
 // ============================================================
 // Admin: Articles (News Management)
 // ============================================================

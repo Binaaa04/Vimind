@@ -11,8 +11,7 @@ import LogoutModal from "../components/LogoutModal";
 import TestOptionsModal from "../components/TestOptionsModal";
 import { getProfile, updateProfile, diagnose, sendChatMessage } from "../services/api";
 import logo from "../assets/logovimind2.png";
-import kemenkesLogo from "../assets/kemenkes_logo.png";
-import familyBanner from "../assets/family_banner.png";
+
 import chatbotIcon from "../assets/chatbot.png";
 // Pastikan path ini sesuai dengan lokasi file CSS-mu
 import "../css/DashboardCSS.css"; 
@@ -26,8 +25,7 @@ const Dashboard = () => {
   const [showResult, setShowResult] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showArticleModal, setShowArticleModal] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState(null);
+
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [showNicknameSuccessModal, setShowNicknameSuccessModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -118,12 +116,7 @@ const Dashboard = () => {
     }
   }, [chatMessages, isChatLoading]);
 
-  const handleArticleClick = (article) => {
-    setSelectedArticle(article);
-    setShowArticleMenu(false);
-    setShowMobileArticleList(false);
-    setShowArticleModal(true);
-  };
+
 
   const fetchChatbotReply = async (newMessages) => {
     try {
@@ -451,12 +444,7 @@ const Dashboard = () => {
         <SummaryModal onClose={() => setShowSummary(false)} />
       )}
 
-      {/* ARTICLE MODAL */}
-      <ArticleModal
-        isOpen={showArticleModal}
-        article={selectedArticle}
-        onClose={() => setShowArticleModal(false)}
-      />
+
       {/* ================= CHATBOT FLOAT ================= */}
       <button
         className="chatbot-float-btn"
