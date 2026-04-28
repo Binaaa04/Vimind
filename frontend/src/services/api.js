@@ -12,6 +12,7 @@ export const getQuestions = (mode = "default", diseaseIDs = [], email = "") => {
   if (email) {
     url += `&email=${encodeURIComponent(email)}`;
   }
+  url += url.includes("?") ? `&_t=${Date.now()}` : `?_t=${Date.now()}`;
   return api.get(url);
 };
 

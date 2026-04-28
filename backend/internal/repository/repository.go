@@ -48,6 +48,14 @@ func (r *Repository) GetQuestions(mode string, diseaseIDs []int) ([]models.Quest
 			ORDER BY RANDOM();
 		`
 		args = append(args, diseaseIDs)
+	} else if mode == "all" {
+		// Ambil semua gejala beserta ID penyakitnya untuk di-chunk di frontend
+		query = `
+			SELECT s.symptoms_id, s.symptoms_code, s.symptoms_name, r.disease_id
+			FROM symptoms s
+			JOIN cf_rules r ON s.symptoms_id = r.symptoms_id
+			ORDER BY r.disease_id ASC, s.symptoms_id ASC;
+		`
 	} else {
 		// Default: Fallback ke random (logic lama)
 		query = `

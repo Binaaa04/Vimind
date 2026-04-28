@@ -33,9 +33,12 @@ func (h *Handler) GetQuestions(c *fiber.Ctx) error {
 			diseaseIDs = append(diseaseIDs, lastDiseaseID)
 			isRefined = true // Confirmed: user has history → will get targeted questions
 		} else {
-			// Fallback to screening if no history or history is Normal
-			mode = "screening"
+			// Fallback to "all" if no history or history is Normal
+			mode = "all"
 		}
+	} else if mode == "refined" && email == "" {
+		// Guest user fallback
+		mode = "all"
 	} else if idsStr != "" {
 		parts := strings.Split(idsStr, ",")
 		for _, p := range parts {
@@ -52,9 +55,9 @@ func (h *Handler) GetQuestions(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch questions"})
 	}
 
-	// If refined mode returned nothing (e.g. Guest or Invalid ID), fallback to screening
+	// If refined mode returned nothing (e.g. Guest or Invalid ID), fallback to "all"
 	if len(questions) == 0 && mode == "refined" {
-		questions, _ = h.Repo.GetQuestions("screening", nil)
+		questions, _ = h.Repo.GetQuestions("all", nil)
 	}
 
 	// Include is_refined flag and history_disease_id so frontend knows whether to skip Phase 2

@@ -174,7 +174,7 @@ export default function Detection() {
             throw new Error("No refined questions, using screening");
           }
         } catch {
-          const fallback = await getQuestions("screening");
+          const fallback = await getQuestions("all");
           if (ignore) return;
           qs = fallback.data?.questions || fallback.data || [];
         }
