@@ -217,18 +217,18 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 			diseaseName, _ := h.Repo.GetDiseaseNameByID(req.RefinedDiseaseID)
 			finalResults = append(finalResults, models.DiagnosisResult{
 				DiseaseName:     diseaseName,
-				Description:     "Berdasarkan jawaban terbaru Anda, gejala untuk kondisi ini sudah sangat minim atau tidak terdeteksi lagi.",
+				Description:     "Based on your recent answers, the symptoms for this condition are minimal or no longer detected.",
 				CFValue:         0,
 				Percentage:      0,
-				Recommendations: "Tetap pertahankan pola hidup sehat dan terus pantau kondisi Anda secara mandiri.",
+				Recommendations: "Maintain a healthy lifestyle and continue to monitor your condition independently.",
 			})
 		} else {
 			finalResults = append(finalResults, models.DiagnosisResult{
-				DiseaseName:     "Kondisi Mental Stabil (Sehat)",
-				Description:     "Berdasarkan jawaban Anda, tidak terdeteksi adanya indikasi masalah kesehatan mental yang signifikan. Kondisi mental Anda saat ini tergolong stabil dan sehat.",
+				DiseaseName:     "Mentally Stable (Healthy)",
+				Description:     "Based on your answers, there are no significant indications of mental health issues. Your current mental condition is considered stable and healthy.",
 				CFValue:         0,
 				Percentage:      0,
-				Recommendations: "Tetap jaga pola makan tidur yang cukup, berolahraga secara teratur, dan luangkan waktu untuk relaksasi atau hobi Anda.",
+				Recommendations: "Continue to maintain adequate sleep, exercise regularly, and make time for relaxation or hobbies.",
 			})
 		}
 	}
