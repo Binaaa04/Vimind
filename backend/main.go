@@ -55,7 +55,7 @@ func main() {
 
 	// Health Check
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("ViMind Backend is running modullary! 🚀")
+		return c.SendString("ViMind Backend is running modullary! ")
 	})
 
 	// 4. Register Routes
