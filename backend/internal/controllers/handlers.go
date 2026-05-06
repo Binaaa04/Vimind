@@ -86,10 +86,10 @@ func (h *Handler) GetDiscoveryQuestions(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
 	}
 
-	// 1. Identifikasi gejala yang dijawab "Mungkin" ke atas (>= 0.7)
+	// 1. Identifikasi gejala yang dijawab "Cukup Setuju" ke atas (>= 0.5)
 	var strongSymptomIDs []int
 	for _, a := range body.Answers {
-		if a.Value >= 0.7 {
+		if a.Value >= 0.5 {
 			strongSymptomIDs = append(strongSymptomIDs, a.SymptomID)
 		}
 	}
@@ -143,7 +143,7 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 	for _, ans := range req.Answers {
 		// Security: Validate that value is between 0 and 1
 		if ans.Value < 0 || ans.Value > 1 {
-			return c.Status(400).JSON(fiber.Map{"error": "Manipulasi data terdeteksi! Nilai harus antara 0 dan 1."})
+			return c.Status(400).JSON(fiber.Map{"error": "Invalid data: value must be between 0 and 1."})
 		}
 		userAnswers[ans.SymptomID] = ans.Value
 	}
@@ -224,7 +224,7 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 			})
 		} else {
 			finalResults = append(finalResults, models.DiagnosisResult{
-				DiseaseName:     "Mentally Stable (Healthy)",
+				DiseaseName:     "Mental Stabil (Healthy)",
 				Description:     "Based on your answers, there are no significant indications of mental health issues. Your current mental condition is considered stable and healthy.",
 				CFValue:         0,
 				Percentage:      0,
@@ -250,13 +250,16 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 	}
 
 	if internalUserID != nil {
-		levelID := 1 // Default: Low
+		// level_category: 1=Sangat memungkinkan, 2=Memungkinkan, 3=Cukup memungkinkan, 4=Sedikit memungkinkan
+		levelID := 4 // Default: Sedikit memungkinkan
 		if top.Percentage > 70 {
-			levelID = 3 // High
+			levelID = 1 // Sangat memungkinkan
 		} else if top.Percentage > 40 {
-			levelID = 2 // Moderate
+			levelID = 2 // Memungkinkan
+		} else if top.Percentage > 20 {
+			levelID = 3 // Cukup memungkinkan
 		} else {
-			levelID = 1 // Low
+			levelID = 4 // Sedikit memungkinkan
 		}
 
 		topDiseaseID, err := h.Repo.GetDiseaseIDByName(top.DiseaseName)

@@ -50,6 +50,22 @@ export default function Result() {
 
     const result = diagnosis?.top_result || (diagnosis?.all_results ? diagnosis.all_results[0] : null);
 
+    if (!result) {
+        return (
+            <div className="result-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', flexDirection: 'column', gap: '16px' }}>
+                <h2 style={{ color: '#6B21A8' }}>Data Hasil Tes Tidak Ditemukan</h2>
+                <p style={{ color: '#64748B', textAlign: 'center', maxWidth: '300px' }}>Sepertinya kamu belum melakukan tes atau data sudah kedaluwarsa.</p>
+                <button
+                    className="next-btn"
+                    onClick={() => navigate(isLoggedIn ? "/dashboard" : "/")}
+                    style={{ marginTop: '10px' }}
+                >
+                    {isLoggedIn ? "Kembali ke Dashboard" : "Kembali ke Beranda"}
+                </button>
+            </div>
+        );
+    }
+
     const handleLogout = async () => {
         await supabase.auth.signOut();
         navigate("/login");

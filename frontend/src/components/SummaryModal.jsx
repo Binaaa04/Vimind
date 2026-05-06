@@ -152,16 +152,14 @@ export default function SummaryModal({ onClose }) {
         </style>
       </head>
       <body>
-        return (
-  <div className="header">
-    <img src={logo} alt="Logo Vimind" />
-    <div className="meta">
-      <p><strong>Laporan Progress Kesehatan Mental</strong></p>
-      <p>Nama: <strong>{userName}</strong></p>
-      <p>Dicetak: {nowStr}</p>
-    </div>
-  </div>
-);
+        <div class="header">
+          <div class="logo">Vi<span>mind</span></div>
+          <div class="meta">
+            <p><strong>Laporan Progress Kesehatan Mental</strong></p>
+            <p>Nama: <strong>${userName}</strong></p>
+            <p>Dicetak: ${nowStr}</p>
+          </div>
+        </div>
         <div class="summary-box">
           <div class="stat-card">
             <div class="val">${history.length}</div>
