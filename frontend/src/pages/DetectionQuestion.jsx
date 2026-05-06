@@ -134,28 +134,88 @@ export default function Detection() {
           setUserEmail(email);
         }
 
+        const isGuest = !email;
         const forceNewTest = location.state?.forceNewTest;
 
-        // Pulihkan dari draft jika ada
+        // ── GUEST USER: Selalu mulai tes baru, jangan pakai draft ──
+        if (isGuest) {
+          clearDraft();
+          setSelectedAnswers({});
+          setCurrentPage(0);
+          setIsRefinedMode(false);
+          setHistoryDiseaseID(0);
+
+          const res = await getQuestions("all");
+          if (ignore) return;
+          const qs = res.data?.questions || res.data || [];
+          if (!ignore) setQuestions(qs);
+
+          // Fetch CF levels
+          try {
+            const levelsRes = await getLevels();
+            if (levelsRes.data && !ignore) {
+              const levelsMap = {};
+              levelsRes.data.forEach((lvl) => { levelsMap[lvl.level_id] = lvl.cf_value; });
+              setCfLevels(levelsMap);
+            }
+          } catch { if (!ignore) console.warn("Failed to fetch CF levels, using fallback"); }
+
+          if (!ignore) setLoading(false);
+          return;
+        }
+
+        // ── LOGGED-IN USER: "Deteksi Penyakit Baru" ──
+        if (forceNewTest) {
+          clearDraft();
+          setSelectedAnswers({});
+          setCurrentPage(0);
+          setIsRefinedMode(false);
+          setHistoryDiseaseID(0);
+
+          const res = await getQuestions("all");
+          if (ignore) return;
+          const qs = res.data?.questions || res.data || [];
+          if (!ignore) setQuestions(qs);
+
+          // Fetch CF levels
+          try {
+            const levelsRes = await getLevels();
+            if (levelsRes.data && !ignore) {
+              const levelsMap = {};
+              levelsRes.data.forEach((lvl) => { levelsMap[lvl.level_id] = lvl.cf_value; });
+              setCfLevels(levelsMap);
+            }
+          } catch { if (!ignore) console.warn("Failed to fetch CF levels, using fallback"); }
+
+          if (!ignore) setLoading(false);
+          return;
+        }
+
+        // ── LOGGED-IN USER: "Lanjutkan Kondisi Sebelumnya" ──
+        // Coba pulihkan draft dulu
         const draft = loadDraft();
-        if (draft && !forceNewTest && draft.questions?.length > 0) {
+        if (draft && draft.questions?.length > 0) {
           setQuestions(draft.questions);
           setSelectedAnswers(draft.selectedAnswers || {});
           setCurrentPage(draft.currentPage || 0);
           setIsRefinedMode(draft.isRefinedMode || false);
           setHistoryDiseaseID(draft.historyDiseaseID || 0);
-          setLoading(false);
+
+          // Tetap fetch CF levels
+          try {
+            const levelsRes = await getLevels();
+            if (levelsRes.data && !ignore) {
+              const levelsMap = {};
+              levelsRes.data.forEach((lvl) => { levelsMap[lvl.level_id] = lvl.cf_value; });
+              setCfLevels(levelsMap);
+            }
+          } catch { if (!ignore) console.warn("Failed to fetch CF levels, using fallback"); }
+
+          if (!ignore) setLoading(false);
           return;
         }
 
-        // Reset jika forceNewTest
-        if (forceNewTest) {
-          clearDraft();
-          setIsRefinedMode(false);
-          setHistoryDiseaseID(0);
-        }
-
-        // Muat soal: coba refined dulu, fallback ke screening
+        // Nggak ada draft → muat soal refined dari history
         let qs = [];
         try {
           const response = await getQuestions("refined", [], email);
@@ -163,7 +223,7 @@ export default function Detection() {
 
           const { questions: refinedQs, is_refined } = response.data;
 
-          if (refinedQs && refinedQs.length > 0 && !forceNewTest) {
+          if (refinedQs && refinedQs.length > 0) {
             qs = refinedQs;
             if (is_refined) {
               setIsRefinedMode(true);
@@ -172,7 +232,7 @@ export default function Detection() {
               }
             }
           } else {
-            throw new Error("No refined questions, using screening");
+            throw new Error("No refined questions, using all");
           }
         } catch {
           const fallback = await getQuestions("all");
@@ -180,21 +240,15 @@ export default function Detection() {
           qs = fallback.data?.questions || fallback.data || [];
         }
 
-        // Fetch CF levels mapping from DB
+        // Fetch CF levels
         try {
           const levelsRes = await getLevels();
           if (levelsRes.data && !ignore) {
             const levelsMap = {};
-            // Asumsikan level_id 1 (Sangat memungkinkan) = Opsi 1 (Paling Setuju)
-            // Asumsikan level_id 4 (Sedikit memungkinkan) = Opsi 4 (Tidak Setuju)
-            levelsRes.data.forEach((lvl) => {
-              levelsMap[lvl.level_id] = lvl.cf_value;
-            });
+            levelsRes.data.forEach((lvl) => { levelsMap[lvl.level_id] = lvl.cf_value; });
             setCfLevels(levelsMap);
           }
-        } catch (err) {
-          if (!ignore) console.warn("Failed to fetch CF levels, using fallback weights");
-        }
+        } catch { if (!ignore) console.warn("Failed to fetch CF levels, using fallback"); }
 
         if (!ignore) setQuestions(qs);
       } catch (err) {
